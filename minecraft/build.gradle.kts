@@ -1,5 +1,6 @@
 import figurafsb.versioning.VERSIONS
 import figurafsb.versioning.FSBDeps
+import net.msrandom.stubs.GenerateStubApi
 
 plugins {
     id("figurafsb.minecraft")
@@ -25,9 +26,9 @@ cloche {
         val fabri = version.fabric
         val forg = version.forge
 
-        val thisVersionCommon = common("$mc:common") {}
+        val thisVersionCommon = common("common:$mc") {}
 
-        if (fabri != null) fabric("$mc:fabric") {
+        if (fabri != null) fabric("fabric:$mc") {
             minecraftVersion = mc
             loaderVersion = fabri.loader
 
@@ -35,13 +36,29 @@ cloche {
                 modLocalRuntime(FSBDeps.fabricApi(fabri.api))
             }
 
+            includedClient()
+
+            runs {
+                server()
+                client()
+            }
+
             dependsOn(thisVersionCommon)
         }
-        if (forg != null) forge("$mc:forge") {
+        if (forg != null) forge("forge:$mc") {
             minecraftVersion = mc
             loaderVersion = forg.loader
+
+            runs {
+                server()
+                client()
+            }
 
             dependsOn(thisVersionCommon)
         }
     }
+}
+
+tasks.named<GenerateStubApi>("createCommonApiStub") {
+    excludes.add("net.java.dev.jna")
 }

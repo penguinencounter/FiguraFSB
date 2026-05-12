@@ -3,12 +3,12 @@ package figurafsb.versioning
 const val fabricLoader = "0.15.10"
 
 val VERSIONS = versions {
-    "1.16.5" {
-        fabric(fabricLoader) {
-            api = "0.42.0+1.16"
-        }
-        forge("36.2.41", 36) {}
-    }
+//    "1.16.5" {
+//        fabric(fabricLoader) {
+//            api = "0.42.0+1.16"
+//        }
+//        forge("36.2.41", 36) {}
+//    }
     "1.18.2" {
         fabric(fabricLoader) {
             api = "0.77.0".versioned
