@@ -2,6 +2,6 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-cloche = "0.18.11-dust.9"
+cloche = "0.18.11-dust.17"
 [plugins]
 cloche = { id = "earth.terrarium.cloche", version.ref = "cloche" }

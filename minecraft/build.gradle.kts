@@ -18,7 +18,7 @@ cloche {
     }
 
     // Gradle dies if this isn't here for some reason
-    common() {}
+    common {}
 
     for (version in VERSIONS.values) {
         val mc = version.minecraft
