@@ -25,6 +25,7 @@ cloche {
         val mc = version.minecraft
         val fabri = version.fabric
         val forg = version.forge
+        val neoforg = version.neoforge
 
         val thisVersionCommon = common("common:$mc") {}
 
@@ -36,12 +37,13 @@ cloche {
                 modLocalRuntime(FSBDeps.fabricApi(fabri.api))
             }
 
-            includedClient()
+            // TODO: cloche bug
+//            includedClient()
 
-            runs {
-                server()
-                client()
-            }
+//            runs {
+//                server()
+//                client()
+//            }
 
             dependsOn(thisVersionCommon)
         }
@@ -49,10 +51,21 @@ cloche {
             minecraftVersion = mc
             loaderVersion = forg.loader
 
-            runs {
-                server()
-                client()
-            }
+//            runs {
+//                server()
+//                client()
+//            }
+
+            dependsOn(thisVersionCommon)
+        }
+        if (neoforg != null) neoforge("neoforge:$mc") {
+            minecraftVersion = mc
+            loaderVersion = neoforg.loader
+
+//            runs {
+//                server()
+//                client()
+//            }
 
             dependsOn(thisVersionCommon)
         }

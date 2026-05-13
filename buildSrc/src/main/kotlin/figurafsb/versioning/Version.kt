@@ -8,6 +8,7 @@ class Version(
     val minecraft: String,
     val fabric: FabricDependencies?,
     val forge: ForgeDependencies?,
+    val neoforge: NeoForgeDependencies?,
 )
 
 class FabricDependencies(
@@ -17,6 +18,9 @@ class FabricDependencies(
 class ForgeDependencies(
     val loader: String,
     val fml: Int,
+)
+class NeoForgeDependencies(
+    val loader: String,
 )
 
 @VersionDsl
@@ -39,14 +43,23 @@ class ForgeDependenciesBuilder(private val loader: String, private val fml: Int)
 }
 
 @VersionDsl
+class NeoForgeDependenciesBuilder(private val loader: String) {
+    fun build() = NeoForgeDependencies(
+        loader = loader
+    )
+}
+
+@VersionDsl
 class VersionBuilder(private val minecraft: String) {
     var fabric: FabricDependencies? = null
     var forge: ForgeDependencies? = null
+    var neoforge: NeoForgeDependencies? = null
 
     fun build() = Version(
         minecraft = minecraft,
         fabric = fabric,
-        forge = forge
+        forge = forge,
+        neoforge = neoforge,
     )
 
     fun fabric(loader: String, c: recv<FabricDependenciesBuilder> = {}) {
@@ -55,6 +68,10 @@ class VersionBuilder(private val minecraft: String) {
 
     fun forge(loader: String, fml: Int, c: recv<ForgeDependenciesBuilder> = {}) {
         forge = ForgeDependenciesBuilder(loader, fml).also(c).build()
+    }
+
+    fun neoforge(loader: String, c: recv<NeoForgeDependenciesBuilder> = {}) {
+        neoforge = NeoForgeDependenciesBuilder(loader).also(c).build()
     }
 }
 
