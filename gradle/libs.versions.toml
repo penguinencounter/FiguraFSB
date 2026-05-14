@@ -2,7 +2,8 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-cloche = "0.18.11-dust.18"
-#cloche = "0.18.11"
+neogradle = { require = "[7.1, 7.2[" }
+
 [plugins]
-cloche = { id = "earth.terrarium.cloche", version.ref = "cloche" }
+neogradle-userdev = { id = "net.neoforged.gradle.userdev", version.ref = "neogradle" }
+neogradle-neoform = { id = "net.neoforged.gradle.neoform", version.ref = "neogradle" }

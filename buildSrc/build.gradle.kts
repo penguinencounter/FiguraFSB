@@ -9,18 +9,16 @@ plugins {
 repositories {
     mavenCentral()
     gradlePluginPortal()
-    maven { url = uri("https://maven.architectury.dev/") }
+    maven { url = uri("https://maven.neoforged.net/releases") }
     maven { url = uri("https://maven.fabricmc.net/") }
     maven { url = uri("https://maven.minecraftforge.net/") }
-    maven { url = uri("https://maven.msrandom.net/repository/cloche/") }
-    maven { url = uri("https://raw.githubusercontent.com/settingdust/maven/main/repository/") }
-    maven { url = uri("https://maven.neoforged.net/releases") }
 }
 
 dependencies {
     // plugins used in convention plugins
-    implementation(pluginMarker(libs.plugins.cloche))
 //    implementation(pluginMarker(libs.plugins.shadow))
+    implementation(pluginMarker(libs.plugins.neogradle.neoform))
+    implementation(pluginMarker(libs.plugins.neogradle.userdev))
 }
 
 java {
