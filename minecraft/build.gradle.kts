@@ -40,10 +40,10 @@ cloche {
             // TODO: cloche bug
 //            includedClient()
 
-//            runs {
-//                server()
-//                client()
-//            }
+            runs {
+                server()
+                client()
+            }
 
             dependsOn(thisVersionCommon)
         }
@@ -51,10 +51,10 @@ cloche {
             minecraftVersion = mc
             loaderVersion = forg.loader
 
-//            runs {
-//                server()
-//                client()
-//            }
+            runs {
+                server()
+                client()
+            }
 
             dependsOn(thisVersionCommon)
         }
@@ -62,12 +62,19 @@ cloche {
             minecraftVersion = mc
             loaderVersion = neoforg.loader
 
-//            runs {
-//                server()
-//                client()
-//            }
+            runs {
+                server()
+                client()
+            }
 
             dependsOn(thisVersionCommon)
+        }
+    }
+
+    // fix 1.20.6+ forge
+    configurations.configureEach {
+        resolutionStrategy.capabilitiesResolution.withCapability("cpw.mods:modlauncher") {
+            selectHighestVersion()
         }
     }
 }

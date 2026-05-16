@@ -15,6 +15,7 @@ repositories {
     maven { url = uri("https://maven.msrandom.net/repository/cloche/") }
     maven { url = uri("https://raw.githubusercontent.com/settingdust/maven/main/repository/") }
     maven { url = uri("https://maven.neoforged.net/releases") }
+    mavenLocal()
 }
 
 dependencies {

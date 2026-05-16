@@ -2,7 +2,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-cloche = "0.18.11-dust.18"
+cloche = "0.18.11-figura.20"
 #cloche = "0.18.11"
 [plugins]
 cloche = { id = "earth.terrarium.cloche", version.ref = "cloche" }

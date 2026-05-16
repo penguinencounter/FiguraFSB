@@ -51,20 +51,23 @@ val VERSIONS = versions {
             api = "0.97.3".versioned
         }
         forge("49.0.8", 49) {}
-        neoforge("20.4.238")
+//        neoforge("20.4.238") // NO
+        neoforge("20.4.244")
+//        neoforge("20.4.251") // YES
     }
     "1.20.6" {
         fabric(fabricLoader) {
             api = "0.100.8".versioned
         }
         forge("50.0.8", 50) {}
-//        neoforge("20.6.119")
+        neoforge("20.6.122")
     }
     "1.21.1" {
         fabric(fabricLoader) {
             api = "0.116.12".versioned
         }
-        forge("52.0.28", 52) {}
+//        forge("52.0.28", 52) {}
+        forge("52.1.0", 52) {}
         neoforge("21.1.80")
     }
 }

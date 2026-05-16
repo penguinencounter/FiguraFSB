@@ -1,24 +1,45 @@
 package figurafsb.versioning
 
+import org.gradle.util.internal.VersionNumber
+
 @DslMarker
 private annotation class VersionDsl
 private typealias recv<T> = T.() -> Unit
+
+object IntListComparator : Comparator<List<Int>> {
+    override fun compare(first: List<Int>, second: List<Int>): Int {
+        for ((i, j) in first zip second) {
+            val diff = i - j
+            if (diff != 0) return diff
+        }
+        return first.size - second.size
+    }
+}
+
+infix fun List<Int>.compareTo(other: List<Int>) = IntListComparator.compare(this, other)
 
 class Version(
     val minecraft: String,
     val fabric: FabricDependencies?,
     val forge: ForgeDependencies?,
     val neoforge: NeoForgeDependencies?,
-)
+) {
+    val minecraftNumeric = run {
+        val uniformMinecraft = minecraft.replace(Regex("^1."), "")
+        uniformMinecraft.split(".").map { it.toInt() }
+    }
+}
 
 class FabricDependencies(
     val loader: String,
     val api: String,
 )
+
 class ForgeDependencies(
     val loader: String,
     val fml: Int,
 )
+
 class NeoForgeDependencies(
     val loader: String,
 )
