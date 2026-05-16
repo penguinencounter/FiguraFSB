@@ -21,6 +21,10 @@ cloche {
     // Gradle dies if this isn't here for some reason
     common {}
 
+    val fabricAny = common("fabric:any") {}
+    val forgeAny = common("forge:any") {}
+    val neoForgeAny = common("neoforge:any") {}
+
     for (version in VERSIONS.values) {
         val mc = version.minecraft
         val fabri = version.fabric
@@ -44,7 +48,7 @@ cloche {
                 client()
             }
 
-            dependsOn(thisVersionCommon)
+            dependsOn(thisVersionCommon, fabricAny)
         }
         if (forg != null) forge("forge:$mc") {
             minecraftVersion = mc
@@ -55,7 +59,7 @@ cloche {
                 client()
             }
 
-            dependsOn(thisVersionCommon)
+            dependsOn(thisVersionCommon, forgeAny)
         }
         if (neoforg != null) neoforge("neoforge:$mc") {
             minecraftVersion = mc
@@ -66,7 +70,7 @@ cloche {
                 client()
             }
 
-            dependsOn(thisVersionCommon)
+            dependsOn(thisVersionCommon, neoForgeAny)
         }
     }
 
