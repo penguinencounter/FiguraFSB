@@ -37,8 +37,7 @@ cloche {
                 modLocalRuntime(FSBDeps.fabricApi(fabri.api))
             }
 
-            // TODO: cloche bug
-//            includedClient()
+            includedClient()
 
             runs {
                 server()
