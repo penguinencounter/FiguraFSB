@@ -19,11 +19,17 @@ cloche {
     }
 
     // Gradle dies if this isn't here for some reason
-    common {}
+    val anyAny = common {}
 
-    val fabricAny = common("fabric:any") {}
-    val forgeAny = common("forge:any") {}
-    val neoForgeAny = common("neoforge:any") {}
+    val fabricAny = common("fabric:any") {
+        dependsOn(anyAny)
+    }
+    val forgeAny = common("forge:any") {
+        dependsOn(anyAny)
+    }
+    val neoForgeAny = common("neoforge:any") {
+        dependsOn(anyAny)
+    }
 
     for (version in VERSIONS.values) {
         val mc = version.minecraft
