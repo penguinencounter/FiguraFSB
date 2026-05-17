@@ -13,3 +13,4 @@ rootProject.name = "FiguraFSB"
 
 include(":library", ":minecraft")
 include(":minecraft:fabric:any")
+include(":minecraft:fabric:1.20.1")

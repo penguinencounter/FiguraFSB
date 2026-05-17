@@ -1,5 +1,7 @@
 package figurafsb
 
+import figurafsb.configurator.OptionsExt
+
 plugins {
     java
     `java-library`
@@ -14,4 +16,16 @@ repositories {
     maven { url = uri("https://maven.fabricmc.net/") }
     maven { url = uri("https://maven.minecraftforge.net/") }
     maven { url = uri("https://maven.architectury.dev/") }
+}
+
+the<OptionsExt>().then {
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(it.javaToolchain.actual)
+        }
+    }
+
+    tasks.withType<JavaCompile>().configureEach {
+        options.release = it.javaVersion
+    }
 }

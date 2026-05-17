@@ -8,10 +8,17 @@
 
 package figurafsb.targets
 
+import figurafsb.configurator.FSBJavaToolchain
+import figurafsb.configurator.OptionsExt
 import figurafsb.versioning.FSBDeps
 
 plugins {
     id("figurafsb.base")
+}
+
+the<OptionsExt>().apply {
+    javaVersion = 8
+    javaToolchain = FSBJavaToolchain.JDK17
 }
 
 dependencies {

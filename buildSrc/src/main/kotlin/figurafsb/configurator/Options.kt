@@ -2,6 +2,8 @@ package figurafsb.configurator
 
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.property
 import javax.inject.Inject
 
 typealias OptionsHandler = (options: ReifiedOptions) -> Unit
@@ -18,25 +20,55 @@ enum class FSBJavaToolchain(val actual: Int) {
 class ReifiedOptions(
     val javaVersion: Int,
     val javaToolchain: FSBJavaToolchain,
+    val minecraft: ReifiedMinecraftOptions?
 )
 
-sealed class ReifiedMinecraftOptions(
+class ReifiedMinecraftOptions(
     val minecraftVersion: String,
 )
 
+open class MinecraftOptions @Inject constructor(private val objects: ObjectFactory): CanReify<ReifiedMinecraftOptions> {
+    val version: Property<String> = objects.property()
 
-abstract class OptionsExt @Inject constructor(objects: ObjectFactory) : CanReify<ReifiedOptions> {
+    override fun reify() = ReifiedMinecraftOptions(
+        minecraftVersion = version.get()
+    )
+}
+
+open class OptionsExt @Inject constructor(private val objects: ObjectFactory) : CanReify<ReifiedOptions> {
     private val onCompleteHandlers = mutableListOf<OptionsHandler>()
     private var committed: ReifiedOptions? = null
 
     // Options
-    abstract var javaVersion: Property<Int>
-    abstract var javaToolchain: Property<FSBJavaToolchain>
+    val javaVersion: Property<Int> = objects.property()
+    val javaToolchain: Property<FSBJavaToolchain> = objects.property()
+    val minecraft: Property<MinecraftOptions> = objects.property<MinecraftOptions>()
+
+    fun java8() {
+        javaVersion.set(8)
+        javaToolchain.set(FSBJavaToolchain.JDK17)
+    }
+
+    fun java17() {
+        javaVersion.set(17)
+        javaToolchain.set(FSBJavaToolchain.JDK17)
+    }
+
+    fun java21() {
+        javaVersion.set(21)
+        javaToolchain.set(FSBJavaToolchain.JDK21)
+    }
+
+    fun minecraft(c: MinecraftOptions.() -> Unit) {
+        if (!minecraft.isPresent) minecraft.set(objects.newInstance<MinecraftOptions>())
+        minecraft.get().apply(c)
+    }
 
     // api
     override fun reify() = ReifiedOptions(
         javaVersion = javaVersion.get(),
         javaToolchain = javaToolchain.get(),
+        minecraft = minecraft.orNull?.reify()
     )
 
     fun then(act: OptionsHandler) {
@@ -52,8 +84,13 @@ abstract class OptionsExt @Inject constructor(objects: ObjectFactory) : CanReify
         onCompleteHandlers.clear()
     }
 
+    fun configure(c: OptionsExt.() -> Unit) {
+        this.c()
+        done()
+    }
+
     fun postConfigure() {
         if (committed == null && !onCompleteHandlers.isEmpty())
-            throw IllegalStateException("${onCompleteHandlers.size} waiting for 'fsbOptions' to be configured, but that didn't happen in time")
+            throw IllegalStateException("${onCompleteHandlers.size} waiting for 'fsbOptions' to be configured, but that didn't happen in time. add a fsbOptions.configure {} block?")
     }
 }

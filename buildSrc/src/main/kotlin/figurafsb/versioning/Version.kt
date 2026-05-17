@@ -6,6 +6,7 @@ private typealias recv<T> = T.() -> Unit
 
 class Version(
     val minecraft: String,
+    val parchment: String,
     val fabric: FabricDependencies?,
     val forge: ForgeDependencies?,
     val neoforge: NeoForgeDependencies?,
@@ -51,12 +52,15 @@ class NeoForgeDependenciesBuilder(private val loader: String) {
 
 @VersionDsl
 class VersionBuilder(private val minecraft: String) {
+    var parchment: String? = null
+
     var fabric: FabricDependencies? = null
     var forge: ForgeDependencies? = null
     var neoforge: NeoForgeDependencies? = null
 
     fun build() = Version(
         minecraft = minecraft,
+        parchment = checkNotNull(parchment),
         fabric = fabric,
         forge = forge,
         neoforge = neoforge,
