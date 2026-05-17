@@ -11,4 +11,4 @@ pluginManagement {
 
 rootProject.name = "FiguraFSB"
 
-include(":library", ":minecraft")
+include(":library", ":fsb-api", ":minecraft")

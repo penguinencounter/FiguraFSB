@@ -1,7 +1,7 @@
 package figurafsb
 
 plugins {
-    id("figurafsb.base")
+    id("figurafsb.consumable")
     id("earth.terrarium.cloche")
 }
 

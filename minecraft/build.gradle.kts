@@ -18,8 +18,11 @@ cloche {
         author("PenguinEncounter")
     }
 
-    // Gradle dies if this isn't here for some reason
-    val anyAny = common {}
+    val anyAny = common {
+        dependencies {
+            implementation(project(":fsb-api"))
+        }
+    }
 
     val fabricAny = common("fabric:any") {
         dependsOn(anyAny)
@@ -45,6 +48,8 @@ cloche {
 
             dependencies {
                 modLocalRuntime(FSBDeps.fabricApi(fabri.api))
+                implementation(project(":fsb-api"))
+                include(project(":fsb-api"))
             }
 
             includedClient()
@@ -86,6 +91,18 @@ cloche {
             selectHighestVersion()
         }
     }
+}
+
+// cloche doesn't get the message earlier so...
+lateinit var api: ProjectDependency
+dependencies {
+    api = project(":fsb-api")
+    implementation(api)
+}
+
+configurations.configureEach {
+    if (this.name.matches(Regex("^common\\d+CompileClasspath$")))
+        dependencies.addLater(provider { api })
 }
 
 tasks.named<GenerateStubApi>("createCommonApiStub") {
