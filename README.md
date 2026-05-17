@@ -1,4 +1,7 @@
-FIGURA FSB
+# Figura Server Backend (standalone)
 
-sync cache size (as of May 12 2026):
-sync from blank cache = 
+## IDE sync resource usage
+
+- sync time (very dependent on network throughput & cpu): 59m 48s :concern:
+- repository: +4.47G
+- `.gradle/caches`: +8.6G
