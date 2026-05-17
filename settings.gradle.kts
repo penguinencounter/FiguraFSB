@@ -12,3 +12,4 @@ pluginManagement {
 rootProject.name = "FiguraFSB"
 
 include(":library", ":minecraft")
+include(":minecraft:fabric:any")

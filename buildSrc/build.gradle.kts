@@ -12,13 +12,14 @@ repositories {
     maven { url = uri("https://maven.neoforged.net/releases") }
     maven { url = uri("https://maven.fabricmc.net/") }
     maven { url = uri("https://maven.minecraftforge.net/") }
+    maven { url = uri("https://maven.architectury.dev/") }
 }
 
 dependencies {
     // plugins used in convention plugins
 //    implementation(pluginMarker(libs.plugins.shadow))
-    implementation(pluginMarker(libs.plugins.neogradle.neoform))
-    implementation(pluginMarker(libs.plugins.neogradle.userdev))
+    implementation(pluginMarker(libs.plugins.architectury.plugin))
+    implementation(pluginMarker(libs.plugins.architectury.loom))
 }
 
 java {

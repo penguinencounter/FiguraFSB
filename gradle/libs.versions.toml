@@ -2,8 +2,9 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-neogradle = { require = "[7.1, 7.2[" }
+architectury-plugin = { require = "[3.5, 3.6[" }
+architectury-loom = { require = "[1.14, 1.15[" }
 
 [plugins]
-neogradle-userdev = { id = "net.neoforged.gradle.userdev", version.ref = "neogradle" }
-neogradle-neoform = { id = "net.neoforged.gradle.neoform", version.ref = "neogradle" }
+architectury-plugin = { id = "architectury-plugin", version.ref = "architectury-plugin" }
+architectury-loom = { id = "dev.architectury.loom", version.ref = "architectury-loom" }
