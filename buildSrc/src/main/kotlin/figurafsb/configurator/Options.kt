@@ -1,7 +1,9 @@
 package figurafsb.configurator
 
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
 import javax.inject.Inject
@@ -17,6 +19,12 @@ enum class FSBJavaToolchain(val actual: Int) {
     JDK21(21)
 }
 
+enum class FSBPlatform(val lowercase: String, val capitalized: String) {
+    FABRIC("fabric", "Fabric"),
+    FORGE("forge", "Forge"),
+    NEOFORGE("neoforge", "NeoForge")
+}
+
 class ReifiedOptions(
     val javaVersion: Int,
     val javaToolchain: FSBJavaToolchain,
@@ -25,13 +33,32 @@ class ReifiedOptions(
 
 class ReifiedMinecraftOptions(
     val minecraftVersion: String,
+    val platform: FSBPlatform,
+    val upstreams: List<String>,
+    val plainUpstreams: List<String>
 )
 
 open class MinecraftOptions @Inject constructor(private val objects: ObjectFactory): CanReify<ReifiedMinecraftOptions> {
     val version: Property<String> = objects.property()
+    val platform: Property<FSBPlatform> = objects.property()
+    val upstreams: ListProperty<String> = objects.listProperty()
+    val plainUpstreams: ListProperty<String> = objects.listProperty()
+
+    /**
+     * add an upstream. don't include the `:minecraft` prefix on it.
+     */
+    fun upstream(project: String) = upstreams.add(":minecraft:$project")
+
+    /**
+     * add an upstream that isn't managed by loom. don't include the `:minecraft` prefix.
+     */
+    fun plain(project: String) = plainUpstreams.add(":minecraft:$project")
 
     override fun reify() = ReifiedMinecraftOptions(
-        minecraftVersion = version.get()
+        minecraftVersion = version.get(),
+        platform = platform.get(),
+        upstreams = upstreams.get(),
+        plainUpstreams = plainUpstreams.get(),
     )
 }
 

@@ -17,9 +17,9 @@ repositories {
 
 dependencies {
     // plugins used in convention plugins
-//    implementation(pluginMarker(libs.plugins.shadow))
     implementation(pluginMarker(libs.plugins.architectury.plugin))
     implementation(pluginMarker(libs.plugins.architectury.loom))
+    implementation(pluginMarker(libs.plugins.shadow))
 }
 
 java {

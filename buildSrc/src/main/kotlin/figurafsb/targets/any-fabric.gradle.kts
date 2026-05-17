@@ -10,7 +10,7 @@ package figurafsb.targets
 
 import figurafsb.configurator.FSBJavaToolchain
 import figurafsb.configurator.OptionsExt
-import figurafsb.versioning.FSBDeps
+import figurafsb.versioning.fabricLoader
 
 plugins {
     id("figurafsb.base")
@@ -22,5 +22,5 @@ the<OptionsExt>().apply {
 }
 
 dependencies {
-    compileOnly(FSBDeps.fabricLoader())
+    compileOnly("net.fabricmc:fabric-loader:$fabricLoader")
 }

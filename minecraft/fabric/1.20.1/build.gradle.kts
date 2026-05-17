@@ -7,5 +7,7 @@ fsbOptions.configure {
 
     minecraft {
         version = "1.20.1"
+        plain(":fabric:any")
+//        upstream(":common:1.20.1")
     }
 }

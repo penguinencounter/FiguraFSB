@@ -6,3 +6,6 @@ build
 
 # I do not need yall seeing my IDE configuration
 .idea
+
+# don't upload the entire Minecraft instance(s)
+run

@@ -4,7 +4,9 @@
 [versions]
 architectury-plugin = { require = "[3.5, 3.6[" }
 architectury-loom = { require = "[1.14, 1.15[" }
+shadow = "9.4.1"
 
 [plugins]
 architectury-plugin = { id = "architectury-plugin", version.ref = "architectury-plugin" }
 architectury-loom = { id = "dev.architectury.loom", version.ref = "architectury-loom" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
