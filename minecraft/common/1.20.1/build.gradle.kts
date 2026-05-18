@@ -5,14 +5,12 @@
 // template parameters: version=1.20.1, java=17
 
 plugins {
-    id("figurafsb.targets.fabric-version")
+    id("figurafsb.targets.common-version")
 }
 
 fsbOptions.configure {
     java17()
-
     minecraft {
         version = "1.20.1"
-        upstream(":common:1.20.1")
     }
 }

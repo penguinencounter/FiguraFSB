@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "figura-fsb",
+  "version": "1.0.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "org.figuramc.fsb.fabric.FSBFabricInit"
+    ]
+  }
+}

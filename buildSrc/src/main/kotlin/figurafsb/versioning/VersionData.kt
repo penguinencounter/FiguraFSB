@@ -1,8 +1,13 @@
 package figurafsb.versioning
 
-const val fabricLoader = "0.15.10"
+const val fabricLoader = "0.16.10"
 
 val VERSIONS = versions {
+    /**
+     * parchment: https://parchmentmc.org/docs/getting-started
+     * fabric api: https://fabricmc.net/develop/
+     * forge: https://github.com/FiguraMC/Figura/blob/1.20/gradle.properties
+     */
     "1.16.5" {
         parchment = "2022.03.06"
         fabric(fabricLoader) {
@@ -51,7 +56,7 @@ val VERSIONS = versions {
             api = "0.91.6".versioned
         }
         forge("48.0.13", 48) {}
-//        neoforge("20.2.93")
+        neoforge("20.2.93")
     }
     "1.20.4" {
         parchment = "2024.04.14"
@@ -67,7 +72,7 @@ val VERSIONS = versions {
             api = "0.100.8".versioned
         }
         forge("50.0.8", 50) {}
-//        neoforge("20.6.119")
+        neoforge("20.6.119")
     }
     "1.21.1" {
         parchment = "2024.11.17"
@@ -76,6 +81,20 @@ val VERSIONS = versions {
         }
         forge("52.0.28", 52) {}
         neoforge("21.1.80")
+    }
+    "1.21.3" {
+        parchment = "2024.12.07"
+        fabric(fabricLoader) {
+            api = "0.114.1".versioned
+        }
+        forge("53.0.14", 53)
+    }
+    "1.21.4" {
+        parchment = "2025.03.23"
+        fabric(fabricLoader) {
+            api = "0.119.4".versioned
+        }
+        forge("54.0.6", 54)
     }
 }
 

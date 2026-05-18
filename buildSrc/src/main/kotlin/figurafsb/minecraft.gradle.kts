@@ -3,6 +3,7 @@ package figurafsb
 import figurafsb.configurator.OptionsExt
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
+import org.gradle.api.attributes.LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE
 
 plugins {
     id("figurafsb.base")
@@ -19,9 +20,27 @@ the<OptionsExt>().then {
     val upstreamConfigurations: MutableMap<String, String> by extra { mutableMapOf() }
     val upstreamShadows: MutableMap<String, String> by extra { mutableMapOf() }
 
+    val resourceIncludes by configurations.dependencyScope("resourceIncludes")
+    val includedResources by configurations.resolvable("includedResources") {
+        extendsFrom(resourceIncludes)
+
+        attributes {
+            // match with base.gradle.kts
+            attribute(LIBRARY_ELEMENTS_ATTRIBUTE, objects.named("resource-jar"))
+        }
+    }
+
     configurations {
         for (upstream in mcData.upstreams) {
-            evaluationDependsOn(upstream)
+            if (mcData.platform == null) throw IllegalStateException(
+                """
+                    Can't do Loom upstreams on a non-loader project, sorry! (configuring ${project.path})
+                    (we don't know at what configuration to use for shadowJar-ing unless you tell us)
+                    - If this is actually a loader project, 'platform' needs to be set in fsbOptions.minecraft.
+                    - If this dependency isn't Loom, use 'plain' instead of 'upstream'.
+                """.trimIndent()
+            )
+
             val name = projToConfName(upstream.removeMinecraftPrefix(), listOf("upstream"))
             upstreamConfigurations[upstream] = name
             register(name)
@@ -30,7 +49,6 @@ the<OptionsExt>().then {
             register(shadow)
         }
         for (upstream in mcData.plainUpstreams) {
-            evaluationDependsOn(upstream)
             val name = projToConfName(upstream.removeMinecraftPrefix(), listOf("upstream"))
             plainConfigurations[upstream] = name
             register(name)
@@ -57,19 +75,15 @@ the<OptionsExt>().then {
 
         for ((projName, confName) in plainConfigurations) {
             add(confName, project(projName)) { isTransitive = false }
+            resourceIncludes(project(projName))
         }
         for ((projName, confName) in upstreamConfigurations) {
             add(confName, project(projName, "namedElements")) { isTransitive = false }
+            resourceIncludes(project(projName))
         }
-    }
-
-    sourceSets {
-        val allResources = (plainConfigurations + upstreamConfigurations).keys.map {
-            project(it).sourceSets.main.get().resources
-        }
-        main {
-            resources {
-                allResources.forEach(::source)
+        mcData.platform?.let { platform ->
+            for ((projName, confName) in upstreamShadows) {
+                add(confName, project(projName, "transformProduction${platform.capitalized}")) { isTransitive = false }
             }
         }
     }
@@ -80,6 +94,7 @@ the<OptionsExt>().then {
             configurations.addAll(provider {
                 (upstreamShadows + plainConfigurations).values.map { project.configurations.get(it) }
             })
+            configurations.add(includedResources)
             archiveClassifier = "dev-shadow"
         }
 

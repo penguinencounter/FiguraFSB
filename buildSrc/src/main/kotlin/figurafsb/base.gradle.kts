@@ -1,6 +1,8 @@
 package figurafsb
 
 import figurafsb.configurator.OptionsExt
+import libs
+import org.gradle.api.attributes.LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE
 
 plugins {
     java
@@ -16,6 +18,28 @@ repositories {
     maven { url = uri("https://maven.fabricmc.net/") }
     maven { url = uri("https://maven.minecraftforge.net/") }
     maven { url = uri("https://maven.architectury.dev/") }
+}
+
+// move resources around
+val resourceJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("resources")
+    from(tasks.processResources)
+}
+
+configurations {
+    consumable("resourceJars") {
+        attributes {
+            attribute(LIBRARY_ELEMENTS_ATTRIBUTE, objects.named("resource-jar"))
+        }
+    }
+}
+
+artifacts {
+    add("resourceJars", resourceJar)
+}
+
+dependencies {
+    compileOnly(libs.annotations)
 }
 
 the<OptionsExt>().then {

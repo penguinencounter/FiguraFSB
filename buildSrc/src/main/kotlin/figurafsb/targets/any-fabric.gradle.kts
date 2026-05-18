@@ -13,14 +13,15 @@ import figurafsb.configurator.OptionsExt
 import figurafsb.versioning.fabricLoader
 
 plugins {
-    id("figurafsb.base")
+    id("figurafsb.standalone")
 }
 
 the<OptionsExt>().apply {
-    javaVersion = 8
-    javaToolchain = FSBJavaToolchain.JDK17
+    java8()
 }
 
 dependencies {
     compileOnly("net.fabricmc:fabric-loader:$fabricLoader")
+    compileOnly(project(":fsb-api"))
+    compileOnly(project(":minecraft:common:any"))
 }

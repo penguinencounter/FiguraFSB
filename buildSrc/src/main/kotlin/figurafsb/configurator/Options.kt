@@ -33,7 +33,7 @@ class ReifiedOptions(
 
 class ReifiedMinecraftOptions(
     val minecraftVersion: String,
-    val platform: FSBPlatform,
+    val platform: FSBPlatform?,
     val upstreams: List<String>,
     val plainUpstreams: List<String>
 )
@@ -47,16 +47,16 @@ open class MinecraftOptions @Inject constructor(private val objects: ObjectFacto
     /**
      * add an upstream. don't include the `:minecraft` prefix on it.
      */
-    fun upstream(project: String) = upstreams.add(":minecraft:$project")
+    fun upstream(project: String) = upstreams.add(":minecraft$project")
 
     /**
      * add an upstream that isn't managed by loom. don't include the `:minecraft` prefix.
      */
-    fun plain(project: String) = plainUpstreams.add(":minecraft:$project")
+    fun plain(project: String, noPrefix: Boolean = false) = plainUpstreams.add(if (noPrefix) project else ":minecraft$project")
 
     override fun reify() = ReifiedMinecraftOptions(
         minecraftVersion = version.get(),
-        platform = platform.get(),
+        platform = platform.orNull,
         upstreams = upstreams.get(),
         plainUpstreams = plainUpstreams.get(),
     )

@@ -2,17 +2,17 @@
 // If you want to edit the template, consult the /templates folder,
 // as well as the generate_buildscripts.py script.
 
-// template parameters: version=1.20.1, java=17
+// template parameters: version=1.21.3, java=21
 
 plugins {
     id("figurafsb.targets.fabric-version")
 }
 
 fsbOptions.configure {
-    java17()
+    java21()
 
     minecraft {
-        version = "1.20.1"
-        upstream(":common:1.20.1")
+        version = "1.21.3"
+        upstream(":common:1.21.3")
     }
 }

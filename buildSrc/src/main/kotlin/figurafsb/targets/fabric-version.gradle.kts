@@ -1,3 +1,10 @@
+/**
+ * fabric, versioned
+ * --------------
+ *
+ * Fabric loader & Minecraft
+ */
+
 package figurafsb.targets
 
 import figurafsb.configurator.FSBPlatform
@@ -12,6 +19,11 @@ plugins {
 the<OptionsExt>().apply {
     minecraft {
         platform = FSBPlatform.FABRIC
+
+        plain(":common:any")
+        plain(":fabric:any")
+        // This basically includes fsb-api, but it does NOT count as JarInJar.
+        plain(":fsb-api", noPrefix = true)
     }
 }
 

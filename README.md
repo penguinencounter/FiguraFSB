@@ -1,4 +1,8 @@
-FIGURA FSB
+# Figura Server Backend, standalone
 
-sync cache size (as of May 12 2026):
-sync from blank cache = 
+## Development
+
+### Sync performance & resources
+
+- sync time (varies by CPU & network speed): ~20 min
+- disk space: 

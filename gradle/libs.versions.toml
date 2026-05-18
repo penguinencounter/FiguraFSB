@@ -6,6 +6,14 @@ architectury-plugin = { require = "[3.5, 3.6[" }
 architectury-loom = { require = "[1.14, 1.15[" }
 shadow = "9.4.1"
 
+# These are libraries that are effectively stable between versions.
+annotations = "26.1.0"
+slf4j = "2.0.16"
+
+[libraries]
+annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
+slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+
 [plugins]
 architectury-plugin = { id = "architectury-plugin", version.ref = "architectury-plugin" }
 architectury-loom = { id = "dev.architectury.loom", version.ref = "architectury-loom" }
