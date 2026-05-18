@@ -15,6 +15,7 @@ class Version(
 class FabricDependencies(
     val loader: String,
     val api: String,
+    val forced: Boolean
 )
 class ForgeDependencies(
     val loader: String,
@@ -27,11 +28,13 @@ class NeoForgeDependencies(
 @VersionDsl
 class FabricDependenciesBuilder(private val mc: String, private val loader: String) {
     var api: String? = null
+    var forced: Boolean = false
     val String.versioned: String get() = "$this+$mc"
 
     fun build() = FabricDependencies(
         loader = loader,
-        api = checkNotNull(api)
+        api = checkNotNull(api),
+        forced = forced,
     )
 }
 

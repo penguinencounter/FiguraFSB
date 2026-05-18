@@ -9,6 +9,7 @@ package figurafsb.targets
 
 import figurafsb.configurator.FSBPlatform
 import figurafsb.configurator.OptionsExt
+import figurafsb.versioning.FSBDependencyContext
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
 
@@ -45,6 +46,12 @@ the<OptionsExt>().then {
                 extendsFrom(
                     *(upstreamConfigurations + plainConfigurations).values.map { named(it) }.toTypedArray()
                 )
+            }
+        }
+
+        version.dependencyContext { d ->
+            if (d.fabricForced()) configureEach {
+                resolutionStrategy.force(FSBDependencyContext(version).fabricLoader())
             }
         }
     }

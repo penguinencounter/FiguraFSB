@@ -7,6 +7,8 @@ class FSBDependencyContext(private val version: Version) {
         }
     }
 
+    fun fabricForced() = fabric.forced
+
     fun minecraft() = "com.mojang:minecraft:${version.minecraft}"
 
     fun parchment() = "org.parchmentmc.data:parchment-${version.minecraft}:${version.parchment}@zip"

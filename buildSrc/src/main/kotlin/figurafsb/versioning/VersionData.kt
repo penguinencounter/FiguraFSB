@@ -11,6 +11,8 @@ val VERSIONS = versions {
     "1.16.5" {
         parchment = "2022.03.06"
         fabric(fabricLoader) {
+            // 1.16 fapi leaks old fabric loader into the classpath for some reason
+            forced = true
             api = "0.42.0+1.16"
         }
         forge("36.2.41", 36) {}
