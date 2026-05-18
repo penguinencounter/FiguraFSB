@@ -51,7 +51,7 @@ the<OptionsExt>().then {
 
         version.dependencyContext { d ->
             if (d.fabricForced()) configureEach {
-                resolutionStrategy.force(FSBDependencyContext(version).fabricLoader())
+                resolutionStrategy.force(d.fabricLoader())
             }
         }
     }
