@@ -6,7 +6,7 @@ val VERSIONS = versions {
     /**
      * parchment: https://parchmentmc.org/docs/getting-started
      * fabric api: https://fabricmc.net/develop/
-     * forge: https://github.com/FiguraMC/Figura/blob/1.20/gradle.properties
+     * forge & neo: https://github.com/FiguraMC/Figura/blob/1.20/gradle.properties
      */
     "1.16.5" {
         parchment = "2022.03.06"
@@ -65,7 +65,8 @@ val VERSIONS = versions {
         fabric(fabricLoader) {
             api = "0.97.3".versioned
         }
-        forge("49.0.8", 49) {}
+//        forge("49.0.8", 49) {} // causes a missing dep on bootstrap-dev (probably an archi bug but 49.1 works so idc)
+        forge("49.1.0", 49) {}
         neoforge("20.4.238")
     }
     "1.20.6" {

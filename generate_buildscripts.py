@@ -9,10 +9,12 @@ env = Environment(loader=FileSystemLoader("templates"), autoescape=select_autoes
 def main():
     commonTemplate = env.get_template("common.gradle.kts.jinja2")
     fabricTemplate = env.get_template("fabric.gradle.kts.jinja2")
+    forgeTemplate = env.get_template("forge.gradle.kts.jinja2")
 
     sourceRoot = Path("./minecraft")
     commons = sourceRoot / "common"
     fabrics = sourceRoot / "fabric"
+    forges = sourceRoot / "forge"
 
     for version, java in [
         ("1.16.5", 8),
@@ -30,14 +32,24 @@ def main():
     ]:
         common = commons / version
         fabric = fabrics / version
+        forge = forges / version
         os.makedirs(common, exist_ok=True)
         os.makedirs(fabric, exist_ok=True)
+        os.makedirs(forge, exist_ok=True)
         with open(common / "build.gradle.kts", "w") as f:
             f.write(commonTemplate.render(version=version, java=java))
         with open(fabric / "build.gradle.kts", "w") as f:
             f.write(fabricTemplate.render(version=version, java=java))
+        with open(forge / "build.gradle.kts", "w") as f:
+            f.write(forgeTemplate.render(version=version, java=java))
+        with open(forge / "gradle.properties", "w") as f:
+            f.write("""
+# this file is generated! your edits will be lost next time the build setup changes
+loom.platform=forge
+""".strip() + "\n")
         os.makedirs(common / "src" / "main" / "java", exist_ok=True)
         os.makedirs(fabric / "src" / "main" / "java", exist_ok=True)
+        os.makedirs(forge / "src" / "main" / "java", exist_ok=True)
 
 
 if __name__ == "__main__":

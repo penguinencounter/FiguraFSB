@@ -14,6 +14,7 @@ rootProject.name = "FiguraFSB"
 include(":fsb-api")
 include(":minecraft:common:any")
 include(":minecraft:fabric:any")
+include(":minecraft:forge:any")
 
 val versions = listOf(
     "1.16.5", "1.18.2", "1.19.2", "1.19.3", "1.19.4", "1.20.1",
@@ -25,6 +26,6 @@ for ((i, version) in versions.withIndex()) {
     val hasNeo = i >= neoForgeAfter
     include(":minecraft:common:${version}")
     include(":minecraft:fabric:${version}")
-//    include(":minecraft:forge:${version}")
+    include(":minecraft:forge:${version}")
 //    if (hasNeo) include(":minecraft:neoforge:${version}")
 }
