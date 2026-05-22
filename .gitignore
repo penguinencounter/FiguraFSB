@@ -5,7 +5,8 @@
 build
 
 # I do not need yall seeing my IDE configuration
-.idea
+.idea/*
+!.idea/scopes
 .vscode
 
 # don't upload the entire Minecraft instance(s)
