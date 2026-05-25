@@ -103,3 +103,6 @@ val VERSIONS = versions {
 
 fun versionFor(minecraft: String) =
     VERSIONS[minecraft] ?: throw IllegalArgumentException("Unknown Minecraft version $minecraft")
+
+// 1.16.5 doesn't have the dependency we need, but overall the entrypoint should still be ABI compatible
+val forgeCompatible = versionFor("1.18.2")

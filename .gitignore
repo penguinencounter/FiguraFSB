@@ -11,3 +11,4 @@ build
 
 # don't upload the entire Minecraft instance(s)
 run
+.architectury-transformer

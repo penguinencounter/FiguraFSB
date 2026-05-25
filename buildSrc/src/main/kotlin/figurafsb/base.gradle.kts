@@ -18,6 +18,7 @@ repositories {
     maven { url = uri("https://maven.fabricmc.net/") }
     maven { url = uri("https://maven.minecraftforge.net/") }
     maven { url = uri("https://maven.architectury.dev/") }
+    maven { url = uri("https://libraries.minecraft.net/") }
 }
 
 // move resources around
@@ -44,6 +45,8 @@ dependencies {
 
 the<OptionsExt>().then {
     java {
+        withSourcesJar()
+
         toolchain {
             languageVersion = JavaLanguageVersion.of(it.javaToolchain.actual)
         }

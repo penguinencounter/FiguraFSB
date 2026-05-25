@@ -1,0 +1,24 @@
+package org.figuramc.fsb.api.packets.handlers.c2s;
+
+import org.figuramc.fsb.api.FiguraServer;
+import org.figuramc.fsb.api.FiguraUser;
+import org.figuramc.fsb.api.packets.Packet;
+
+import java.util.UUID;
+
+public abstract class AuthorizedC2SPacketHandler<P extends Packet> implements C2SPacketHandler<P> {
+    protected final FiguraServer parent;
+
+    protected AuthorizedC2SPacketHandler(FiguraServer parent) {
+        this.parent = parent;
+    }
+
+    @Override
+    public final void handle(UUID sender, P packet) {
+        FiguraUser user = parent.userManager().getUserOrNull(sender);
+        if (user == null || user.offline()) return;
+        handle(user, packet);
+    }
+
+    protected abstract void handle(FiguraUser sender, P packet);
+}

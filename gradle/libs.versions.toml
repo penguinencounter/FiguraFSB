@@ -9,10 +9,15 @@ shadow = "9.4.1"
 # These are libraries that are effectively stable between versions.
 annotations = "26.1.0"
 slf4j = "2.0.16"
+# 1.16.5's libraries
+brigadier = "1.0.17"
+gson = "2.8.0"
 
 [libraries]
 annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+brigadier = { module = "com.mojang:brigadier", version.ref = "brigadier" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson"}
 
 [plugins]
 architectury-plugin = { id = "architectury-plugin", version.ref = "architectury-plugin" }

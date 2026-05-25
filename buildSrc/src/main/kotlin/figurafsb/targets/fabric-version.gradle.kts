@@ -7,11 +7,14 @@
 
 package figurafsb.targets
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import figurafsb.configurator.FSBPlatform
 import figurafsb.configurator.OptionsExt
-import figurafsb.versioning.FSBDependencyContext
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
+import net.fabricmc.loom.task.RemapJarTask
+import org.gradle.kotlin.dsl.named
+import org.gradle.kotlin.dsl.register
 
 plugins {
     id("figurafsb.minecraft")
@@ -60,6 +63,29 @@ the<OptionsExt>().then {
         version.dependencyContext { d ->
             modApi(d.fabricApi())
             modImplementation(d.fabricLoader())
+        }
+    }
+
+    project.version = "${rootProject.version}+${mc.minecraftVersion}-fabric"
+    val artifactRoot: String by project
+
+    publishing {
+        publications {
+            register("maven", MavenPublication::class) {
+                artifactId = "${artifactRoot}-fabric"
+
+                val shadowJar = tasks.named<ShadowJar>("shadowJar")
+                artifact(shadowJar) {
+                    builtBy(shadowJar)
+                    classifier = ""
+                }
+
+                val sourcesJar = tasks.named<Jar>("sourcesJar")
+                artifact(sourcesJar) {
+                    builtBy(sourcesJar)
+                    classifier = "sources"
+                }
+            }
         }
     }
 }
