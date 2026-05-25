@@ -24,7 +24,7 @@ the<OptionsExt>().apply {
         platform = FSBPlatform.NEOFORGE
 
         plain(":common:any")
-//        plain(":forge:any")
+        plain(":neoforge:any")
         plain(":fsb-api", noPrefix = true)
     }
 }

@@ -15,6 +15,7 @@ include(":fsb-api")
 include(":minecraft:common:any")
 include(":minecraft:fabric:any")
 include(":minecraft:forge:any")
+include(":minecraft:neoforge:any")
 
 val versions = listOf(
     "1.16.5", "1.18.2", "1.19.2", "1.19.3", "1.19.4", "1.20.1",
