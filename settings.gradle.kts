@@ -27,5 +27,5 @@ for ((i, version) in versions.withIndex()) {
     include(":minecraft:common:${version}")
     include(":minecraft:fabric:${version}")
     include(":minecraft:forge:${version}")
-//    if (hasNeo) include(":minecraft:neoforge:${version}")
+    if (hasNeo) include(":minecraft:neoforge:${version}")
 }

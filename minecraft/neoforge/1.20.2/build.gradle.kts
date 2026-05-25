@@ -3,14 +3,14 @@
 // as well as the generate_buildscripts.py script.
 
 plugins {
-    id("figurafsb.targets.forge-version")
+    id("figurafsb.targets.neoforge-version")
 }
 
 fsbOptions.configure {
     java17()
 
     minecraft {
-        version = "1.18.2"
-        upstream(":common:1.18.2")
+        version = "1.20.2"
+        upstream(":common:1.20.2")
     }
 }

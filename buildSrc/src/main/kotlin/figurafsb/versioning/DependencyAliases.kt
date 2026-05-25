@@ -29,6 +29,8 @@ class FSBDependencyContext(private val version: Version) {
     fun fabricLoader() = "net.fabricmc:fabric-loader:${fabric.loader}"
 
     fun forgeLoader() = "net.minecraftforge:forge:${version.minecraft}-${forge.loader}"
+
+    fun neoForgeLoader() = "net.neoforged:neoforge:${neoforge.loader}"
 }
 
 inline fun Version.dependencyContext(c: (d: FSBDependencyContext) -> Unit) = c(FSBDependencyContext(this))

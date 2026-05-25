@@ -91,6 +91,7 @@ val VERSIONS = versions {
             api = "0.114.1".versioned
         }
         forge("53.0.14", 53)
+        neoforge("21.3.28-beta")
     }
     "1.21.4" {
         parchment = "2025.03.23"
@@ -98,6 +99,7 @@ val VERSIONS = versions {
             api = "0.119.4".versioned
         }
         forge("54.0.6", 54)
+        neoforge("21.4.92-beta")
     }
 }
 
