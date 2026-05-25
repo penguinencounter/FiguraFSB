@@ -67,6 +67,7 @@ the<OptionsExt>().then {
     }
 
     project.version = "${rootProject.version}+${mc.minecraftVersion}-fabric"
+    project.group = rootProject.group
     val artifactRoot: String by project
 
     publishing {

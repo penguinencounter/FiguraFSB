@@ -30,6 +30,8 @@ the<OptionsExt>().then {
     }
 
     project.version = "${rootProject.version}+${mc.minecraftVersion}"
+    project.group = rootProject.group
+
 
     val artifactRoot: String by project
 

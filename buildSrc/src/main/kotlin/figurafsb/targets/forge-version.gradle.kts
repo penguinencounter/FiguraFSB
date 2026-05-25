@@ -7,11 +7,13 @@
 
 package figurafsb.targets
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import figurafsb.configurator.FSBPlatform
 import figurafsb.configurator.OptionsExt
 import figurafsb.versioning.FSBDependencyContext
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
+import org.gradle.kotlin.dsl.named
 
 plugins {
     id("figurafsb.minecraft")
@@ -56,6 +58,30 @@ the<OptionsExt>().then {
     dependencies {
         version.dependencyContext { d ->
             "forge"(d.forgeLoader()) // it doesn't resolve.
+        }
+    }
+
+    project.version = "${rootProject.version}+${mc.minecraftVersion}-forge"
+    project.group = rootProject.group
+    val artifactRoot: String by project
+
+    publishing {
+        publications {
+            register("maven", MavenPublication::class) {
+                artifactId = "${artifactRoot}-forge"
+
+                val shadowJar = tasks.named<ShadowJar>("shadowJar")
+                artifact(shadowJar) {
+                    builtBy(shadowJar)
+                    classifier = ""
+                }
+
+                val sourcesJar = tasks.named<Jar>("sourcesJar")
+                artifact(sourcesJar) {
+                    builtBy(sourcesJar)
+                    classifier = "sources"
+                }
+            }
         }
     }
 }

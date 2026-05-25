@@ -13,6 +13,7 @@ fsbOptions.configure {
 
 val artifactRoot: String by project
 project.version = rootProject.version
+project.group = rootProject.group
 
 publishing {
     publications {
