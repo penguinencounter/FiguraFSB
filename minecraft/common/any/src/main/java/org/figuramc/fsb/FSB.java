@@ -7,6 +7,8 @@ public class FSB {
     public static final LoggingProxy LOGGER = LogService.getLogger();
 
     public static void init() {
-        LOGGER.info("hello! from common/any");
+        // try to inline the indy?
+        for (int i = 0; i < 10_000; i++)
+            LOGGER.info("hello! from common/any");
     }
 }

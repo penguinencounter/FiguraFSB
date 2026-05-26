@@ -3,11 +3,11 @@ package org.figuramc.fsb.internals.logging;
 import org.figuramc.fsb.internals.BindingException;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.invoke.MethodHandle;
+import java.lang.invoke.LambdaConversionException;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
-import static org.figuramc.fsb.internals.PolymorphicBindings.eraseThis;
+import static org.figuramc.fsb.internals.PolymorphicBindings.produceLambda;
 
 /**
  * <p>
@@ -24,216 +24,178 @@ import static org.figuramc.fsb.internals.PolymorphicBindings.eraseThis;
  * </ol>
  */
 public class LoggingProxy {
-    private static final MethodHandles.Lookup LOOKUP = MethodHandles.publicLookup();
+    private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
+
+    @FunctionalInterface
+    public interface Form1 {
+        void log(String message);
+    }
+
+    @FunctionalInterface
+    public interface Form2 {
+        void log(String formatting, Object... arguments);
+    }
+
+    @FunctionalInterface
+    public interface Form3 {
+        void log(String message, Throwable throwable);
+    }
+
     private static final MethodType FORM_1 = MethodType.methodType(void.class, String.class);
     private static final MethodType FORM_2 = MethodType.methodType(void.class, String.class, Object[].class);
     private static final MethodType FORM_3 = MethodType.methodType(void.class, String.class, Throwable.class);
 
     @NotNull
-    private final MethodHandle TRACE_1;
+    private final Form1 TRACE_1;
     @NotNull
-    private final MethodHandle TRACE_2;
+    private final Form2 TRACE_2;
     @NotNull
-    private final MethodHandle TRACE_3;
+    private final Form3 TRACE_3;
     @NotNull
-    private final MethodHandle DEBUG_1;
+    private final Form1 DEBUG_1;
     @NotNull
-    private final MethodHandle DEBUG_2;
+    private final Form2 DEBUG_2;
     @NotNull
-    private final MethodHandle DEBUG_3;
+    private final Form3 DEBUG_3;
     @NotNull
-    private final MethodHandle INFO_1;
+    private final Form1 INFO_1;
     @NotNull
-    private final MethodHandle INFO_2;
+    private final Form2 INFO_2;
     @NotNull
-    private final MethodHandle INFO_3;
+    private final Form3 INFO_3;
     @NotNull
-    private final MethodHandle WARN_1;
+    private final Form1 WARN_1;
     @NotNull
-    private final MethodHandle WARN_2;
+    private final Form2 WARN_2;
     @NotNull
-    private final MethodHandle WARN_3;
+    private final Form3 WARN_3;
     @NotNull
-    private final MethodHandle ERROR_1;
+    private final Form1 ERROR_1;
     @NotNull
-    private final MethodHandle ERROR_2;
+    private final Form2 ERROR_2;
     @NotNull
-    private final MethodHandle ERROR_3;
+    private final Form3 ERROR_3;
     @NotNull
     private final Object wrapper;
+
+    private Form1 generateForm1(Class<?> wrapperClass,
+                                String name) throws NoSuchMethodException, IllegalAccessException, LambdaConversionException {
+        return produceLambda(
+                LOOKUP,
+                Form1.class,
+                "log",
+                wrapper,
+                FORM_1,
+                LOOKUP.findVirtual(wrapperClass, name, FORM_1)
+        );
+    }
+
+    private Form2 generateForm2(Class<?> wrapperClass,
+                                String name) throws NoSuchMethodException, IllegalAccessException, LambdaConversionException {
+        return produceLambda(
+                LOOKUP,
+                Form2.class,
+                "log",
+                wrapper,
+                FORM_2,
+                LOOKUP.findVirtual(wrapperClass, name, FORM_2)
+        );
+    }
+
+    private Form3 generateForm3(Class<?> wrapperClass,
+                                String name) throws NoSuchMethodException, IllegalAccessException, LambdaConversionException {
+        return produceLambda(
+                LOOKUP,
+                Form3.class,
+                "log",
+                wrapper,
+                FORM_3,
+                LOOKUP.findVirtual(wrapperClass, name, FORM_3)
+        );
+    }
 
     public LoggingProxy(@NotNull Object wrapper) {
         this.wrapper = wrapper;
         try {
             Class<?> theClass = wrapper.getClass();
-            TRACE_1 = eraseThis(LOOKUP.findVirtual(theClass, "trace", FORM_1));
-            TRACE_2 = eraseThis(LOOKUP.findVirtual(theClass, "trace", FORM_2));
-            TRACE_3 = eraseThis(LOOKUP.findVirtual(theClass, "trace", FORM_3));
-            DEBUG_1 = eraseThis(LOOKUP.findVirtual(theClass, "debug", FORM_1));
-            DEBUG_2 = eraseThis(LOOKUP.findVirtual(theClass, "debug", FORM_2));
-            DEBUG_3 = eraseThis(LOOKUP.findVirtual(theClass, "debug", FORM_3));
-            INFO_1 = eraseThis(LOOKUP.findVirtual(theClass, "info", FORM_1));
-            INFO_2 = eraseThis(LOOKUP.findVirtual(theClass, "info", FORM_2));
-            INFO_3 = eraseThis(LOOKUP.findVirtual(theClass, "info", FORM_3));
-            WARN_1 = eraseThis(LOOKUP.findVirtual(theClass, "warn", FORM_1));
-            WARN_2 = eraseThis(LOOKUP.findVirtual(theClass, "warn", FORM_2));
-            WARN_3 = eraseThis(LOOKUP.findVirtual(theClass, "warn", FORM_3));
-            ERROR_1 = eraseThis(LOOKUP.findVirtual(theClass, "error", FORM_1));
-            ERROR_2 = eraseThis(LOOKUP.findVirtual(theClass, "error", FORM_2));
-            ERROR_3 = eraseThis(LOOKUP.findVirtual(theClass, "error", FORM_3));
-        } catch (NoSuchMethodException | IllegalAccessException e) {
+            TRACE_1 = generateForm1(theClass, "trace");
+            TRACE_2 = generateForm2(theClass, "trace");
+            TRACE_3 = generateForm3(theClass, "trace");
+            DEBUG_1 = generateForm1(theClass, "debug");
+            DEBUG_2 = generateForm2(theClass, "debug");
+            DEBUG_3 = generateForm3(theClass, "debug");
+            INFO_1 = generateForm1(theClass, "info");
+            INFO_2 = generateForm2(theClass, "info");
+            INFO_3 = generateForm3(theClass, "info");
+            WARN_1 = generateForm1(theClass, "warn");
+            WARN_2 = generateForm2(theClass, "warn");
+            WARN_3 = generateForm3(theClass, "warn");
+            ERROR_1 = generateForm1(theClass, "error");
+            ERROR_2 = generateForm2(theClass, "error");
+            ERROR_3 = generateForm3(theClass, "error");
+        } catch (NoSuchMethodException | IllegalAccessException | LambdaConversionException e) {
             throw new BindingException(e);
         }
     }
 
     // use a template engine to save yourself the headache tbh
     public void trace(String message) {
-        try {
-            TRACE_1.invokeExact(wrapper, message);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        TRACE_1.log(message);
     }
 
     public void trace(String format, Object... arguments) {
-        try {
-            TRACE_2.invokeExact(wrapper, format, arguments);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        TRACE_2.log(format, arguments);
     }
 
     public void trace(String message, Throwable throwable) {
-        try {
-            TRACE_3.invokeExact(wrapper, message, throwable);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        TRACE_3.log(message, throwable);
     }
 
     public void debug(String message) {
-        try {
-            DEBUG_1.invokeExact(wrapper, message);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        DEBUG_1.log(message);
     }
 
     public void debug(String format, Object... arguments) {
-        try {
-            DEBUG_2.invokeExact(wrapper, format, arguments);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        DEBUG_2.log(format, arguments);
     }
 
     public void debug(String message, Throwable throwable) {
-        try {
-            DEBUG_3.invokeExact(wrapper, message, throwable);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        DEBUG_3.log(message, throwable);
     }
 
     public void info(String message) {
-        try {
-            INFO_1.invokeExact(wrapper, message);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        INFO_1.log(message);
     }
 
     public void info(String format, Object... arguments) {
-        try {
-            INFO_2.invokeExact(wrapper, format, arguments);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        INFO_2.log(format, arguments);
     }
 
     public void info(String message, Throwable throwable) {
-        try {
-            INFO_3.invokeExact(wrapper, message, throwable);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        INFO_3.log(message, throwable);
     }
 
     public void warn(String message) {
-        try {
-            WARN_1.invokeExact(wrapper, message);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        WARN_1.log(message);
     }
 
     public void warn(String format, Object... arguments) {
-        try {
-            WARN_2.invokeExact(wrapper, format, arguments);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        WARN_2.log(format, arguments);
     }
 
     public void warn(String message, Throwable throwable) {
-        try {
-            WARN_3.invokeExact(wrapper, message, throwable);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        WARN_3.log(message, throwable);
     }
 
     public void error(String message) {
-        try {
-            ERROR_1.invokeExact(wrapper, message);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        ERROR_1.log(message);
     }
 
     public void error(String format, Object... arguments) {
-        try {
-            ERROR_2.invokeExact(wrapper, format, arguments);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        ERROR_2.log(format, arguments);
     }
 
     public void error(String message, Throwable throwable) {
-        try {
-            ERROR_3.invokeExact(wrapper, message, throwable);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        ERROR_3.log(message, throwable);
     }
 }

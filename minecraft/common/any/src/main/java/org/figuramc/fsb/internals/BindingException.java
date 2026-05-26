@@ -8,7 +8,7 @@ public class BindingException extends RuntimeException {
         super(message);
     }
 
-    public BindingException(Exception cause) {
+    public BindingException(Throwable cause) {
         super(cause);
     }
 }
