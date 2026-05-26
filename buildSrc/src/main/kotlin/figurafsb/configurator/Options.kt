@@ -64,6 +64,7 @@ open class MinecraftOptions @Inject constructor(private val objects: ObjectFacto
 
 open class OptionsExt @Inject constructor(private val objects: ObjectFactory) : CanReify<ReifiedOptions> {
     private val onCompleteHandlers = mutableListOf<OptionsHandler>()
+    private val preCompleteHandlers = mutableListOf<OptionsExt.() -> Unit>()
     private var committed: ReifiedOptions? = null
 
     // Options
@@ -103,8 +104,18 @@ open class OptionsExt @Inject constructor(private val objects: ObjectFactory) : 
         onCompleteHandlers += act
     }
 
+    /**
+     * Runs just *before* the structure is committed.
+     * Use this to configure any last-minute changes based on the external configuration.
+     */
+    fun adapt(act: OptionsExt.() -> Unit) {
+        if (committed != null) throw IllegalStateException("configuration is already completed")
+        preCompleteHandlers += act
+    }
+
     fun done() {
         if (committed != null) throw IllegalStateException("i've already been configured and committed! you're too late.")
+        preCompleteHandlers.forEach { it() }
         val result = reify()
         committed = result
         onCompleteHandlers.forEach { it(result) }

@@ -29,6 +29,12 @@ the<OptionsExt>().apply {
         // This basically includes fsb-api, but it does NOT count as JarInJar.
         plain(":fsb-api", noPrefix = true)
     }
+}.adapt {
+    val opt = reify()
+    val ver = opt.minecraft?.minecraftVersion ?: throw IllegalStateException("need Minecraft configuration on fabric-version")
+    if (ver != "1.16.5") this.minecraft {
+        plain(":common:modernish")
+    }
 }
 
 the<OptionsExt>().then {

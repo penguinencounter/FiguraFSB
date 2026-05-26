@@ -13,6 +13,7 @@ rootProject.name = "FiguraFSB"
 
 include(":fsb-api")
 include(":minecraft:common:any")
+include(":minecraft:common:modernish")
 include(":minecraft:fabric:any")
 include(":minecraft:forge:any")
 include(":minecraft:neoforge:any")
