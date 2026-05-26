@@ -1,4 +1,4 @@
-package org.figuramc.fsb.api;
+package org.figuramc.fsb.api.commands;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import org.figuramc.fsb.api.FiguraUser;
 
 import java.util.concurrent.CompletableFuture;
 

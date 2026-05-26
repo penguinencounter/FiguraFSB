@@ -1,4 +1,4 @@
-package org.figuramc.fsb.api;
+package org.figuramc.fsb.api.commands;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -7,6 +7,9 @@ import com.mojang.brigadier.context.CommandContext;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import org.figuramc.fsb.api.FiguraPermissionNodes;
+import org.figuramc.fsb.api.FiguraServer;
+import org.figuramc.fsb.api.FiguraUser;
 import org.figuramc.fsb.api.avatars.EHashPair;
 import org.figuramc.fsb.api.utils.Hash;
 import org.figuramc.fsb.api.utils.Pair;
@@ -16,7 +19,7 @@ import java.util.UUID;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
-import static org.figuramc.fsb.api.FiguraServerCommands.permissionCheck;
+import static org.figuramc.fsb.api.commands.FiguraServerCommands.permissionCheck;
 import static org.figuramc.fsb.api.utils.ComponentUtils.text;
 
 public class FiguraAvatarCommand {

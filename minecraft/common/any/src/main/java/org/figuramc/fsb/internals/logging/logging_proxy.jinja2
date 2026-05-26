@@ -1,0 +1,29 @@
+public void {{name}}(String message) {
+    try {
+        {{uppercase}}_1.invokeExact(wrapper, message);
+    } catch (RuntimeException | Error e) {
+        throw e;
+    } catch (Throwable e) {
+        throw new RuntimeException(e);
+    }
+}
+
+public void {{name}}(String format, Object... arguments) {
+    try {
+        {{uppercase}}_2.invokeExact(wrapper, format, arguments);
+    } catch (RuntimeException | Error e) {
+        throw e;
+    } catch (Throwable e) {
+        throw new RuntimeException(e);
+    }
+}
+
+public void {{name}}(String message, Throwable throwable) {
+    try {
+        {{uppercase}}_3.invokeExact(wrapper, message, throwable);
+    } catch (RuntimeException | Error e) {
+        throw e;
+    } catch (Throwable e) {
+        throw new RuntimeException(e);
+    }
+}

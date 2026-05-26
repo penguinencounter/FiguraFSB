@@ -1,6 +1,9 @@
-package org.figuramc.fsb.api;
+package org.figuramc.fsb.api.commands;
 
 import com.google.gson.JsonObject;
+import org.figuramc.fsb.api.FiguraPermissionNodes;
+import org.figuramc.fsb.api.FiguraServer;
+import org.figuramc.fsb.api.FiguraUser;
 
 import java.util.UUID;
 

@@ -1,7 +1,9 @@
-package org.figuramc.fsb.api;
+package org.figuramc.fsb.api.commands;
 
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import org.figuramc.fsb.api.FiguraPermissionNodes;
+import org.figuramc.fsb.api.FiguraServer;
 
 import java.util.function.Predicate;
 
