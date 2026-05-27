@@ -10,7 +10,10 @@ public class CustomFSBPacket implements Packet {
     private final byte[] data;
 
     public CustomFSBPacket(int id, byte[] data) {
-        if (data.length > MAX_SERVER_PING_SIZE) throw new IllegalArgumentException(String.format("Server ping size can't be more than %s", MAX_SERVER_PING_SIZE));
+        if (data.length > MAX_SERVER_PING_SIZE) throw new IllegalArgumentException(String.format(
+                "Server ping size can't be more than %s",
+                MAX_SERVER_PING_SIZE
+        ));
         this.id = id;
         this.data = data;
     }

@@ -18,7 +18,11 @@ public class S2CBackendHandshakePacket implements Packet {
 
     private final ArrayList<UUID> connectedPlayers;
 
-    public S2CBackendHandshakePacket(int pingsRateLimit, int pingsSizeLimit, int maxAvatarSize, int maxAvatarsCount, ArrayList<UUID> connectedPlayers) {
+    public S2CBackendHandshakePacket(int pingsRateLimit,
+                                     int pingsSizeLimit,
+                                     int maxAvatarSize,
+                                     int maxAvatarsCount,
+                                     ArrayList<UUID> connectedPlayers) {
         this.pingsRateLimit = pingsRateLimit;
         this.pingsSizeLimit = pingsSizeLimit;
         this.maxAvatarSize = maxAvatarSize;
@@ -69,7 +73,7 @@ public class S2CBackendHandshakePacket implements Packet {
         byteBuf.writeInt(maxAvatarsCount);
         byteBuf.writeInt(connectedPlayers.size());
 
-        for (UUID player: connectedPlayers) {
+        for (UUID player : connectedPlayers) {
             byteBuf.writeUUID(player);
         }
     }

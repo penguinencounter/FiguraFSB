@@ -20,7 +20,10 @@ public class FiguraBadgesCommand {
         LiteralArgumentBuilder<FiguraServerCommandSource> root = literal("badge");
 
         LiteralArgumentBuilder<FiguraServerCommandSource> set = literal("set");
-        RequiredArgumentBuilder<FiguraServerCommandSource, String> badgeArgument = argument("badge", StringArgumentType.word());
+        RequiredArgumentBuilder<FiguraServerCommandSource, String> badgeArgument = argument(
+                "badge",
+                StringArgumentType.word()
+        );
         badgeArgument.executes(FiguraBadgesCommand::setBadge);
         badgeArgument.suggests(FiguraBadgesCommand::suggestBadge);
         set.then(badgeArgument);
@@ -34,15 +37,15 @@ public class FiguraBadgesCommand {
         return root;
     }
 
-    private static CompletableFuture<Suggestions> suggestBadge(CommandContext<FiguraServerCommandSource> ctx, SuggestionsBuilder suggestionsBuilder) {
+    private static CompletableFuture<Suggestions> suggestBadge(CommandContext<FiguraServerCommandSource> ctx,
+                                                               SuggestionsBuilder suggestionsBuilder) {
         String currentBadgeInput;
         try {
             currentBadgeInput = StringArgumentType.getString(ctx, "badge").toLowerCase();
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             currentBadgeInput = "";
         }
-        for (PrideBadge badge: PrideBadge.values()) {
+        for (PrideBadge badge : PrideBadge.values()) {
             String badgeName = badge.name().toLowerCase();
             if (badgeName.contains(currentBadgeInput)) suggestionsBuilder.suggest(badgeName);
         }
@@ -56,8 +59,7 @@ public class FiguraBadgesCommand {
         PrideBadge badge;
         try {
             badge = PrideBadge.valueOf(badgeName);
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             source.sendComponent(badgeNotFound(badgeName));
             return -1;
         }
@@ -77,11 +79,13 @@ public class FiguraBadgesCommand {
     }
 
     private static JsonObject badgeSetMessage() {
-        return text("Pride badge successfully changed. Reload your avatar in order to see changes.").color("blue").build();
+        return text("Pride badge successfully changed. Reload your avatar in order to see changes.").color("blue")
+                .build();
     }
 
     private static JsonObject badgeClearMessage() {
-        return text("Pride badge successfully cleared. Reload your avatar in order to see changes.").color("blue").build();
+        return text("Pride badge successfully cleared. Reload your avatar in order to see changes.").color("blue")
+                .build();
     }
 
     private static JsonObject badgeNotFound(String badgeName) {

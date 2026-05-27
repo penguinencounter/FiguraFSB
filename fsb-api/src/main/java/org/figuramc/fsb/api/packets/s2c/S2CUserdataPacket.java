@@ -21,7 +21,10 @@ public class S2CUserdataPacket implements Packet {
     private final BitSet prideBadges;
     private final @Nullable Pair<String, EHashPair> avatar;
 
-    public S2CUserdataPacket(int responseId, UUID target, BitSet prideBadges, @Nullable Pair<String, EHashPair> avatar) {
+    public S2CUserdataPacket(int responseId,
+                             UUID target,
+                             BitSet prideBadges,
+                             @Nullable Pair<String, EHashPair> avatar) {
         this.responseId = responseId;
         this.target = target;
         this.prideBadges = prideBadges;
@@ -37,8 +40,7 @@ public class S2CUserdataPacket implements Packet {
             Hash hash = byteBuf.readHash();
             Hash ehash = byteBuf.readHash();
             avatar = new Pair<>(avatarId, new EHashPair(hash, ehash));
-        }
-        else avatar = null;
+        } else avatar = null;
     }
 
     public int responseId() {
@@ -67,8 +69,7 @@ public class S2CUserdataPacket implements Packet {
             byteBuf.writeByteArray(avatar.left().getBytes(UTF_8));
             byteBuf.writeBytes(avatar.right().hash().get());
             byteBuf.writeBytes(avatar.right().ehash().get());
-        }
-        else {
+        } else {
             byteBuf.writeByte(0);
         }
     }

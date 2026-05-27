@@ -28,8 +28,7 @@ public class C2SHandshakeHandler implements C2SPacketHandler<C2SBackendHandshake
     public void handle(UUID sender, C2SBackendHandshakePacket packet) {
         if (Events.call(new HandshakeEvent(sender)).isCancelled()) {
             parent.sendPacket(sender, new S2CRefusedPacket());
-        }
-        else {
+        } else {
             FiguraUserManager manager = parent.userManager();
             FiguraUser user = manager.setupOnlinePlayer(sender);
             user.sendPacket(parent.getHandshake(sender));

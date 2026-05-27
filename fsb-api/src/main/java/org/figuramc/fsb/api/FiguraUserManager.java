@@ -48,8 +48,7 @@ public final class FiguraUserManager {
         try {
             Path dataFile = parent.getUserdataFile(player);
             return FiguraUser.load(player, dataFile);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Path dataFile = parent.getOldUserdataFile(player);
             return FiguraUser.loadByteBuf(player, dataFile);
         }
@@ -64,16 +63,18 @@ public final class FiguraUserManager {
     }
 
     public void onUserLeave(UUID player) {
-        users.computeIfPresent(player, (uuid, pl) -> {
-            if (!Events.call(new SavePlayerDataEvent(pl)).isCancelled())
-                pl.save(parent.getUserdataFile(pl.uuid()));
-            pl.setOffline();
-            return pl;
-        });
+        users.computeIfPresent(
+                player, (uuid, pl) -> {
+                    if (!Events.call(new SavePlayerDataEvent(pl)).isCancelled())
+                        pl.save(parent.getUserdataFile(pl.uuid()));
+                    pl.setOffline();
+                    return pl;
+                }
+        );
     }
 
     public void close() {
-        for (FiguraUser user: users.values()) {
+        for (FiguraUser user : users.values()) {
             if (!Events.call(new SavePlayerDataEvent(user)).isCancelled())
                 user.save(parent.getUserdataFile(user.uuid()));
         }

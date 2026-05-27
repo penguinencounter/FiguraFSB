@@ -13,8 +13,10 @@ public class HashNotMatchingException extends RuntimeException {
 
     @Override
     public String toString() {
-        return String.format("Expected hash %s for avatar data, got %s",
-                expectedHash, actualHash);
+        return String.format(
+                "Expected hash %s for avatar data, got %s",
+                expectedHash, actualHash
+        );
     }
 
     public Hash expectedHash() {

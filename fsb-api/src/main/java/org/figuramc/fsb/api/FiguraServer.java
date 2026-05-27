@@ -9,10 +9,12 @@ import org.figuramc.fsb.api.events.Events;
 import org.figuramc.fsb.api.events.packets.OutcomingPacketEvent;
 import org.figuramc.fsb.api.json.EHashPairSerializer;
 import org.figuramc.fsb.api.json.HashSerializer;
-import org.figuramc.fsb.api.packets.*;
+import org.figuramc.fsb.api.packets.AvatarDataPacket;
+import org.figuramc.fsb.api.packets.CustomFSBPacket;
+import org.figuramc.fsb.api.packets.Packet;
 import org.figuramc.fsb.api.packets.c2s.*;
 import org.figuramc.fsb.api.packets.handlers.c2s.*;
-import org.figuramc.fsb.api.packets.s2c.*;
+import org.figuramc.fsb.api.packets.s2c.S2CBackendHandshakePacket;
 import org.figuramc.fsb.api.utils.Hash;
 import org.figuramc.fsb.api.utils.Identifier;
 import org.figuramc.fsb.api.utils.Utils;
@@ -23,7 +25,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 
 public abstract class FiguraServer {
@@ -36,6 +41,7 @@ public abstract class FiguraServer {
     private final FiguraServerAvatarManager avatarManager = new FiguraServerAvatarManager(this);
     private FiguraServerConfig config = new FiguraServerConfig();
     private final FiguraCustomPackets customPackets = new FiguraCustomPackets();
+
     protected FiguraServer() {
         if (INSTANCE != null) throw new IllegalStateException("Can't create more than one instance of FiguraServer");
         INSTANCE = this;
@@ -122,15 +128,15 @@ public abstract class FiguraServer {
                 String configString = Utils.readStreamToString(fis, StandardCharsets.UTF_8);
                 config = GSON.fromJson(configString, FiguraServerConfig.class);
                 return;
+            } catch (Exception ignored) {
             }
-            catch (Exception ignored) {}
         }
         config = new FiguraServerConfig();
         try (FileOutputStream fos = new FileOutputStream(cfg)) {
             String res = GSON.toJson(config);
             fos.write(res.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException ignored) {
         }
-        catch (IOException ignored) {}
     }
 
     public final C2SPacketHandler<Packet> getPacketHandler(Identifier id) {
@@ -180,7 +186,9 @@ public abstract class FiguraServer {
     protected abstract void sendPacketInternal(UUID receiver, Packet packet);
 
     public abstract boolean getPermission(UUID player, FiguraPermissionNodes permission);
+
     public abstract Optional<String> getOption(UUID player, FiguraPermissionNodes permission);
+
     public abstract void sendMessage(UUID receiver, JsonObject component);
 
     public FiguraServerAvatarManager avatarManager() {
@@ -188,7 +196,10 @@ public abstract class FiguraServer {
     }
 
     public abstract void logInfo(String text);
+
     public abstract void logError(String text);
+
     public abstract void logError(String text, Throwable err);
+
     public abstract void logDebug(String text);
 }

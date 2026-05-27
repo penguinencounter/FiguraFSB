@@ -9,7 +9,10 @@ import org.figuramc.fsb.api.packets.AvatarDataPacket;
 import org.figuramc.fsb.api.packets.CloseIncomingStreamPacket;
 import org.figuramc.fsb.api.packets.s2c.S2CAvatarReadyPacket;
 import org.figuramc.fsb.api.packets.s2c.S2CInitializeAvatarStreamPacket;
-import org.figuramc.fsb.api.utils.*;
+import org.figuramc.fsb.api.utils.Hash;
+import org.figuramc.fsb.api.utils.InputStreamByteBuf;
+import org.figuramc.fsb.api.utils.StatusCode;
+import org.figuramc.fsb.api.utils.Utils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -34,7 +37,11 @@ public final class FiguraServerAvatarManager {
         return avatars.computeIfAbsent(hash, AvatarHandle::new);
     }
 
-    public synchronized void receiveAvatar(FiguraUser uploader, String avatarId, int streamId, Hash avatarHash, Hash avatarEHash) {
+    public synchronized void receiveAvatar(FiguraUser uploader,
+                                           String avatarId,
+                                           int streamId,
+                                           Hash avatarHash,
+                                           Hash avatarEHash) {
         incomingAvatarHandler.openStream(uploader.uuid(), avatarId, streamId, avatarHash, avatarEHash);
     }
 
@@ -87,6 +94,7 @@ public final class FiguraServerAvatarManager {
             timeWithoutFetching++;
         }
     }
+
     public static class AvatarMetadata {
         private final HashMap<UUID, Hash> owners;
         private final HashMap<UUID, Hash> equipped;
@@ -111,6 +119,7 @@ public final class FiguraServerAvatarManager {
         /**
          * Map of users who owns this avatar.
          * Avatar will have more than one owner in case if multiple people uploaded the same avatar, so avatar with same hash.
+         *
          * @return Map of UUID to EHash
          */
         public synchronized HashMap<UUID, Hash> owners() {
@@ -120,6 +129,7 @@ public final class FiguraServerAvatarManager {
         /**
          * Map of users who has this avatar equipped.
          * Avatar can have more than one user equipping it.
+         *
          * @return Map of UUID to EHash
          */
         public synchronized HashMap<UUID, Hash> equipped() {
@@ -131,6 +141,7 @@ public final class FiguraServerAvatarManager {
          * even if count of owners and users who equips this avatar will be 0.
          * Otherwise, once avatar is not owned and equipped by anyone, file of this
          * avatar will be deleted from server.
+         *
          * @return True if protected from cleanup.
          */
         public boolean cleanupProtection() {
@@ -249,8 +260,7 @@ public final class FiguraServerAvatarManager {
         File file = parent.getAvatar(avatarHash.get()).toFile();
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(avatarData);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -261,8 +271,7 @@ public final class FiguraServerAvatarManager {
         File file = parent.getAvatarMetadata(avatarHash.get()).toFile();
         try (FileOutputStream fos = new FileOutputStream(file)) {
             metadata.write(fos);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -325,7 +334,10 @@ public final class FiguraServerAvatarManager {
         private AvatarMetadata getMetadata() throws IOException {
             if (metadata == null) {
                 metadata = loadMetadata();
-                if (metadata == null) throw new RuntimeException(String.format("The avatar metadata for %s is corrupt (empty file?!)", hash));
+                if (metadata == null) throw new RuntimeException(String.format(
+                        "The avatar metadata for %s is corrupt (empty file?!)",
+                        hash
+                ));
             }
             return metadata;
         }
@@ -349,7 +361,8 @@ public final class FiguraServerAvatarManager {
                 data = getAvatarData();
                 metadata = getMetadata();
             } catch (FileNotFoundException fileEx) {
-                FiguraServer.getInstance().logInfo(String.format("Throwing away avatar %s because its data is missing", hash));
+                FiguraServer.getInstance()
+                        .logInfo(String.format("Throwing away avatar %s because its data is missing", hash));
                 markedForDeletion = true;
                 return;
             } catch (IOException e) {
@@ -372,7 +385,8 @@ public final class FiguraServerAvatarManager {
 
         private void openStream(UUID uploader, String avatarId, int streamId, Hash avatarHash, Hash avatarEHash) {
             IncomingAvatarKey key = new IncomingAvatarKey(uploader, streamId);
-            streams.put(new IncomingAvatarKey(uploader, streamId),
+            streams.put(
+                    new IncomingAvatarKey(uploader, streamId),
                     new AvatarIncomingStream(uploader, streamId, avatarId, avatarHash, avatarEHash)
             );
             hashesToUploads.computeIfAbsent(avatarHash, h -> new ArrayList<>()).add(key);
@@ -415,7 +429,7 @@ public final class FiguraServerAvatarManager {
                 size += chunk.length;
                 // In case if avatar size is exceeded - closing the stream and removing it from handler.
                 if (size > parent.config().avatarSizeLimit(parent, uploader) &&
-                    !Events.call(new AvatarUploadSizeExceedEvent(uploader, size)).isCancelled()) {
+                        !Events.call(new AvatarUploadSizeExceedEvent(uploader, size)).isCancelled()) {
                     close(StatusCode.MAX_AVATAR_SIZE_EXCEEDED);
                     return true;
                 }
@@ -426,7 +440,7 @@ public final class FiguraServerAvatarManager {
                     // Collecting all data chunks in one array
                     int offset = 0;
                     byte[] avatarData = new byte[size];
-                    for (byte[] dataChunk: dataChunks) {
+                    for (byte[] dataChunk : dataChunks) {
                         System.arraycopy(dataChunk, 0, avatarData, offset, dataChunk.length);
                         offset += dataChunk.length;
                     }
@@ -449,7 +463,7 @@ public final class FiguraServerAvatarManager {
 
                     // Creating empty metadata for this avatar with all the avatar owners
                     AvatarMetadata metadata = new AvatarMetadata();
-                    for (IncomingAvatarKey key: hashesToUploads.get(hash)) {
+                    for (IncomingAvatarKey key : hashesToUploads.get(hash)) {
                         FiguraServerAvatarManager.IncomingAvatarHandler.AvatarIncomingStream stream = streams.get(key);
                         metadata.owners.put(stream.uploader, stream.ehash);
                     }
@@ -463,7 +477,7 @@ public final class FiguraServerAvatarManager {
                     avatars.put(hash, avatarHandle);
 
                     // Finishing work of all streams
-                    for (IncomingAvatarKey key: hashesToUploads.get(hash)) {
+                    for (IncomingAvatarKey key : hashesToUploads.get(hash)) {
                         FiguraServerAvatarManager.IncomingAvatarHandler.AvatarIncomingStream stream = streams.get(key);
                         stream.finish();
                     }

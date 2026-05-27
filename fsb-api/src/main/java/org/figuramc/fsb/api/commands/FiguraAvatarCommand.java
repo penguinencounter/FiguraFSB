@@ -2,11 +2,9 @@ package org.figuramc.fsb.api.commands;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-
 import org.figuramc.fsb.api.FiguraPermissionNodes;
 import org.figuramc.fsb.api.FiguraServer;
 import org.figuramc.fsb.api.FiguraUser;
@@ -34,7 +32,6 @@ public class FiguraAvatarCommand {
     }
 
 
-
     // COMMAND BUILDERS
 
     private static LiteralArgumentBuilder<FiguraServerCommandSource> immortalizeCommand() {
@@ -42,7 +39,10 @@ public class FiguraAvatarCommand {
         immortalize.requires(permissionCheck(FiguraPermissionNodes.FIGURA_AVATARS_IMMORTALIZE));
         immortalize.executes(FiguraAvatarCommand::immortalizeEquippedAvatar);
 
-        RequiredArgumentBuilder<FiguraServerCommandSource, String> immortalizeSpecific = argument("avatar_hash", StringArgumentType.string());
+        RequiredArgumentBuilder<FiguraServerCommandSource, String> immortalizeSpecific = argument(
+                "avatar_hash",
+                StringArgumentType.string()
+        );
         immortalizeSpecific.executes(FiguraAvatarCommand::immortalizeSpecificAvatar);
 
         immortalize.then(immortalizeSpecific);
@@ -54,11 +54,17 @@ public class FiguraAvatarCommand {
         LiteralArgumentBuilder<FiguraServerCommandSource> setAvatar = literal("set");
         setAvatar.requires(permissionCheck(FiguraPermissionNodes.FIGURA_AVATARS_SET));
 
-        RequiredArgumentBuilder<FiguraServerCommandSource, String> target = argument("target", StringArgumentType.string());
+        RequiredArgumentBuilder<FiguraServerCommandSource, String> target = argument(
+                "target",
+                StringArgumentType.string()
+        );
         target.executes(FiguraAvatarCommand::setAvatarEquipped);
         setAvatar.then(target);
 
-        RequiredArgumentBuilder<FiguraServerCommandSource, String> avatarHash = argument("avatar", StringArgumentType.string());
+        RequiredArgumentBuilder<FiguraServerCommandSource, String> avatarHash = argument(
+                "avatar",
+                StringArgumentType.string()
+        );
         avatarHash.executes(FiguraAvatarCommand::setAvatarSpecific);
         target.then(avatarHash);
 
@@ -69,7 +75,10 @@ public class FiguraAvatarCommand {
         LiteralArgumentBuilder<FiguraServerCommandSource> clearAvatar = literal("clear");
         clearAvatar.requires(permissionCheck(FiguraPermissionNodes.FIGURA_AVATARS_CLEAR));
 
-        RequiredArgumentBuilder<FiguraServerCommandSource, String> target = argument("target", StringArgumentType.string());
+        RequiredArgumentBuilder<FiguraServerCommandSource, String> target = argument(
+                "target",
+                StringArgumentType.string()
+        );
         target.executes(FiguraAvatarCommand::clearAvatar);
         clearAvatar.then(target);
 
@@ -96,8 +105,7 @@ public class FiguraAvatarCommand {
         Hash avatar;
         try {
             avatar = Utils.parseHash(StringArgumentType.getString(ctx, "avatar_hash"));
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             source.sendComponent(unableToParseHash());
             return -1;
         }
@@ -132,8 +140,7 @@ public class FiguraAvatarCommand {
         }
         try {
             targetUUID = UUID.fromString(StringArgumentType.getString(ctx, "target"));
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             source.sendComponent(failedToParseTarget());
             return -1;
         }
@@ -147,16 +154,14 @@ public class FiguraAvatarCommand {
         UUID targetUUID;
         try {
             targetUUID = UUID.fromString(StringArgumentType.getString(ctx, "target"));
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             source.sendComponent(failedToParseTarget());
             return -1;
         }
         Hash avatar;
         try {
             avatar = Utils.parseHash(StringArgumentType.getString(ctx, "avatar"));
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             source.sendComponent(unableToParseHash());
             return -1;
         }
@@ -183,8 +188,7 @@ public class FiguraAvatarCommand {
         UUID targetUUID;
         try {
             targetUUID = UUID.fromString(StringArgumentType.getString(ctx, "target"));
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             source.sendComponent(failedToParseTarget());
             return -1;
         }

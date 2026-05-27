@@ -24,7 +24,7 @@ public final class Events {
     @SuppressWarnings("unchecked")
     public static <T extends Event> T call(T event) {
         ArrayList<RegisteredHandler<T>> handlers = (ArrayList<RegisteredHandler<T>>) (Object) getHandlers(event.getClass());
-        for (RegisteredHandler<T> regHandler: handlers) {
+        for (RegisteredHandler<T> regHandler : handlers) {
             regHandler.handler.handle(event);
             if (!event.canContinue()) break;
         }

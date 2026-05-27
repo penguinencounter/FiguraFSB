@@ -10,12 +10,13 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class Utils {
-    private static final char[] HEX_CHARS = new char[] {
+    private static final char[] HEX_CHARS = new char[]{
             '0', '1', '2', '3',
             '4', '5', '6', '7',
             '8', '9', 'a', 'b',
             'c', 'd', 'e', 'f'
     };
+
     public static String hexFromBytes(byte[] arr, boolean reverse) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < arr.length; i++) {
@@ -25,8 +26,7 @@ public class Utils {
             if (reverse) {
                 sb.insert(0, c2);
                 sb.insert(0, c1);
-            }
-            else {
+            } else {
                 sb.append(c1);
                 sb.append(c2);
             }
@@ -95,9 +95,8 @@ public class Utils {
                 data[i / 2] |= (byte) (v << (4 - curShift));
                 curShift = (curShift + 4) % 8;
             }
-        }
-        else {
-            for (int i = hex.length() - 1; i >= 0 ; i--) {
+        } else {
+            for (int i = hex.length() - 1; i >= 0; i--) {
                 char c = hex.charAt(i);
                 int v = fromHexChar(c);
                 data[data.length - ((i / 2) + 1)] |= (byte) (v << (4 - curShift));
@@ -108,7 +107,7 @@ public class Utils {
     }
 
     public static byte[] toBytes(int i) {
-        return new byte[] {
+        return new byte[]{
                 (byte) ((i >> 24) & 0xFF),
                 (byte) ((i >> 16) & 0xFF),
                 (byte) ((i >> 8) & 0xFF),
@@ -117,7 +116,7 @@ public class Utils {
     }
 
     public static byte[] toBytes(long l) {
-        return new byte[] {
+        return new byte[]{
                 (byte) ((l >> 56) & 0xFF),
                 (byte) ((l >> 48) & 0xFF),
                 (byte) ((l >> 40) & 0xFF),

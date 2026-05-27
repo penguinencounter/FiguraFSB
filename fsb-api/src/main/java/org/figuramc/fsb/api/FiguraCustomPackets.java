@@ -14,8 +14,9 @@ public class FiguraCustomPackets {
 
     /**
      * Registers a new listener for specified packet. Rewrites previous for specified packetName listener.
+     *
      * @param packetName name of packet to listen to
-     * @param listener listener object
+     * @param listener   listener object
      */
     public void registerListener(String packetName, CustomPacketListener listener) {
         listeners.put(packetName, listener);

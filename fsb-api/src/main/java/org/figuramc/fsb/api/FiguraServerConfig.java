@@ -16,18 +16,22 @@ public final class FiguraServerConfig {
     private int avatarsCountLimit = 1;
 
     public int pingsRateLimit(FiguraServer server, UUID player) {
-        return Integer.parseInt(server.getOption(player, FiguraPermissionNodes.FIGURA_PINGS_RATELIMIT).orElse(pingsRateLimit + ""));
+        return Integer.parseInt(server.getOption(player, FiguraPermissionNodes.FIGURA_PINGS_RATELIMIT)
+                .orElse(pingsRateLimit + ""));
     }
 
     public int pingsSizeLimit(FiguraServer server, UUID player) {
-        return Integer.parseInt(server.getOption(player, FiguraPermissionNodes.FIGURA_PINGS_SIZELIMIT).orElse(pingsSizeLimit + ""));
+        return Integer.parseInt(server.getOption(player, FiguraPermissionNodes.FIGURA_PINGS_SIZELIMIT)
+                .orElse(pingsSizeLimit + ""));
     }
 
     public int avatarSizeLimit(FiguraServer server, UUID player) {
-        return Integer.parseInt(server.getOption(player, FiguraPermissionNodes.FIGURA_AVATARS_SIZELIMIT).orElse(avatarSizeLimit + ""));
+        return Integer.parseInt(server.getOption(player, FiguraPermissionNodes.FIGURA_AVATARS_SIZELIMIT)
+                .orElse(avatarSizeLimit + ""));
     }
 
     public int avatarsCountLimit(FiguraServer server, UUID player) {
-        return Integer.parseInt(server.getOption(player, FiguraPermissionNodes.FIGURA_AVATARS_COUNTLIMIT).orElse(avatarsCountLimit + ""));
+        return Integer.parseInt(server.getOption(player, FiguraPermissionNodes.FIGURA_AVATARS_COUNTLIMIT)
+                .orElse(avatarsCountLimit + ""));
     }
 }

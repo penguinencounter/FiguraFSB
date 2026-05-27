@@ -25,8 +25,7 @@ public class C2SFetchUserdataPacketHandler extends AuthorizedC2SPacketHandler<C2
             FiguraUser user = manager.getUser(packet.target());
             BitSet badges = user.prideBadges();
             sender.sendPacket(new S2CUserdataPacket(packet.transactionId(), target, badges, user.equippedAvatar()));
-        }
-        else {
+        } else {
             sender.sendPacket(new S2CUserdataNotFoundPacket(packet.transactionId()));
         }
     }

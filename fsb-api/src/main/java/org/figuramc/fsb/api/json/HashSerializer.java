@@ -8,7 +8,9 @@ import java.lang.reflect.Type;
 
 public class HashSerializer implements JsonSerializer<Hash>, JsonDeserializer<Hash> {
     @Override
-    public Hash deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public Hash deserialize(JsonElement jsonElement,
+                            Type type,
+                            JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         if (jsonElement instanceof JsonPrimitive && ((JsonPrimitive) jsonElement).isString()) {
             JsonPrimitive primitive = (JsonPrimitive) jsonElement;
             return Utils.parseHash(primitive.getAsString());

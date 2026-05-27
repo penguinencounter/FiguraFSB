@@ -9,7 +9,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -22,7 +24,10 @@ public final class FiguraUser {
 
     private final HashMap<String, EHashPair> ownedAvatars;
 
-    public FiguraUser(UUID player, BitSet prideBadges, Pair<String, EHashPair> equippedAvatar, HashMap<String, EHashPair> ownedAvatars) {
+    public FiguraUser(UUID player,
+                      BitSet prideBadges,
+                      Pair<String, EHashPair> equippedAvatar,
+                      HashMap<String, EHashPair> ownedAvatars) {
         this.player = player;
         this.online = false;
         this.prideBadges = prideBadges;
@@ -89,7 +94,10 @@ public final class FiguraUser {
             String str = Utils.readStreamToString(fis, UTF_8);
             fis.close();
             FiguraUserStruct struct = FiguraServer.getInstance().GSON.fromJson(str, FiguraUserStruct.class);
-            Pair<String, EHashPair> avatar = struct.equippedAvatar != null ? new Pair<>(struct.equippedAvatar, struct.avatarHash) : null;
+            Pair<String, EHashPair> avatar = struct.equippedAvatar != null ? new Pair<>(
+                    struct.equippedAvatar,
+                    struct.avatarHash
+            ) : null;
             return new FiguraUser(player, struct.prideBadges, avatar, struct.ownedAvatars);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -138,7 +146,7 @@ public final class FiguraUser {
             EHashPair pair = avatar.right();
             if (pair.hash().equals(hash)) return pair.ehash();
         }
-        for (EHashPair pair: ownedAvatars.values()) {
+        for (EHashPair pair : ownedAvatars.values()) {
             if (pair.hash().equals(hash)) return pair.ehash();
         }
         return null;
@@ -170,7 +178,8 @@ public final class FiguraUser {
     public void removeEquippedAvatar() {
         if (equippedAvatar != null) {
             try {
-                FiguraServer.getInstance().avatarManager().getAvatarMetadata(equippedAvatar.right().hash()).equipped().remove(uuid());
+                FiguraServer.getInstance().avatarManager().getAvatarMetadata(equippedAvatar.right().hash()).equipped()
+                        .remove(uuid());
                 equippedAvatar = null;
             } catch (RuntimeException re) {
                 FiguraServer.getInstance().logError("Failed to remove equipped avatar", re);

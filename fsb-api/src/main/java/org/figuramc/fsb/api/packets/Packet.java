@@ -5,6 +5,7 @@ import org.figuramc.fsb.api.utils.Identifier;
 
 public interface Packet {
     void write(IFriendlyByteBuf buf);
+
     Identifier getId();
 
 

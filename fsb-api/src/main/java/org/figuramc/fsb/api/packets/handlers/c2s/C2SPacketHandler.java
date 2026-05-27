@@ -7,5 +7,6 @@ import java.util.UUID;
 
 public interface C2SPacketHandler<P extends Packet> {
     P serialize(IFriendlyByteBuf byteBuf);
+
     void handle(UUID sender, P packet);
 }

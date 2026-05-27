@@ -6,6 +6,7 @@ import org.figuramc.fsb.api.utils.Hash;
 public class AvatarDeletionException extends Event {
     private final Hash hash;
     private final Exception exception;
+
     public AvatarDeletionException(Hash hash, Exception e) {
         this.hash = hash;
         exception = e;

@@ -51,7 +51,7 @@ public class S2CPingErrorPacket implements Packet {
         }
 
         public static Error byCode(byte b) {
-            for (Error e: Error.values()) {
+            for (Error e : Error.values()) {
                 if (e.code == b) {
                     return e;
                 }

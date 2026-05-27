@@ -5,6 +5,7 @@ import org.figuramc.fsb.api.utils.Hash;
 
 public class StartLoadingAvatarEvent extends ReturnableEvent<byte[]> {
     private final Hash hash;
+
     public StartLoadingAvatarEvent(Hash hash) {
         this.hash = hash;
     }

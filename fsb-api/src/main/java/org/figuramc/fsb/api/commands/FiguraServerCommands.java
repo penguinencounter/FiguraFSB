@@ -29,8 +29,7 @@ public class FiguraServerCommands {
         public boolean test(FiguraServerCommandSource source) {
             try {
                 return source.permission(permission.toString());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 FiguraServer.getInstance().logError("Error occured while processing permission check: ", e);
                 return false;
             }

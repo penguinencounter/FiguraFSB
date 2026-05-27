@@ -6,7 +6,8 @@ import org.figuramc.fsb.api.utils.IFriendlyByteBuf;
 import org.figuramc.fsb.api.utils.Identifier;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class C2SEquipAvatarsPacket implements Packet {
     public static final Identifier PACKET_ID = new Identifier("figura", "c2s/avatars/equip");
@@ -20,8 +21,10 @@ public class C2SEquipAvatarsPacket implements Packet {
         int count = byteBuf.readByte();
         HashMap<String, EHashPair> pairs = new HashMap<>();
         for (int i = 0; i < count; i++) {
-            pairs.put(new String(byteBuf.readByteArray(256)),
-                    new EHashPair(byteBuf.readHash(), byteBuf.readHash()));
+            pairs.put(
+                    new String(byteBuf.readByteArray(256)),
+                    new EHashPair(byteBuf.readHash(), byteBuf.readHash())
+            );
         }
         avatars = pairs;
     }
@@ -32,7 +35,7 @@ public class C2SEquipAvatarsPacket implements Packet {
 
     public void write(IFriendlyByteBuf byteBuf) {
         byteBuf.writeByte(avatars.size());
-        for (Map.Entry<String, EHashPair> entry: avatars.entrySet()) {
+        for (Map.Entry<String, EHashPair> entry : avatars.entrySet()) {
             byteBuf.writeByteArray(entry.getKey().getBytes(StandardCharsets.UTF_8));
             byteBuf.writeBytes(entry.getValue().hash().get());
             byteBuf.writeBytes(entry.getValue().ehash().get());

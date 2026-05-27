@@ -14,8 +14,7 @@ public class OutputStreamByteBuf implements IFriendlyByteBuf {
     public IFriendlyByteBuf writeByte(int b) {
         try {
             baos.write(b);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return this;

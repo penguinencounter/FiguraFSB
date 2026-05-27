@@ -10,6 +10,7 @@ import org.figuramc.fsb.api.utils.Identifier;
  */
 public class C2SFetchOwnedAvatarsPacket implements Packet {
     public static final Identifier PACKET_ID = new Identifier("figura", "c2s/avatars/owned");
+
     @Override
     public void write(IFriendlyByteBuf buf) {
 

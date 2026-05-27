@@ -8,7 +8,9 @@ import java.lang.reflect.Type;
 
 public class EHashPairSerializer implements JsonSerializer<EHashPair>, JsonDeserializer<EHashPair> {
     @Override
-    public EHashPair deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public EHashPair deserialize(JsonElement jsonElement,
+                                 Type type,
+                                 JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         if (jsonElement instanceof JsonArray && ((JsonArray) jsonElement).size() == 2) {
             JsonArray array = (JsonArray) jsonElement;
             Hash hash = jsonDeserializationContext.deserialize(array.get(0), Hash.class);

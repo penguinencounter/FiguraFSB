@@ -34,7 +34,7 @@ public class ComponentUtils {
 
     public static JsonObject tooltip(JsonObject component, JsonObject otherComponent) {
         JsonObject event = new JsonObject();
-        event.addProperty("action","show_text");
+        event.addProperty("action", "show_text");
         event.add("value", otherComponent);
         component.add("hoverEvent", event);
         return component;
@@ -44,8 +44,7 @@ public class ComponentUtils {
         JsonArray children;
         if (component.has("extra")) {
             children = component.getAsJsonArray("extra");
-        }
-        else {
+        } else {
             children = new JsonArray();
             component.add("extra", children);
         }
