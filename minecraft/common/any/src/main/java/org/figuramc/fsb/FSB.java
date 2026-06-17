@@ -8,7 +8,6 @@ public class FSB {
 
     public static void init() {
         // try to inline the indy?
-        for (int i = 0; i < 10_000; i++)
-            LOGGER.info("hello! from common/any");
+        LOGGER.info("hello! from common/any");
     }
 }
