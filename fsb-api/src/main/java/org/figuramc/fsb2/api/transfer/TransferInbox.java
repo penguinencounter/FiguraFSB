@@ -34,7 +34,7 @@ public final class TransferInbox {
      * Chunk data. Follow instructions in {@link #syncObjects} and {@link #lock} before reading/writing.
      */
     private final byte[][] chunks;
-    private AtomicInteger actualTotalSize = new AtomicInteger(0);
+    private final AtomicInteger actualTotalSize = new AtomicInteger(0);
 
     /* threadsafe required */
     private final Set<Integer> neededChunks;
@@ -77,11 +77,11 @@ public final class TransferInbox {
                 if (isComplete())
                     throw new FSBStateException(String.format(
                             "Did not receive the correct amount of data.\n  declared %dB, got %dB",
-                            totalSize, actualTotalSize
+                            totalSize, actualTotalSize.get()
                     ));
                 throw new FSBStateException(String.format(
                         "This transfer is not complete.\n  currently have %d/%d bytes, want %d more chunks",
-                        actualTotalSize, totalSize, neededChunks.size()
+                        actualTotalSize.get(), totalSize, neededChunks.size()
                 ));
             }
             byte[] result = new byte[totalSize];
