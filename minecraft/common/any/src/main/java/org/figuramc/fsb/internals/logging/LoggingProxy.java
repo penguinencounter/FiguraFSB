@@ -1,6 +1,7 @@
 package org.figuramc.fsb.internals.logging;
 
 import org.figuramc.fsb.internals.BindingException;
+import org.figuramc.fsb2.api.utils.FSBLogger;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.LambdaConversionException;
@@ -11,11 +12,10 @@ import static org.figuramc.fsb.internals.PolymorphicBindings.produceLambda;
 
 /**
  * <p>
- * Proxy for a few types of logging framework.
- * <a href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/lang/invoke/MethodHandles.html">java.lang.invoke documentation</a>
+ * Turn any logging object with the right method shapes into a {@link FSBLogger}.
  * </p>
  * <p>
- * We aim to support the following three forms for each log level:
+ * The target object needs to support the following three forms for each log level:
  * </p>
  * <ol>
  *     <li>{@code log(String message)}</li>
@@ -23,7 +23,7 @@ import static org.figuramc.fsb.internals.PolymorphicBindings.produceLambda;
  *     <li>{@code log(String message, Throwable throwable)}</li>
  * </ol>
  */
-public class LoggingProxy {
+public class LoggingProxy implements FSBLogger {
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 
     @FunctionalInterface
@@ -139,62 +139,77 @@ public class LoggingProxy {
     }
 
     // use a template engine to save yourself the headache tbh
+    @Override
     public void trace(String message) {
         TRACE_1.log(message);
     }
 
+    @Override
     public void trace(String format, Object... arguments) {
         TRACE_2.log(format, arguments);
     }
 
+    @Override
     public void trace(String message, Throwable throwable) {
         TRACE_3.log(message, throwable);
     }
 
+    @Override
     public void debug(String message) {
         DEBUG_1.log(message);
     }
 
+    @Override
     public void debug(String format, Object... arguments) {
         DEBUG_2.log(format, arguments);
     }
 
+    @Override
     public void debug(String message, Throwable throwable) {
         DEBUG_3.log(message, throwable);
     }
 
+    @Override
     public void info(String message) {
         INFO_1.log(message);
     }
 
+    @Override
     public void info(String format, Object... arguments) {
         INFO_2.log(format, arguments);
     }
 
+    @Override
     public void info(String message, Throwable throwable) {
         INFO_3.log(message, throwable);
     }
 
+    @Override
     public void warn(String message) {
         WARN_1.log(message);
     }
 
+    @Override
     public void warn(String format, Object... arguments) {
         WARN_2.log(format, arguments);
     }
 
+    @Override
     public void warn(String message, Throwable throwable) {
         WARN_3.log(message, throwable);
     }
 
+    @Override
     public void error(String message) {
         ERROR_1.log(message);
     }
 
+    @Override
     public void error(String format, Object... arguments) {
         ERROR_2.log(format, arguments);
     }
 
+    @Override
     public void error(String message, Throwable throwable) {
         ERROR_3.log(message, throwable);
     }

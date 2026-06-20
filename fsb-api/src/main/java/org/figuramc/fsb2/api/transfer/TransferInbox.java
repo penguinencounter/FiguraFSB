@@ -1,23 +1,25 @@
 package org.figuramc.fsb2.api.transfer;
 
+import org.figuramc.fsb2.api.except.FSBArgumentException;
+import org.figuramc.fsb2.api.except.FSBInvalidDataException;
 import org.figuramc.fsb2.api.except.FSBStateException;
 import org.figuramc.fsb2.api.utils.Locking;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.BitSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.zip.CRC32;
 
 /**
  * State data for an inbound transfer.
  */
 public final class TransferInbox {
-    public final int transferId;
     public final int totalSize;
     public final int totalNumberOfChunks;
+    public final long overallCRC;
+    private final AtomicInteger retries = new AtomicInteger(0);
 
     /**
      * {@code synchronized} on each object to lock an individual chunk.
@@ -37,43 +39,109 @@ public final class TransferInbox {
     private final AtomicInteger actualTotalSize = new AtomicInteger(0);
 
     /* threadsafe required */
-    private final Set<Integer> neededChunks;
+    private final BitSet neededChunks;
 
-    public TransferInbox(int transferId, int totalSize, int totalNumberOfChunks) {
-        this.transferId = transferId;
+    /**
+     * Create a new container for receiving transfers.
+     * You should have validated the parameters of the transfer prior to constructing this object.
+     *
+     * @param totalSize           the total size of the transfer
+     * @param totalNumberOfChunks the number of chunks the transfer is split into
+     * @param overallCRC          CRC32 checksum for the entire data
+     */
+    public TransferInbox(int totalSize, int totalNumberOfChunks, long overallCRC) {
         this.totalSize = totalSize;
         this.totalNumberOfChunks = totalNumberOfChunks;
         this.chunks = new byte[totalNumberOfChunks][];
         this.syncObjects = new Object[totalNumberOfChunks];
+        this.overallCRC = overallCRC;
         for (int i = 0; i < totalNumberOfChunks; i++) this.syncObjects[i] = new Object();
-        this.neededChunks = IntStream.range(0, totalNumberOfChunks).boxed().collect(Collectors.toCollection(ConcurrentHashMap::newKeySet));
+        this.neededChunks = new BitSet(totalNumberOfChunks);
+        this.neededChunks.set(0, totalNumberOfChunks);
     }
 
-    public void receive(int chunkId, byte[] data) {
+    /**
+     * Add a chunk to the container.
+     *
+     * @param chunkId   chunk ID, from 0 to ({@link #totalNumberOfChunks} - 1)
+     * @param data      chunk data, preferably validated
+     * @param overwrite set {@code true} to delete existing chunks. otherwise, data will be silently discarded
+     *                  if data for the same chunk ID is already present
+     * @throws FSBArgumentException if chunk ID is out of range or negative
+     */
+    public void receive(int chunkId, byte @NotNull [] data, boolean overwrite) throws FSBArgumentException {
+        if (chunkId < 0 || chunkId >= totalNumberOfChunks)
+            throw new FSBArgumentException(String.format("chunk ID %d out of range; total # of chunks is %d", chunkId, totalNumberOfChunks));
         try (Locking.Resource ignored = Locking.use(lock.readLock())) {
             synchronized (syncObjects[chunkId]) {
-                neededChunks.remove(chunkId);
+                synchronized (neededChunks) {
+                    neededChunks.clear(chunkId);
+                }
                 byte[] prev = chunks[chunkId];
-                if (prev != null) actualTotalSize.addAndGet(-prev.length);
+                if (prev != null) {
+                    if (overwrite) actualTotalSize.addAndGet(-prev.length);
+                    else return;
+                }
                 chunks[chunkId] = data;
                 actualTotalSize.addAndGet(data.length);
             }
         }
     }
 
+    /**
+     * <p>
+     * {@code true} if all chunks have been received. Does not validate that the data is the right length,
+     * nor does it check the CRC. May return partially complete results if receive calls are in-flight.
+     * </p>
+     * <p>
+     * <b>synchronization:</b> locks only the needed chunks bitset;
+     * as such, may block some {@link #receive} calls momentarily
+     * </p>
+     */
     public boolean isComplete() {
-        try (Locking.Resource ignored = Locking.use(lock.writeLock())) {
+        synchronized (neededChunks) {
             return neededChunks.isEmpty();
         }
     }
 
-    public boolean isCompleteAndValid() {
+    /**
+     * {@link #isComplete()}, plus checks that the received data is the expected length.
+     * same synchronization impacts of {@link #isComplete}, but note that the length check is not locked;
+     * as such this operation is technically not atomic on its own
+     */
+    public boolean isWhole() {
         return isComplete() && actualTotalSize.get() == totalSize;
     }
 
-    public byte[] joinToByteArray() throws FSBStateException {
+    /**
+     * Reset all the data and start over.
+     * You probably want to do this in case of a checksum failure.
+     * Increments and returns the number of {@link #retries} (ex. 1 after this method is called for the first time).
+     */
+    public int reset() {
         try (Locking.Resource ignored = Locking.use(lock.writeLock())) {
-            if (!isCompleteAndValid()) {
+            for (int i = 0; i < totalNumberOfChunks; i++) {
+                chunks[i] = null;
+            }
+            // shouldn't be necessary if locking works, but I don't trust myself enough
+            synchronized (neededChunks) {
+                neededChunks.set(0, totalNumberOfChunks);
+            }
+            actualTotalSize.set(0);
+            return retries.incrementAndGet();
+        }
+    }
+
+    /**
+     * Join all the chunks into a single byte array. Transfer must be complete at this point.
+     *
+     * @return the joined data
+     * @throws FSBStateException       if not all chunks received, or data is the wrong length
+     * @throws FSBInvalidDataException if the CRC failed
+     */
+    public byte[] joinToByteArray() throws FSBStateException, FSBInvalidDataException {
+        try (Locking.Resource ignored = Locking.use(lock.writeLock())) {
+            if (!isWhole()) {
                 if (isComplete())
                     throw new FSBStateException(String.format(
                             "Did not receive the correct amount of data.\n  declared %dB, got %dB",
@@ -81,24 +149,39 @@ public final class TransferInbox {
                     ));
                 throw new FSBStateException(String.format(
                         "This transfer is not complete.\n  currently have %d/%d bytes, want %d more chunks",
-                        actualTotalSize.get(), totalSize, neededChunks.size()
+                        actualTotalSize.get(), totalSize, neededChunks.cardinality()
                 ));
             }
+            CRC32 crc = new CRC32();
             byte[] result = new byte[totalSize];
             int c = 0;
             for (byte[] chunk : chunks) {
                 int l = chunk.length;
                 if (c + l > totalSize)
-                    throw new RuntimeException(
-                            "consistency error: ran out of space when joining the data for transfer"
-                    );
+                    throw new RuntimeException(String.format("too much data (cur %d + len %d > expected %d)", c, l, totalSize));
                 System.arraycopy(chunk, 0, result, c, l);
+                crc.update(chunk, 0, l);
                 c += l;
             }
-            if (c != totalSize) throw new RuntimeException(
-                    "consistency error: did not get expected amount of data"
-            );
+            if (c != totalSize)
+                throw new RuntimeException(String.format("wrong amount of data (actual %d != expected %d)", c, totalSize));
+            long crcSum = crc.getValue();
+            if (crcSum != overallCRC)
+                throw new FSBInvalidDataException(String.format(
+                        "checksum does not check out: want %08x (from sender), have %08x",
+                        overallCRC,
+                        crcSum
+                ));
             return result;
+        }
+    }
+
+    /**
+     * Returns an array of the remaining chunks that need to be sent to complete the transfer.
+     */
+    public int[] remainingChunks() {
+        try (Locking.Resource ignored = Locking.use(lock.writeLock())) {
+            return neededChunks.stream().toArray();
         }
     }
 }

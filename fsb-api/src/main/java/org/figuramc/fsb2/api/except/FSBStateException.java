@@ -1,7 +1,7 @@
 package org.figuramc.fsb2.api.except;
 
 /**
- * Checked equivalent of {@link IllegalStateException}
+ * Checked equivalent of {@link IllegalStateException}.
  */
 public class FSBStateException extends FSBException {
     public FSBStateException() {
