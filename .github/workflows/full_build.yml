@@ -13,6 +13,26 @@ jobs:
         with:
           path: /home/runner/.gradle
           key: ${{ github.ref }}-gradle-cache
+      - name: Java 8
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 8
+      - name: Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Java 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
       - name: setup output
         run: mkdir -p /home/runner/repo
       - name: build
@@ -24,10 +44,12 @@ jobs:
           find /home/runner/repo -name '*.jar' ! -name '*-sources.jar' -exec cp {} /home/runner/artifacts \;
           find /home/runner/repo -name '*-sources.jar' -exec cp {} /home/runner/sources \;
       - uses: actions/upload-artifact@v7
+        name: 'Upload builds'
         with:
           name: builds
           path: '/home/runner/artifacts/'
       - uses: actions/upload-artifact@v7
+        name: 'Upload sources'
         with:
           name: source-jars
           path: '/home/runner/sources/'
