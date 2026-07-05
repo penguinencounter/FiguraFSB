@@ -56,3 +56,15 @@ the<OptionsExt>().then {
         options.release = it.javaVersion
     }
 }
+
+publishing {
+    repositories {
+        val mavenPath: String? by rootProject
+        mavenPath?.let {
+            maven {
+                name = "mounted"
+                url = uri(it)
+            }
+        }
+    }
+}

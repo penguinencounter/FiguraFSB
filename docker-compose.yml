@@ -1,0 +1,14 @@
+services:
+  build:
+    build:
+      context: .
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+      - type: volume
+        source: gradle-cache
+        target: /root/.gradle
+
+volumes:
+  gradle-cache:

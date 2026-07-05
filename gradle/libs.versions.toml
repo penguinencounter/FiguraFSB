@@ -3,7 +3,7 @@
 
 [versions]
 architectury-plugin = { require = "[3.5, 3.6[" }
-architectury-loom = { require = "[1.14, 1.15[" }
+architectury-loom = { require = "[1.17, 1.18[" }
 shadow = "9.4.1"
 
 # These are libraries that are effectively stable between versions.

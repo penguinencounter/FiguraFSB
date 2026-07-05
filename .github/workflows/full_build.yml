@@ -1,0 +1,34 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: "Build"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
+        with:
+          path: /home/runner/.gradle
+          key: ${{ github.ref }}-gradle-cache
+      - name: setup output
+        run: mkdir -p /home/runner/repo
+      - name: build
+        run: ./gradlew --console=colored -PmavenPath=/home/runner/repo publishAllPublicationsToMountedRepository
+      - name: collect outputs
+        run: |
+          mkdir -p /home/runner/artifacts
+          mkdir -p /home/runner/sources
+          find /home/runner/repo -name '*.jar' ! -name '*-sources.jar' -exec cp {} /home/runner/artifacts \;
+          find /home/runner/repo -name '*-sources.jar' -exec cp {} /home/runner/sources \;
+      - uses: actions/upload-artifact@v7
+        with:
+          name: builds
+          path: '/home/runner/artifacts/'
+      - uses: actions/upload-artifact@v7
+        with:
+          name: source-jars
+          path: '/home/runner/sources/'
+
