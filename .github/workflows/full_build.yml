@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/cache@v6
+      - uses: actions/cache/restore@v6
         with:
           path: /home/runner/.gradle
           key: ${{ github.ref }}-gradle-cache
@@ -53,4 +53,8 @@ jobs:
         with:
           name: source-jars
           path: '/home/runner/sources/'
+      - uses: actions/cache/save@v6
+        with:
+          path: /home/runner/.gradle
+          key: ${{ github.ref }}-gradle-cache
 
