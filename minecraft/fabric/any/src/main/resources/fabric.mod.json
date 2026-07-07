@@ -10,5 +10,6 @@
   },
   "mixins": [
     "figura-fsb.mixins.json"
-  ]
+  ],
+  "__resource_priority": -1
 }

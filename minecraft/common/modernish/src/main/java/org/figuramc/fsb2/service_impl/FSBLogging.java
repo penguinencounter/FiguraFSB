@@ -1,7 +1,7 @@
-package org.figuramc.fsb.service_impl;
+package org.figuramc.fsb2.service_impl;
 
-import org.figuramc.fsb.FSB;
-import org.figuramc.fsb.services.FSBLoggingService;
+import org.figuramc.fsb2.FSB;
+import org.figuramc.fsb2.services.FSBLoggingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package org.figuramc.fsb.services;
+package org.figuramc.fsb2.services;
 
 public interface FSBLoggingService {
     /**

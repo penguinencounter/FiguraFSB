@@ -3,6 +3,7 @@ package figurafsb.targets
 import figurafsb.configurator.OptionsExt
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
+import libs
 import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
@@ -32,6 +33,11 @@ the<OptionsExt>().then {
 
     dependencies {
         version.dependencyContext { d ->
+            libs.mixinExtras.common.let { dep ->
+                annotationProcessor(dep)
+                compileOnly(dep)
+            }
+            compileOnly(d.mixinCommon())
         }
     }
 

@@ -10,6 +10,7 @@ val VERSIONS = versions {
      */
     "1.16.5" {
         parchment = "2022.03.06"
+        mixin = "0.8.4"
         fabric(fabricLoader) {
             // 1.16 fapi leaks old fabric loader into the classpath for some reason
             forced = true
@@ -19,6 +20,7 @@ val VERSIONS = versions {
     }
     "1.18.2" {
         parchment = "2022.11.06"
+        mixin = "0.8.5"
         fabric(fabricLoader) {
             api = "0.77.0".versioned
         }
@@ -26,6 +28,7 @@ val VERSIONS = versions {
     }
     "1.19.2" {
         parchment = "2022.11.27"
+        mixin = "0.8.5"
         fabric(fabricLoader) {
             api = "0.77.0".versioned
         }
@@ -33,6 +36,7 @@ val VERSIONS = versions {
     }
     "1.19.3" {
         parchment = "2023.06.25"
+        mixin = "0.8.5"
         fabric(fabricLoader) {
             api = "0.76.1".versioned
         }
@@ -40,6 +44,7 @@ val VERSIONS = versions {
     }
     "1.19.4" {
         parchment = "2023.06.26"
+        mixin = "0.8.5"
         fabric(fabricLoader) {
             api = "0.87.2".versioned
         }
@@ -47,6 +52,7 @@ val VERSIONS = versions {
     }
     "1.20.1" {
         parchment = "2023.09.03"
+        mixin = "0.8.5"
         fabric(fabricLoader) {
             api = "0.92.9".versioned
         }
@@ -54,6 +60,7 @@ val VERSIONS = versions {
     }
     "1.20.2" {
         parchment = "2023.12.10"
+        mixin = "0.8.5"
         fabric(fabricLoader) {
             api = "0.91.6".versioned
         }
@@ -62,6 +69,7 @@ val VERSIONS = versions {
     }
     "1.20.4" {
         parchment = "2024.04.14"
+        mixin = "0.8.5"
         fabric(fabricLoader) {
             api = "0.97.3".versioned
         }
@@ -71,6 +79,7 @@ val VERSIONS = versions {
     }
     "1.20.6" {
         parchment = "2024.06.16"
+        mixin = "0.8.5"
         fabric(fabricLoader) {
             api = "0.100.8".versioned
         }
@@ -79,6 +88,7 @@ val VERSIONS = versions {
     }
     "1.21.1" {
         parchment = "2024.11.17"
+        mixin = "0.8.7"
         fabric(fabricLoader) {
             api = "0.116.12".versioned
         }
@@ -87,6 +97,7 @@ val VERSIONS = versions {
     }
     "1.21.3" {
         parchment = "2024.12.07"
+        mixin = "0.8.7"
         fabric(fabricLoader) {
             api = "0.114.1".versioned
         }
@@ -95,6 +106,7 @@ val VERSIONS = versions {
     }
     "1.21.4" {
         parchment = "2025.03.23"
+        mixin = "0.8.7"
         fabric(fabricLoader) {
             api = "0.119.4".versioned
         }

@@ -1,4 +1,4 @@
-package org.figuramc.fsb.internals;
+package org.figuramc.fsb2.internals;
 
 /**
  * An error in method resolution when binding to unknown external libraries

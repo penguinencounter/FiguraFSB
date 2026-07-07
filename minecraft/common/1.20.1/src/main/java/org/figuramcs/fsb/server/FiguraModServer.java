@@ -5,7 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.figuramc.fsb.api.FiguraServer;
-import org.figuramc.fsb.service_impl.FSBLogging;
+import org.figuramc.fsb2.service_impl.FSBLogging;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;

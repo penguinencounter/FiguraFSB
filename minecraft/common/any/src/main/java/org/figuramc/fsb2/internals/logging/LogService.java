@@ -1,7 +1,7 @@
-package org.figuramc.fsb.internals.logging;
+package org.figuramc.fsb2.internals.logging;
 
-import org.figuramc.fsb.internals.BindingException;
-import org.figuramc.fsb.services.FSBLoggingService;
+import org.figuramc.fsb2.internals.BindingException;
+import org.figuramc.fsb2.services.FSBLoggingService;
 
 import java.util.ServiceLoader;
 

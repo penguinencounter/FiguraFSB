@@ -14,6 +14,9 @@ brigadier = "1.0.17"
 gson = "2.8.0"
 guava = "21.0"
 
+# spans all the versions!
+mixinExtras = "0.5.4"
+
 # For plugins only
 forPlugins-kotlinxJson = "1.11.0"
 
@@ -23,6 +26,10 @@ slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 brigadier = { module = "com.mojang:brigadier", version.ref = "brigadier" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
+mixinExtras-common = { module = "io.github.llamalad7:mixinextras-common", version.ref = "mixinExtras" }
+mixinExtras-fabric = { module = "io.github.llamalad7:mixinextras-fabric", version.ref = "mixinExtras" }
+mixinExtras-forge = { module = "io.github.llamalad7:mixinextras-forge", version.ref = "mixinExtras" }
+mixinExtras-neoforge = { module = "io.github.llamalad7:mixinextras-neoforge", version.ref = "mixinExtras" }
 
 forPlugins-kotlinxJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "forPlugins-kotlinxJson" }
 

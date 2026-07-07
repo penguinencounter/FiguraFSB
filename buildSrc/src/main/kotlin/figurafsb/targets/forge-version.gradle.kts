@@ -12,6 +12,7 @@ import figurafsb.configurator.FSBPlatform
 import figurafsb.configurator.OptionsExt
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
+import libs
 
 plugins {
     id("figurafsb.minecraft")
@@ -62,7 +63,16 @@ the<OptionsExt>().then {
 
     dependencies {
         version.dependencyContext { d ->
-            "forge"(d.forgeLoader()) // it doesn't resolve.
+            "forge"(d.forgeLoader()) // it doesn't resolve. sorry :/
+
+            libs.mixinExtras.forge.let { dep ->
+                include(dep)
+                implementation(dep)
+            }
+            libs.mixinExtras.common.let { dep ->
+                compileOnly(dep)
+                annotationProcessor(dep)
+            }
         }
     }
 

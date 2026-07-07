@@ -12,6 +12,7 @@ import figurafsb.configurator.FSBPlatform
 import figurafsb.configurator.OptionsExt
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
+import libs
 
 plugins {
     id("figurafsb.minecraft")
@@ -63,6 +64,11 @@ the<OptionsExt>().then {
     dependencies {
         version.dependencyContext { d ->
             "neoForge"(d.neoForgeLoader())
+
+            libs.mixinExtras.neoforge.let { dep ->
+                implementation(dep)
+                include(dep)  // i think??
+            }
         }
     }
 

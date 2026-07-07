@@ -12,6 +12,7 @@ import figurafsb.configurator.FSBPlatform
 import figurafsb.configurator.OptionsExt
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
+import libs
 
 plugins {
     id("figurafsb.minecraft")
@@ -67,6 +68,11 @@ the<OptionsExt>().then {
         version.dependencyContext { d ->
             modApi(d.fabricApi())
             modImplementation(d.fabricLoader())
+            libs.mixinExtras.fabric.let { dep ->
+                include(dep)
+                implementation(dep)
+                annotationProcessor(dep)
+            }
         }
     }
 

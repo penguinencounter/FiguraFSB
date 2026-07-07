@@ -31,6 +31,8 @@ class FSBDependencyContext(private val version: Version) {
     fun forgeLoader() = "net.minecraftforge:forge:${version.minecraft}-${forge.loader}"
 
     fun neoForgeLoader() = "net.neoforged:neoforge:${neoforge.loader}"
+
+    fun mixinCommon() = "org.spongepowered:mixin:${version.mixin}"
 }
 
 inline fun Version.dependencyContext(c: (d: FSBDependencyContext) -> Unit) = c(FSBDependencyContext(this))
