@@ -5,6 +5,7 @@ plugins {
 dependencies {
     compileOnlyApi(libs.brigadier)
     compileOnlyApi(libs.gson)
+    compileOnlyApi(libs.guava)
 }
 
 fsbOptions.configure {

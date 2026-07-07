@@ -1,5 +1,6 @@
 package org.figuramc.fsb2.api.transfer;
 
+import org.figuramc.fsb2.api.ProtocolSession;
 import org.figuramc.fsb2.api.except.FSBArgumentException;
 import org.figuramc.fsb2.api.except.FSBInvalidDataException;
 import org.figuramc.fsb2.api.except.FSBStateException;
@@ -16,6 +17,10 @@ import java.util.zip.CRC32;
  * State data for an inbound transfer.
  */
 public final class TransferInbox {
+    public final int localTransactionID;
+    public final int remoteTransactionID;
+    public final int remoteID;
+
     public final int totalSize;
     public final int totalNumberOfChunks;
     public final long overallCRC;
@@ -49,7 +54,17 @@ public final class TransferInbox {
      * @param totalNumberOfChunks the number of chunks the transfer is split into
      * @param overallCRC          CRC32 checksum for the entire data
      */
-    public TransferInbox(int totalSize, int totalNumberOfChunks, long overallCRC) {
+    public TransferInbox(
+            @NotNull ProtocolSession session,
+            int remoteID,
+            int remoteTransactionID,
+            int totalSize,
+            int totalNumberOfChunks,
+            long overallCRC
+    ) throws FSBArgumentException {
+        this.remoteTransactionID = remoteTransactionID;
+        this.remoteID = remoteID;
+        this.localTransactionID = session.allocateInboundTransfer(remoteID, remoteTransactionID);
         this.totalSize = totalSize;
         this.totalNumberOfChunks = totalNumberOfChunks;
         this.chunks = new byte[totalNumberOfChunks][];
@@ -58,6 +73,8 @@ public final class TransferInbox {
         for (int i = 0; i < totalNumberOfChunks; i++) this.syncObjects[i] = new Object();
         this.neededChunks = new BitSet(totalNumberOfChunks);
         this.neededChunks.set(0, totalNumberOfChunks);
+
+        ProtocolSession.internal.registerIn.accept(session, this);
     }
 
     /**

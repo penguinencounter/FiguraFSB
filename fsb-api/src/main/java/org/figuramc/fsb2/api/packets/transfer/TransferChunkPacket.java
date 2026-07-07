@@ -36,7 +36,7 @@ public final class TransferChunkPacket implements Packet<TransferChunkPacket> {
             throw new FSBInvalidDataException("Chunked transfers cannot be longer than 0xFFFF bytes per chunk");
     }
 
-    public TransferChunkPacket(IFriendlyByteBuf buf) {
+    public TransferChunkPacket(IFriendlyByteBuf buf, Object context) {
         this.transactionID = buf.readInt();
         this.chunkCRC = buf.readInt() & 0x00000000ffffffffL;
         int length = buf.readShort() & 0x0000ffff;

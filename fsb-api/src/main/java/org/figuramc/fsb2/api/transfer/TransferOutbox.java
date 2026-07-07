@@ -10,7 +10,8 @@ import java.util.zip.CRC32;
  * State data for an outbound transfer.
  */
 public final class TransferOutbox {
-    public final int transferId;
+    public final int localTransactionID;
+
     public final int totalSize;
     public final int totalNumberOfChunks;
 
@@ -50,17 +51,21 @@ public final class TransferOutbox {
         return algo.getValue();
     }
 
-    public TransferOutbox(@NotNull ProtocolSession session, byte @NotNull [] data, int targetSizePerChunk) {
+    public TransferOutbox(
+            @NotNull ProtocolSession session,
+            byte @NotNull [] data,
+            int targetSizePerChunk
+    ) {
+        this.localTransactionID = session.allocateOutboundTransfer();
         this.overallCRC = crc32(data);
         this.chunks = splitChunks(data, targetSizePerChunk);
         this.totalNumberOfChunks = chunks.length;
         this.chunkCRC = new long[totalNumberOfChunks];
         for (int i = 0; i < totalNumberOfChunks; i++) this.chunkCRC[i] = crc32(this.chunks[i]);
         this.totalSize = data.length;
-        this.transferId = session.allocateOutboundTransfer();
         this.wantedChunks = new BitSet();
         this.wantedChunks.set(0, totalNumberOfChunks);
+
+        ProtocolSession.internal.registerOut.accept(session, this);
     }
-
-
 }

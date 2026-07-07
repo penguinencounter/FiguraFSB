@@ -12,12 +12,19 @@ slf4j = "2.0.16"
 # 1.16.5's libraries
 brigadier = "1.0.17"
 gson = "2.8.0"
+guava = "21.0"
+
+# For plugins only
+forPlugins-kotlinxJson = "1.11.0"
 
 [libraries]
 annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 brigadier = { module = "com.mojang:brigadier", version.ref = "brigadier" }
-gson = { module = "com.google.code.gson:gson", version.ref = "gson"}
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+
+forPlugins-kotlinxJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "forPlugins-kotlinxJson" }
 
 [plugins]
 architectury-plugin = { id = "architectury-plugin", version.ref = "architectury-plugin" }

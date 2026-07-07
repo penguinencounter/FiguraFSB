@@ -1,6 +1,7 @@
 package figurafsb
 
 import figurafsb.configurator.OptionsExt
+import figurafsb.proc.JSONMerger
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
 import org.gradle.api.attributes.LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE
@@ -90,11 +91,24 @@ the<OptionsExt>().then {
 
     tasks {
         shadowJar {
+            duplicatesStrategy = DuplicatesStrategy.WARN
             exclude("architectury.common.json")
+
+            mergeServiceFiles()
+            filesMatching("META-INF/services/**") {
+                duplicatesStrategy = DuplicatesStrategy.INCLUDE
+            }
+
+            transform(JSONMerger())
+            filesMatching("**/*.json") {
+                duplicatesStrategy = DuplicatesStrategy.INCLUDE
+            }
+
             configurations.addAll(provider {
                 (upstreamShadows + plainConfigurations).values.map { project.configurations.get(it) }
             })
             configurations.add(includedResources)
+
             archiveClassifier = "dev-shadow"
         }
 

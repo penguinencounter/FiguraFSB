@@ -13,23 +13,29 @@ import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
  * this is a failure condition if the receiver has not completed the
  * transfer yet, but note that this packet will still be sent in successful cases as well.
  */
-public final class CloseTransferPacket implements Packet<CloseTransferPacket> {
-    public static final PacketRecord<CloseTransferPacket> REC = rec(
-            Identifier.figura("transfer/close"),
-            CloseTransferPacket::new
+public final class CloseTransferPacketS2R implements Packet<CloseTransferPacketS2R> {
+    public static final PacketRecord<CloseTransferPacketS2R> REC = rec(
+            Identifier.figura("transfer/close/s2r"),
+            CloseTransferPacketS2R::new
     );
 
-    public CloseTransferPacket(IFriendlyByteBuf buf) {
-        // TODO
+    public final int transactionID;
+
+    public CloseTransferPacketS2R(int transactionID) {
+        this.transactionID = transactionID;
+    }
+
+    public CloseTransferPacketS2R(IFriendlyByteBuf buf, Object context) {
+        this.transactionID = buf.readInt();
     }
 
     @Override
     public void write(IFriendlyByteBuf buf) {
-
+        buf.writeInt(transactionID);
     }
 
     @Override
-    public PacketRecord<CloseTransferPacket> identify() {
+    public PacketRecord<CloseTransferPacketS2R> identify() {
         return REC;
     }
 }

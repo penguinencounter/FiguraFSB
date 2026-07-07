@@ -1,3 +1,10 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
 plugins {
     // allows versions from gradle/libs.versions.toml to be used in buildSrc
     // see: https://github.com/gradle/gradle/issues/15383

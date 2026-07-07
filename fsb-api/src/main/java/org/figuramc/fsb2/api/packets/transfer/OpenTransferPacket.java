@@ -16,14 +16,27 @@ public final class OpenTransferPacket implements Packet<OpenTransferPacket> {
             Identifier.figura("transfer/open"),
             OpenTransferPacket::new
     );
+    public final int transactionID;
+    public final int totalSize;
+    public final int numberOfChunks;
 
-    public OpenTransferPacket(IFriendlyByteBuf buf) {
-        // TODO
+    public OpenTransferPacket(int transactionID, int totalSize, int numberOfChunks) {
+        this.transactionID = transactionID;
+        this.totalSize = totalSize;
+        this.numberOfChunks = numberOfChunks;
+    }
+
+    public OpenTransferPacket(IFriendlyByteBuf buf, Object context) {
+        this.transactionID = buf.readInt();
+        this.totalSize = buf.readInt();
+        this.numberOfChunks = buf.readInt();
     }
 
     @Override
     public void write(IFriendlyByteBuf buf) {
-
+        buf.writeInt(this.transactionID);
+        buf.writeInt(this.totalSize);
+        buf.writeInt(this.numberOfChunks);
     }
 
     @Override

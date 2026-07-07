@@ -12,9 +12,6 @@ import figurafsb.configurator.FSBPlatform
 import figurafsb.configurator.OptionsExt
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
-import net.fabricmc.loom.task.RemapJarTask
-import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.register
 
 plugins {
     id("figurafsb.minecraft")
@@ -31,7 +28,8 @@ the<OptionsExt>().apply {
     }
 }.adapt {
     val opt = reify()
-    val ver = opt.minecraft?.minecraftVersion ?: throw IllegalStateException("need Minecraft configuration on fabric-version")
+    val ver = opt.minecraft?.minecraftVersion
+        ?: throw IllegalStateException("need Minecraft configuration on fabric-version")
     if (ver != "1.16.5") this.minecraft {
         plain(":common:modernish")
     }

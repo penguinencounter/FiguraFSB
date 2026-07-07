@@ -18,13 +18,19 @@ public final class TransferStandbyPacket implements Packet<TransferStandbyPacket
             TransferStandbyPacket::new
     );
 
-    public TransferStandbyPacket(IFriendlyByteBuf buf) {
-        // TODO
+    public final int transactionID;
+
+    public TransferStandbyPacket(int transactionID) {
+        this.transactionID = transactionID;
+    }
+
+    public TransferStandbyPacket(IFriendlyByteBuf buf, Object context) {
+        this.transactionID = buf.readInt();
     }
 
     @Override
     public void write(IFriendlyByteBuf buf) {
-
+        buf.writeInt(transactionID);
     }
 
     @Override

@@ -10,10 +10,8 @@ package figurafsb.targets
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import figurafsb.configurator.FSBPlatform
 import figurafsb.configurator.OptionsExt
-import figurafsb.versioning.FSBDependencyContext
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
-import org.gradle.kotlin.dsl.named
 
 plugins {
     id("figurafsb.minecraft")
@@ -29,7 +27,8 @@ the<OptionsExt>().apply {
     }
 }.adapt {
     val opt = reify()
-    val ver = opt.minecraft?.minecraftVersion ?: throw IllegalStateException("need Minecraft configuration on neoforge-version")
+    val ver = opt.minecraft?.minecraftVersion
+        ?: throw IllegalStateException("need Minecraft configuration on neoforge-version")
     if (ver != "1.16.5") this.minecraft {
         plain(":common:modernish")
     }

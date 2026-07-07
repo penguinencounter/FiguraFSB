@@ -4,6 +4,8 @@ val javaVersion: String by project
 
 plugins {
     `kotlin-dsl`
+
+    kotlin("plugin.serialization") version (KotlinVersion.CURRENT.toString())
 }
 
 repositories {
@@ -20,6 +22,9 @@ dependencies {
     implementation(pluginMarker(libs.plugins.architectury.plugin))
     implementation(pluginMarker(libs.plugins.architectury.loom))
     implementation(pluginMarker(libs.plugins.shadow))
+
+    // literal library
+    implementation(libs.forPlugins.kotlinxJson)
 }
 
 java {

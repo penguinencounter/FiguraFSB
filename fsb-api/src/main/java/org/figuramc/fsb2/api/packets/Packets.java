@@ -1,5 +1,6 @@
 package org.figuramc.fsb2.api.packets;
 
+import org.figuramc.fsb2.api.packets.s2c.S2CAdvertisePacket;
 import org.figuramc.fsb2.api.packets.transfer.*;
 import org.figuramc.fsb2.api.utils.Identifier;
 import org.jetbrains.annotations.Contract;
@@ -12,10 +13,12 @@ public final class Packets {
         @NotNull
         public final Identifier id;
         public final int hashId;
+        public final Packet.Deserializer<T> deserializer;
 
         public PacketRecord(Identifier id, Packet.Deserializer<T> deserializer) {
             this.id = id;
             this.hashId = id.toString().hashCode();
+            this.deserializer = deserializer;
         }
 
         /**
@@ -44,8 +47,10 @@ public final class Packets {
         register(TransferChunkPacket.REC);
         register(TransferResendPacket.REC);
         register(TransferStandbyPacket.REC);
-        register(CompletedTransferPacket.REC);
-        register(RejectTransferPacket.REC);
-        register(CloseTransferPacket.REC);
+        register(CloseTransferPacketR2S.REC);
+        register(CloseTransferPacketS2R.REC);
+
+        // .s2c
+        register(S2CAdvertisePacket.REC);
     }
 }

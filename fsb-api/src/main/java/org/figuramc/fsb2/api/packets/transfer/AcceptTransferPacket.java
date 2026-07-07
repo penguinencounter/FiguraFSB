@@ -17,13 +17,19 @@ public final class AcceptTransferPacket implements Packet<AcceptTransferPacket> 
             AcceptTransferPacket::new
     );
 
-    public AcceptTransferPacket(IFriendlyByteBuf buf) {
-        // TODO
+    public final int transactionID;
+
+    public AcceptTransferPacket(int transactionID) {
+        this.transactionID = transactionID;
+    }
+
+    public AcceptTransferPacket(IFriendlyByteBuf buf, Object context) {
+        this.transactionID = buf.readInt();
     }
 
     @Override
     public void write(IFriendlyByteBuf buf) {
-
+        buf.writeInt(transactionID);
     }
 
     @Override
