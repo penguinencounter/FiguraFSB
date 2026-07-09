@@ -6,7 +6,7 @@ import org.figuramc.fsb2.FSB;
 public class FSBFabricInit implements ModInitializer {
     @Override
     public void onInitialize() {
+        FSB.LOGGER.info("FSB server running Fabric entrypoint");
         FSB.init();
-        FSB.LOGGER.info("hello! from fabric/any");
     }
 }

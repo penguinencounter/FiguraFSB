@@ -13,7 +13,7 @@ import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
  */
 public final class OpenTransferPacket implements Packet<OpenTransferPacket> {
     public static final PacketRecord<OpenTransferPacket> REC = rec(
-            Identifier.figura("transfer/open"),
+            Identifier.fsb("transfer/open"),
             OpenTransferPacket::new
     );
     public final int transactionID;

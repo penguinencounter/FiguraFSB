@@ -14,7 +14,7 @@ import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
  */
 public final class TransferStandbyPacket implements Packet<TransferStandbyPacket> {
     public static final PacketRecord<TransferStandbyPacket> REC = rec(
-            Identifier.figura("transfer/standby"),
+            Identifier.fsb("transfer/standby"),
             TransferStandbyPacket::new
     );
 

@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
 
@@ -22,7 +24,7 @@ import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
  */
 public final class TransferResendPacket implements Packet<TransferResendPacket> {
     public static final PacketRecord<TransferResendPacket> REC = rec(
-            Identifier.figura("transfer/resend"),
+            Identifier.fsb("transfer/resend"),
             TransferResendPacket::new
     );
 
@@ -39,6 +41,11 @@ public final class TransferResendPacket implements Packet<TransferResendPacket> 
     public TransferResendPacket(int transactionID, Collection<Integer> neededChunks) {
         this.transactionID = transactionID;
         this.neededChunks = Collections.unmodifiableList(new ArrayList<>(neededChunks));
+    }
+
+    public TransferResendPacket(int transactionID, IntStream stream) {
+        this.transactionID = transactionID;
+        this.neededChunks = Collections.unmodifiableList(stream.boxed().collect(Collectors.toList()));
     }
 
     /**

@@ -1,9 +1,12 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.fabricmc.example.mixin",
+  "package": "org.figuramc.fsb2.server.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
+  "mixins": [
+    "MinecraftServerMixin",
+    "ServerGamePacketListenerImplMixin"
+  ],
   "client": [],
   "server": [],
   "injectors": {

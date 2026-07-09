@@ -20,7 +20,7 @@ import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
  */
 public final class TransferChunkPacket implements Packet<TransferChunkPacket> {
     public static final PacketRecord<TransferChunkPacket> REC = rec(
-            Identifier.figura("transfer/chunk"),
+            Identifier.fsb("transfer/chunk"),
             TransferChunkPacket::new
     );
 

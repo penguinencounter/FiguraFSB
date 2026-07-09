@@ -9,7 +9,7 @@ import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
 
 public class S2CAdvertisePacket implements Packet<S2CAdvertisePacket> {
     public static final Packets.PacketRecord<S2CAdvertisePacket> REC = rec(
-            Identifier.figura("s2c/advertise"),
+            Identifier.fsb("s2c/advertise"),
             S2CAdvertisePacket::new
     );
 

@@ -1,5 +1,7 @@
 package org.figuramc.fsb2.api.utils;
 
+import org.figuramc.fsb2.api.FSBConstants;
+
 import java.util.Objects;
 
 /**
@@ -18,8 +20,8 @@ public final class Identifier {
         this.path = path;
     }
 
-    public static Identifier figura(String path) {
-        return new Identifier("figura", path);
+    public static Identifier fsb(String path) {
+        return new Identifier(FSBConstants.MOD_NAMESPACE, path);
     }
 
     @Override

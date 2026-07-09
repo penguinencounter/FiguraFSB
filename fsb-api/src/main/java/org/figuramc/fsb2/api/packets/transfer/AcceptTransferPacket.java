@@ -13,7 +13,7 @@ import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
  */
 public final class AcceptTransferPacket implements Packet<AcceptTransferPacket> {
     public static final PacketRecord<AcceptTransferPacket> REC = rec(
-            Identifier.figura("transfer/accept"),
+            Identifier.fsb("transfer/accept"),
             AcceptTransferPacket::new
     );
 

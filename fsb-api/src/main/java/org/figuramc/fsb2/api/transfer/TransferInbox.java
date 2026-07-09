@@ -4,8 +4,11 @@ import org.figuramc.fsb2.api.ProtocolSession;
 import org.figuramc.fsb2.api.except.FSBArgumentException;
 import org.figuramc.fsb2.api.except.FSBInvalidDataException;
 import org.figuramc.fsb2.api.except.FSBStateException;
+import org.figuramc.fsb2.api.packets.transfer.CloseTransferPacketR2S;
+import org.figuramc.fsb2.api.packets.transfer.TransferResendPacket;
 import org.figuramc.fsb2.api.utils.Locking;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.BitSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,6 +20,25 @@ import java.util.zip.CRC32;
  * State data for an inbound transfer.
  */
 public final class TransferInbox {
+
+
+    public enum State {
+        OPEN,
+        COMPLETE,
+        FAILURE;
+    }
+
+    private volatile String reason = null;
+    private volatile State state = State.OPEN;
+
+    public @Nullable String getReason() {
+        return reason;
+    }
+
+    public @NotNull State getState() {
+        return state;
+    }
+
     public final int localTransactionID;
     public final int remoteTransactionID;
     public final int remoteID;
@@ -78,7 +100,7 @@ public final class TransferInbox {
     }
 
     /**
-     * Add a chunk to the container.
+     * Add a chunk to the container. Does nothing if the transfer is closed.
      *
      * @param chunkId   chunk ID, from 0 to ({@link #totalNumberOfChunks} - 1)
      * @param data      chunk data, preferably validated
@@ -87,9 +109,14 @@ public final class TransferInbox {
      * @throws FSBArgumentException if chunk ID is out of range or negative
      */
     public void receive(int chunkId, byte @NotNull [] data, boolean overwrite) throws FSBArgumentException {
+        if (state != State.OPEN)
+            return;
         if (chunkId < 0 || chunkId >= totalNumberOfChunks)
             throw new FSBArgumentException(String.format("chunk ID %d out of range; total # of chunks is %d", chunkId, totalNumberOfChunks));
         try (Locking.Resource ignored = Locking.use(lock.readLock())) {
+            if (state != State.OPEN)
+                return;
+
             synchronized (syncObjects[chunkId]) {
                 synchronized (neededChunks) {
                     neededChunks.clear(chunkId);
@@ -152,11 +179,12 @@ public final class TransferInbox {
     /**
      * Join all the chunks into a single byte array. Transfer must be complete at this point.
      *
+     * @param autoClose close the transfer automatically if everything works
      * @return the joined data
      * @throws FSBStateException       if not all chunks received, or data is the wrong length
      * @throws FSBInvalidDataException if the CRC failed
      */
-    public byte[] joinToByteArray() throws FSBStateException, FSBInvalidDataException {
+    public byte[] joinToByteArray(boolean autoClose) throws FSBStateException, FSBInvalidDataException {
         try (Locking.Resource ignored = Locking.use(lock.writeLock())) {
             if (!isWhole()) {
                 if (isComplete())
@@ -189,6 +217,8 @@ public final class TransferInbox {
                         overallCRC,
                         crcSum
                 ));
+
+            if (autoClose) maybeComplete("Completed successfully");
             return result;
         }
     }
@@ -199,6 +229,32 @@ public final class TransferInbox {
     public int[] remainingChunks() {
         try (Locking.Resource ignored = Locking.use(lock.writeLock())) {
             return neededChunks.stream().toArray();
+        }
+    }
+
+    public TransferResendPacket produceResend() {
+        try (Locking.Resource ignored = Locking.use(lock.writeLock())) {
+            return new TransferResendPacket(remoteTransactionID, neededChunks.stream());
+        }
+    }
+
+    public CloseTransferPacketR2S produceClosure() throws FSBStateException {
+        if (state == State.OPEN) throw new FSBStateException("not closed");
+        boolean outcome = state == State.COMPLETE;
+        return new CloseTransferPacketR2S(remoteTransactionID, outcome);
+    }
+
+    public void maybeReject(String reason) {
+        if (state == State.OPEN) {
+            state = State.FAILURE;
+            this.reason = reason;
+        }
+    }
+
+    public void maybeComplete(String reason) {
+        if (state == State.OPEN) {
+            state = State.COMPLETE;
+            this.reason = reason;
         }
     }
 }

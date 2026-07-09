@@ -15,7 +15,7 @@ import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
  */
 public final class CloseTransferPacketS2R implements Packet<CloseTransferPacketS2R> {
     public static final PacketRecord<CloseTransferPacketS2R> REC = rec(
-            Identifier.figura("transfer/close/s2r"),
+            Identifier.fsb("transfer/close/s2r"),
             CloseTransferPacketS2R::new
     );
 
