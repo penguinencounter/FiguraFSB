@@ -24,12 +24,14 @@ public final class TransferChunkPacket implements Packet<TransferChunkPacket> {
             TransferChunkPacket::new
     );
 
-    private final int transactionID;
-    private final long chunkCRC;
-    private final byte[] data;
+    public final int transactionID;
+    public final int chunkID;
+    public final long chunkCRC;
+    public final byte[] data;
 
-    public TransferChunkPacket(int transactionID, long chunkCRC, byte[] data) throws FSBInvalidDataException {
+    public TransferChunkPacket(int transactionID, int chunkID, long chunkCRC, byte[] data) throws FSBInvalidDataException {
         this.transactionID = transactionID;
+        this.chunkID = chunkID;
         this.chunkCRC = chunkCRC;
         this.data = data;
         if (data.length > 0xffff)
@@ -38,6 +40,7 @@ public final class TransferChunkPacket implements Packet<TransferChunkPacket> {
 
     public TransferChunkPacket(IFriendlyByteBuf buf, Object context) {
         this.transactionID = buf.readInt();
+        this.chunkID = buf.readInt();
         this.chunkCRC = buf.readInt() & 0x00000000ffffffffL;
         int length = buf.readShort() & 0x0000ffff;
         this.data = buf.readNBytes(length);
@@ -46,6 +49,7 @@ public final class TransferChunkPacket implements Packet<TransferChunkPacket> {
     @Override
     public void write(IFriendlyByteBuf buf) {
         buf.writeInt(transactionID);
+        buf.writeInt(chunkID);
         buf.writeInt((int) chunkCRC);
         buf.writeShort((short) data.length);
         buf.writeBytes(data);

@@ -2,6 +2,10 @@ package org.figuramc.fsb2.api;
 
 import com.google.common.collect.MapMaker;
 import org.figuramc.fsb2.api.except.FSBArgumentException;
+import org.figuramc.fsb2.api.except.FSBStateException;
+import org.figuramc.fsb2.api.packets.Packet;
+import org.figuramc.fsb2.api.packets.PacketHandler;
+import org.figuramc.fsb2.api.packets.Packets;
 import org.figuramc.fsb2.api.transfer.TransferInbox;
 import org.figuramc.fsb2.api.transfer.TransferOutbox;
 import org.figuramc.fsb2.api.utils.FSBLogger;
@@ -68,6 +72,8 @@ public class ProtocolSession {
      * not required. This queue handles cases that don't use {@link #delRemote}.
      */
     private final ReferenceQueue<Object> remoteDisposal = new ReferenceQueue<>();
+
+    private final ConcurrentHashMap<Packets.PacketRecord<?>, PacketHandler<?>> handlers = new ConcurrentHashMap<>();
 
     public ProtocolSession(@NotNull FSBLogger logger, boolean isClient) {
         this.logger = logger;
@@ -238,6 +244,19 @@ public class ProtocolSession {
 
     private void register(TransferInbox obj) {
         this.inboundTransfers.put(obj.localTransactionID, obj);
+    }
+
+    public <T extends Packet<?>> void onReceive(Packets.PacketRecord<T> record, PacketHandler<T> handler) throws FSBStateException {
+        if (this.handlers.putIfAbsent(record, handler) != null)
+            throw new FSBStateException("Handler is already registered");
+    }
+
+    public <T extends Packet<?>> void handlePacket(T packet, Object context) {
+        Packets.PacketRecord<?> record = packet.identify();
+        //noinspection unchecked :(
+        PacketHandler<T> handler = (PacketHandler<T>) this.handlers.get(record);
+        if (handler == null) return;
+        handler.handle(packet, context);
     }
 
     /**

@@ -55,9 +55,15 @@ public final class Packets {
             // Try to acquire a logger and complain.
             ProtocolSession maybeSession = ProtocolSession.lookup(context);
             if (maybeSession == null) return NoOpPacket.INSTANCE;
-            maybeSession.logger.error(String.format("Decode failed for FSB packet '%s' (ctx %s), dropping. reason:", id, context), e);
+            maybeSession.logger.error(String.format("Decode rejected for FSB packet '%s' (ctx %s), dropping. reason:", id, context), e);
             return NoOpPacket.INSTANCE;
         }
+    }
+
+    public static void dispatchPacket(Packet<?> packet, Object context) {
+        ProtocolSession session = ProtocolSession.lookup(context);
+        if (session == null) return;
+        session.handlePacket(packet, context);
     }
 
     static {
