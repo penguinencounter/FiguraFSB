@@ -1,6 +1,7 @@
 package org.figuramc.fsb2.api.packets;
 
-import org.figuramc.fsb.api.utils.Hash;
+
+import org.figuramc.fsb2.api.utils.Hash;
 
 import java.util.UUID;
 

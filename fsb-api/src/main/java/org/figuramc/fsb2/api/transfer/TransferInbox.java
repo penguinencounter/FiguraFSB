@@ -185,7 +185,7 @@ public final class TransferInbox {
      * @throws FSBInvalidDataException if the CRC failed
      */
     public byte[] joinToByteArray(boolean autoClose) throws FSBStateException, FSBInvalidDataException {
-        try (Locking.Resource ignored = Locking.use(lock.writeLock())) {
+        try (Locking.Resource igored = Locking.use(lock.writeLock())) {
             if (!isWhole()) {
                 if (isComplete())
                     throw new FSBStateException(String.format(

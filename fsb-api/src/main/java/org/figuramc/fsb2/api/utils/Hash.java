@@ -1,9 +1,11 @@
-package org.figuramc.fsb.api.utils;
+package org.figuramc.fsb2.api.utils;
 
 import java.util.Arrays;
 
 public class Hash {
     private final byte[] hash;
+    private final char[] HEX = "0123456789abcdef".toCharArray();
+
 
     public Hash(byte[] hash) {
         if (hash.length != 32) throw new IllegalArgumentException("Invalid hash length");
@@ -11,12 +13,18 @@ public class Hash {
     }
 
     public byte[] get() {
-        return Utils.copyBytes(hash);
+        return hash.clone();
     }
 
     @Override
     public String toString() {
-        return Utils.hexFromBytes(hash);
+        char[] hexChars = new char[hash.length * 2];
+        for (int i = 0; i < hash.length; i++) {
+            int widened = hash[i] & 0xff;
+            hexChars[i * 2] = HEX[widened >>> 4];
+            hexChars[i * 2 + 1] = HEX[widened & 0xf];
+        }
+        return new String(hexChars);
     }
 
     @Override
