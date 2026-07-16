@@ -1,4 +1,4 @@
-package org.figuramc.fsb2.internals;
+package org.figuramc.fsb2.server.internals;
 
 import org.figuramc.fsb2.services.FSBInitializerService;
 

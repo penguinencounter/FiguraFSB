@@ -1,4 +1,4 @@
-package org.figuramc.fsb2;
+package org.figuramc.fsb2.server;
 
 import org.figuramc.fsb2.api.ProtocolSession;
 
@@ -8,8 +8,8 @@ public class ServerExt {
     /**
      * Default server extension.
      */
-    public ServerExt() {
-        session = new ProtocolSession(FSB.LOGGER, false);
+    public ServerExt(Object server) {
+        session = new ProtocolSession(FSB.LOGGER, server, false);
     }
 
 }

@@ -1,6 +1,6 @@
-package org.figuramc.fsb2.internals.logging;
+package org.figuramc.fsb2.server.internals.logging;
 
-import org.figuramc.fsb2.internals.BindingException;
+import org.figuramc.fsb2.server.internals.BindingException;
 import org.figuramc.fsb2.api.utils.FSBLogger;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,7 +8,7 @@ import java.lang.invoke.LambdaConversionException;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
-import static org.figuramc.fsb2.internals.PolymorphicBindings.produceLambda;
+import static org.figuramc.fsb2.server.internals.PolymorphicBindings.produceLambda;
 
 /**
  * <p>

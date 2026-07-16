@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.ref.PhantomReference;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -41,6 +42,15 @@ public class ProtocolSession {
 
     public final @NotNull FSBLogger logger;
     public final boolean isClient;
+
+    /**
+     * Reference to the client or server object.
+     * <ul>
+     * <li>On the server side, this is the MinecraftServer instance.</li>
+     * <li>On the client side, this is the Minecraft instance. ({@code == Minecraft.getInstance()})</li>
+     * </ul>
+     */
+    public final WeakReference<Object> bindRef;
 
     private final AtomicInteger nextOutboundTransferId = new AtomicInteger(0);
     private final AtomicInteger nextInboundTransferId = new AtomicInteger(0);
@@ -75,8 +85,9 @@ public class ProtocolSession {
 
     private final ConcurrentHashMap<Packets.PacketRecord<?>, PacketHandler<?>> handlers = new ConcurrentHashMap<>();
 
-    public ProtocolSession(@NotNull FSBLogger logger, boolean isClient) {
+    public ProtocolSession(@NotNull FSBLogger logger, Object bindRef, boolean isClient) {
         this.logger = logger;
+        this.bindRef = new WeakReference<>(bindRef);
         this.isClient = isClient;
     }
 

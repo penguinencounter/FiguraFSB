@@ -11,25 +11,28 @@ import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
  * sender -> receiver.
  * request to start a transfer.
  */
-public final class OpenTransferPacket implements Packet<OpenTransferPacket> {
-    public static final PacketRecord<OpenTransferPacket> REC = rec(
+public final class TransferOpenPacket implements Packet<TransferOpenPacket> {
+    public static final PacketRecord<TransferOpenPacket> REC = rec(
             Identifier.fsb("transfer/open"),
-            OpenTransferPacket::new
+            TransferOpenPacket::new
     );
     public final int transactionID;
     public final int totalSize;
     public final int numberOfChunks;
+    public final long overallCRC;
 
-    public OpenTransferPacket(int transactionID, int totalSize, int numberOfChunks) {
+    public TransferOpenPacket(int transactionID, int totalSize, int numberOfChunks, long overallCRC) {
         this.transactionID = transactionID;
         this.totalSize = totalSize;
         this.numberOfChunks = numberOfChunks;
+        this.overallCRC = overallCRC;
     }
 
-    public OpenTransferPacket(IFriendlyByteBuf buf, Object context) {
+    public TransferOpenPacket(IFriendlyByteBuf buf, Object context) {
         this.transactionID = buf.readInt();
         this.totalSize = buf.readInt();
         this.numberOfChunks = buf.readInt();
+        this.overallCRC = buf.readInt() & 0x00000000ffffffffL;
     }
 
     @Override
@@ -37,10 +40,11 @@ public final class OpenTransferPacket implements Packet<OpenTransferPacket> {
         buf.writeInt(this.transactionID);
         buf.writeInt(this.totalSize);
         buf.writeInt(this.numberOfChunks);
+        buf.writeInt((int) this.overallCRC);
     }
 
     @Override
-    public PacketRecord<OpenTransferPacket> identify() {
+    public PacketRecord<TransferOpenPacket> identify() {
         return REC;
     }
 }

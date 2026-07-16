@@ -1,7 +1,7 @@
 package org.figuramc.fsb.fabric;
 
 import net.fabricmc.api.ModInitializer;
-import org.figuramc.fsb2.FSB;
+import org.figuramc.fsb2.server.FSB;
 
 public class FSBFabricInit implements ModInitializer {
     @Override

@@ -11,19 +11,19 @@ import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
  * receiver -> sender.
  * signal to sender to begin sending chunks.
  */
-public final class AcceptTransferPacket implements Packet<AcceptTransferPacket> {
-    public static final PacketRecord<AcceptTransferPacket> REC = rec(
+public final class TransferAcceptPacket implements Packet<TransferAcceptPacket> {
+    public static final PacketRecord<TransferAcceptPacket> REC = rec(
             Identifier.fsb("transfer/accept"),
-            AcceptTransferPacket::new
+            TransferAcceptPacket::new
     );
 
     public final int transactionID;
 
-    public AcceptTransferPacket(int transactionID) {
+    public TransferAcceptPacket(int transactionID) {
         this.transactionID = transactionID;
     }
 
-    public AcceptTransferPacket(IFriendlyByteBuf buf, Object context) {
+    public TransferAcceptPacket(IFriendlyByteBuf buf, Object context) {
         this.transactionID = buf.readInt();
     }
 
@@ -33,7 +33,7 @@ public final class AcceptTransferPacket implements Packet<AcceptTransferPacket> 
     }
 
     @Override
-    public PacketRecord<AcceptTransferPacket> identify() {
+    public PacketRecord<TransferAcceptPacket> identify() {
         return REC;
     }
 }

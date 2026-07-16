@@ -45,7 +45,7 @@ public final class Packets {
     }
 
     @CheckReturnValue
-    public static Packet<?> decode(IFriendlyByteBuf buf, Object context) {
+    public static Packet<?> decode(@NotNull IFriendlyByteBuf buf, @NotNull Object context) {
         Identifier id = Identifier.parse(new String(buf.readByteArray(512), StandardCharsets.UTF_8));
         PacketRecord<?> record = getRecord(id);
         if (record == null) return NoOpPacket.INSTANCE;
@@ -60,7 +60,7 @@ public final class Packets {
         }
     }
 
-    public static void dispatchPacket(Packet<?> packet, Object context) {
+    public static void dispatchPacket(@NotNull Packet<?> packet, @NotNull Object context) {
         ProtocolSession session = ProtocolSession.lookup(context);
         if (session == null) return;
         session.handlePacket(packet, context);
@@ -68,13 +68,13 @@ public final class Packets {
 
     static {
         // chunked transfer machinery (.transfer)
-        register(OpenTransferPacket.REC);
-        register(AcceptTransferPacket.REC);
+        register(TransferOpenPacket.REC);
+        register(TransferAcceptPacket.REC);
         register(TransferChunkPacket.REC);
         register(TransferResendPacket.REC);
         register(TransferStandbyPacket.REC);
-        register(CloseTransferPacketR2S.REC);
-        register(CloseTransferPacketS2R.REC);
+        register(TransferClosePacketR2S.REC);
+        register(TransferClosePacketS2R.REC);
 
         // .s2c
         register(S2CAdvertisePacket.REC);

@@ -4,7 +4,7 @@ import org.figuramc.fsb2.api.ProtocolSession;
 import org.figuramc.fsb2.api.except.FSBArgumentException;
 import org.figuramc.fsb2.api.except.FSBInvalidDataException;
 import org.figuramc.fsb2.api.except.FSBStateException;
-import org.figuramc.fsb2.api.packets.transfer.CloseTransferPacketR2S;
+import org.figuramc.fsb2.api.packets.transfer.TransferClosePacketR2S;
 import org.figuramc.fsb2.api.packets.transfer.TransferResendPacket;
 import org.figuramc.fsb2.api.utils.Locking;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ public final class TransferInbox {
     public enum State {
         OPEN,
         COMPLETE,
-        FAILURE;
+        FAILURE
     }
 
     private volatile String reason = null;
@@ -232,16 +232,17 @@ public final class TransferInbox {
         }
     }
 
-    public TransferResendPacket produceResend() {
+    public @Nullable TransferResendPacket produceResend() {
         try (Locking.Resource ignored = Locking.use(lock.writeLock())) {
+            if (neededChunks.isEmpty()) return null;
             return new TransferResendPacket(remoteTransactionID, neededChunks.stream());
         }
     }
 
-    public CloseTransferPacketR2S produceClosure() throws FSBStateException {
+    public TransferClosePacketR2S produceClosure() throws FSBStateException {
         if (state == State.OPEN) throw new FSBStateException("not closed");
         boolean outcome = state == State.COMPLETE;
-        return new CloseTransferPacketR2S(remoteTransactionID, outcome);
+        return new TransferClosePacketR2S(remoteTransactionID, outcome);
     }
 
     public void maybeReject(String reason) {

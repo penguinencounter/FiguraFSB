@@ -12,21 +12,21 @@ import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
  * the receiver has gotten all the chunks successfully; the transfer session is now over.
  * this is a successful outcome.
  */
-public final class CloseTransferPacketR2S implements Packet<CloseTransferPacketR2S> {
-    public static final PacketRecord<CloseTransferPacketR2S> REC = rec(
+public final class TransferClosePacketR2S implements Packet<TransferClosePacketR2S> {
+    public static final PacketRecord<TransferClosePacketR2S> REC = rec(
             Identifier.fsb("transfer/close/r2s"),
-            CloseTransferPacketR2S::new
+            TransferClosePacketR2S::new
     );
 
     public final int transactionID;
     public final boolean successful;
 
-    public CloseTransferPacketR2S(int transactionID, boolean successful) {
+    public TransferClosePacketR2S(int transactionID, boolean successful) {
         this.transactionID = transactionID;
         this.successful = successful;
     }
 
-    public CloseTransferPacketR2S(IFriendlyByteBuf buf, Object context) {
+    public TransferClosePacketR2S(IFriendlyByteBuf buf, Object context) {
         this.transactionID = buf.readInt();
         this.successful = buf.readByte() > 0;
     }
@@ -38,7 +38,7 @@ public final class CloseTransferPacketR2S implements Packet<CloseTransferPacketR
     }
 
     @Override
-    public PacketRecord<CloseTransferPacketR2S> identify() {
+    public PacketRecord<TransferClosePacketR2S> identify() {
         return REC;
     }
 }
