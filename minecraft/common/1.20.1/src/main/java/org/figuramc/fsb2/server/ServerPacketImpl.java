@@ -1,10 +1,12 @@
 package org.figuramc.fsb2.server;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import org.figuramc.fsb2.api.FSBConstants;
 import org.figuramc.fsb2.api.packets.IFriendlyByteBuf;
 
 public class ServerPacketImpl {
-    public record Buf(ByteBuf actual) implements IFriendlyByteBuf {
+    public record Buf(FriendlyByteBuf actual) implements IFriendlyByteBuf {
         @Override
         public IFriendlyByteBuf writeByte(int b) {
             actual.writeByte(b);
@@ -79,4 +81,6 @@ public class ServerPacketImpl {
             return actual.isWritable(i);
         }
     }
+
+    public static final ResourceLocation PACKET_ID = new ResourceLocation(FSBConstants.MOD_NAMESPACE, FSBConstants.FSB_PACKET_PATH);
 }
