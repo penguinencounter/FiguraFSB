@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          path: main
       - name: Enable or disable publishing
         run: |
           if git show -s --format=%B @ | grep -q '\[skip publish\]'; then
@@ -27,8 +29,12 @@ jobs:
         if: ${{ env.PUBLISH == 'yes' }}
         with:
           token: '${{ secrets.MAVEN_GH_PAT }}'
-          path: /home/runner/repo
+          path: repo
           fetch-depth: 0
+          repository: penguinencounter/mvn
+      - name: Link maven
+        if: ${{ env.PUBLISH == 'yes' }}
+        run: ln -s "$(realpath ./repo/snapshots)" /home/runner/repo
       - name: Create empty maven
         if: ${{ env.PUBLISH == 'no' }}
         run: mkdir -p /home/runner/repo
@@ -60,15 +66,28 @@ jobs:
           distribution: temurin
           java-version: 25
       - name: build
-        run: ./gradlew --console=colored -PmavenPath=/home/runner/repo publishAllPublicationsToMountedRepository
+        run: |
+          pushd main || exit 1
+          ./gradlew --console=colored -PmavenPath=/home/runner/repo publishAllPublicationsToMountedRepository
+          popd
       - name: pull-rebase-push
         if: ${{ env.PUBLISH == 'yes' }}
         run: |
-          git -C /home/runner/repo pull --rebase
-          git -C /home/runner/repo push -u origin main  # should be fast-forward
+          pushd ./repo || exit 1
+          git add .
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "(Nothing to do...)"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "🚀 Automated snapshot: penguinencounter/FiguraFSB"
+          git pull --rebase
+          git push -u origin main  # should be fast-forward
           echo "## Maven publishing" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Publishing was completed for this run. The resulting commit is \`$(git -C /home/runner/repo show --format=%H -q)\`." >> "$GITHUB_STEP_SUMMARY"
+          echo "Publishing was completed for this run. The resulting commit is \`$(git show --format=%H -q)\`." >> "$GITHUB_STEP_SUMMARY"
+          popd
       - name: collect outputs
         run: |
           mkdir -p /home/runner/artifacts
