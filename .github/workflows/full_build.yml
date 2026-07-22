@@ -92,8 +92,8 @@ jobs:
         run: |
           mkdir -p /home/runner/artifacts
           mkdir -p /home/runner/sources
-          find /home/runner/repo -name '*.jar' ! -name '*-sources.jar' -exec cp {} /home/runner/artifacts \;
-          find /home/runner/repo -name '*-sources.jar' -exec cp {} /home/runner/sources \;
+          find -H /home/runner/repo -name '*.jar' ! -name '*-sources.jar' -exec cp {} /home/runner/artifacts \;
+          find -H /home/runner/repo -name '*-sources.jar' -exec cp {} /home/runner/sources \;
       - uses: actions/upload-artifact@v7
         name: 'Upload builds'
         with:
