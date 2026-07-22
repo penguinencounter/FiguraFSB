@@ -13,8 +13,11 @@ public class FSB {
 
     public static final WeakHashMap<Object, ServerExt> servers = new WeakHashMap<>();
 
-    public static void init() {
-        LOGGER.info("FSB server environment (common/any)");
+    public static FSBEnvType environment;
+
+    public static void init(FSBEnvType side) {
+        FSB.environment = side;
+        LOGGER.info("FSB server environment (common/any) (physically {})", side);
         InitializerService.runInitializers();
     }
 

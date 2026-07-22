@@ -11,13 +11,14 @@ import org.figuramc.fsb2.api.packets.Packets;
 import org.figuramc.fsb2.server.FSB;
 import org.figuramc.fsb2.server.FSBWrapper;
 import org.figuramc.fsb2.server.ServerPacketImpl;
+import org.figuramc.fsb2.server.VersionedNetworking;
 import org.figuramc.fsb2.services.FSBInitializerService;
 import org.figuramc.fsb2.services.FSBNetworkingService;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public class FabricNetworkingImpl implements FSBNetworkingService<ServerGamePacketListenerImpl>, FSBInitializerService {
+public class FabricNetworkingImpl implements VersionedNetworking, FSBInitializerService {
     @Override
     public void send(@NotNull ServerGamePacketListenerImpl connection, @NotNull Packet<?> packet) {
         ServerPacketImpl.Buf bufW = new ServerPacketImpl.Buf(Unpooled.buffer());

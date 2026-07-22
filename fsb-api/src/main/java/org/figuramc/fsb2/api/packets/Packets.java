@@ -2,7 +2,9 @@ package org.figuramc.fsb2.api.packets;
 
 import org.figuramc.fsb2.api.ProtocolSession;
 import org.figuramc.fsb2.api.except.FSBException;
-import org.figuramc.fsb2.api.packets.s2c.S2CAdvertisePacket;
+import org.figuramc.fsb2.api.packets.c2s.C2SHelloPacket;
+import org.figuramc.fsb2.api.packets.s2c.S2CHelloPacket;
+import org.figuramc.fsb2.api.packets.s2c.S2CReconfigurePacket;
 import org.figuramc.fsb2.api.packets.transfer.*;
 import org.figuramc.fsb2.api.utils.Identifier;
 import org.jetbrains.annotations.CheckReturnValue;
@@ -77,6 +79,10 @@ public final class Packets {
         register(TransferClosePacketS2R.REC);
 
         // .s2c
-        register(S2CAdvertisePacket.REC);
+        register(S2CHelloPacket.REC);
+        register(S2CReconfigurePacket.REC);
+
+        // .c2s
+        register(C2SHelloPacket.REC);
     }
 }
