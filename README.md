@@ -1,6 +1,28 @@
 # Figura Server Backend, standalone
 
+> [!caution]
+> Before cloning the repository and importing it, **read the development information below.**
+> Specifically, you need to read the _Sync performance & resources_ section.
+
 ## Development
+
+### Development dependencies
+
+You'll need at least 2 JDKs installed in places that Gradle can find them.
+We like [Eclipse Adoptium Temurin ↗](https://adoptium.net/temurin/releases/), but feel free to use
+any distribution that works.
+
+1. a JDK 17, for building 1.16.5 until 1.20.4. [Download Temurin JDK 17 ↗](https://adoptium.net/temurin/releases?version=17&os=any&arch=any)
+2. a JDK 21, for building 1.20.6 until 1.21.4. [Download Temurin JDK 21 ↗](https://adoptium.net/temurin/releases?version=21&os=any&arch=any)
+3. you may need a JDK 25 in the future, but it is **not necessary for now**
+
+You need to assign **JDK 21 (or newer) as your `JAVA_HOME`**. How to do this temporarily varies by operating system.
+- If you're running the project in IntelliJ IDEA, which JDK is used in the integrated terminal is determined by
+  the Project SDK, located in **(top menu) File → Project Structure → Project (tab) → SDK**.
+  - You may have to terminate the terminal and re-open it for changes to apply. 
+- On Linux and macOS (most -sh shells), you can use `JAVA_HOME=/path/to/jdk/21 ./gradlew`, or `export JAVA_HOME=/path/to/jdk/21` to keep the
+  preference for your session
+- On Windows PowerShell, you can use `$env:JAVA_HOME=\path\to\jdk\21` to set the variable for your session.
 
 ### Sync performance & resources
 
