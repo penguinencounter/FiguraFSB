@@ -7,6 +7,7 @@ import figurafsb.proc.Templater
 import figurafsb.versioning.addToTemplate
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
+import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.attributes.LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE
 
 plugins {
@@ -97,6 +98,14 @@ the<OptionsExt>().then {
         mcData.platform?.let { platform ->
             for ((projName, confName) in upstreamShadows) {
                 add(confName, project(projName, "transformProduction${platform.capitalized}")) { isTransitive = false }
+            }
+        }
+    }
+
+    afterEvaluate { // crap
+        loom {
+            runConfigs.configureEach {
+                generateRunConfig = false
             }
         }
     }

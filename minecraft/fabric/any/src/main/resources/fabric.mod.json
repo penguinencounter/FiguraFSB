@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "figura-fsb",
+  "id": "figurafsb",
   "version": "${modVersion}",
   "environment": "*",
   "entrypoints": {

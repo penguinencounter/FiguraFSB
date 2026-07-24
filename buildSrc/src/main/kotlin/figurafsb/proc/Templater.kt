@@ -1,7 +1,9 @@
 package figurafsb.proc
 
+import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.logging.Logging
 import java.io.Serializable
+import java.util.Hashtable
 
 data class Templater(val replacements: Map<String, String?>) : Serializable {
     companion object {
@@ -21,4 +23,13 @@ data class Templater(val replacements: Map<String, String?>) : Serializable {
             notetaker(" ~~ {$inner} unavailable")
         result ?: it.value
     }
+
+    /**
+     * get a [ReplaceTokens] options map for Gradle corresponding to this Templater
+     */
+    fun toReplaceTokensOptions() = arrayOf(
+        "tokens" to Hashtable(replacements.filter { (_, v) -> v != null }),
+        "beginToken" to $$"${",
+        "endToken" to "}"
+    )
 }

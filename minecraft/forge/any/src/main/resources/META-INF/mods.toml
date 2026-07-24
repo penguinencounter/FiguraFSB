@@ -9,6 +9,7 @@ displayName = "Figura Server Backend"
 description = """
 Figura avatar hosting service for LAN and dedicated servers.
 """
+displayTest="IGNORE_ALL_VERSION"
 
 [[dependencies.figurafsb]]
 modId="forge"
