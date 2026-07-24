@@ -9,6 +9,7 @@ import org.apache.tools.zip.ZipEntry
 import org.apache.tools.zip.ZipOutputStream
 import org.gradle.api.file.FileTreeElement
 import org.gradle.api.logging.Logging
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.util.PatternSet
 
@@ -16,7 +17,8 @@ import org.gradle.api.tasks.util.PatternSet
 class JSONMerger
 @JvmOverloads constructor(
     patternSet: PatternSet =
-        PatternSet().include(JSON_ANY)
+        PatternSet().include(JSON_ANY),
+    @Input val templater: Templater,
 ) : PatternFilterableResourceTransformer(patternSet) {
 
     companion object {
@@ -83,15 +85,23 @@ class JSONMerger
                 else -> throw IllegalStateException("more than one $KEY in ${context.path}")
             }
 
+            val notes = mutableListOf<String>()
 
+            lateinit var result: Entry
             if (prev == null || priority >= prev.priority) {
                 if (prev != null && priority > prev.priority)
-                    log.lifecycle(" ✓  %50s (%s), previous best: %s".format(context.path, priority, prev.priority))
-                Entry(priority, content)
+                    notes.add(" ✓  %50s (%s), previous best: %s".format(context.path, priority, prev.priority))
+                result = Entry(priority, templater.process(content, notes::add))
             } else {
-                log.lifecycle("  ✗ %50s (%s),  current best: %s".format(context.path, priority, prev.priority))
-                prev
+                notes.add("  ✗ %50s (%s),  current best: %s".format(context.path, priority, prev.priority))
+                result = prev
             }
+            if (notes.isNotEmpty()) log.lifecycle(buildString {
+                appendLine("$k:")
+                notes.forEach(::appendLine)
+            })
+
+            result
         }
     }
 

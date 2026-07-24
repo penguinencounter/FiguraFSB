@@ -2,6 +2,9 @@ package figurafsb
 
 import figurafsb.configurator.OptionsExt
 import figurafsb.proc.JSONMerger
+import figurafsb.proc.TemplateTransform
+import figurafsb.proc.Templater
+import figurafsb.versioning.addToTemplate
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
 import org.gradle.api.attributes.LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE
@@ -12,6 +15,8 @@ plugins {
     id("dev.architectury.loom")
     id("com.gradleup.shadow")
 }
+
+val modVersion: String by project
 
 the<OptionsExt>().then {
     val mcData = it.minecraft
@@ -30,6 +35,13 @@ the<OptionsExt>().then {
             attribute(LIBRARY_ELEMENTS_ATTRIBUTE, objects.named("resource-jar"))
         }
     }
+
+    val repl = mutableMapOf<String, String?>(
+        "modVersion" to modVersion,
+    )
+    version.addToTemplate(repl, "mc")
+
+    val template = Templater(repl)
 
     configurations {
         for (upstream in mcData.upstreams) {
@@ -99,13 +111,15 @@ the<OptionsExt>().then {
                 duplicatesStrategy = DuplicatesStrategy.INCLUDE
             }
 
-            transform(JSONMerger())
+            transform(JSONMerger(templater = template))
             filesMatching("**/*.json") {
                 duplicatesStrategy = DuplicatesStrategy.INCLUDE
             }
 
+            transform(TemplateTransform(templater = template, patternSet = PatternSet().include("**/*.toml")))
+
             configurations.addAll(provider {
-                (upstreamShadows + plainConfigurations).values.map { project.configurations.get(it) }
+                (upstreamShadows + plainConfigurations).values.map { project.configurations[it] }
             })
             configurations.add(includedResources)
 

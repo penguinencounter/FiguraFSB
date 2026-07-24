@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "figura-fsb",
-  "version": "1.0.0",
+  "version": "${modVersion}",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -11,5 +11,8 @@
   "mixins": [
     "figura-fsb.mixins.json"
   ],
+  "depends": {
+    "minecraft": "${mc.version}"
+  },
   "__resource_priority": -1
 }

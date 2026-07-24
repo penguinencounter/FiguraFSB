@@ -102,3 +102,15 @@ inline fun versions(c: recv<MultiVersionBuilder>) = run {
     val result = MultiVersionBuilder().also(c).versions.toMap()
     result
 }
+
+fun Version.addToTemplate(template: MutableMap<String, String?>, prefix: String = "mc") {
+    template.putAll(mapOf(
+        "$prefix.version" to this.minecraft,
+        "$prefix.mixin" to this.mixin,
+        "$prefix.fabric.api" to this.fabric?.api,
+        "$prefix.fabric.loader" to this.fabric?.loader,
+        "$prefix.forge.loader" to this.forge?.loader,
+        "$prefix.forge.fml" to this.forge?.fml?.toString(),
+        "$prefix.neo.loader" to this.neoforge?.loader
+    ))
+}

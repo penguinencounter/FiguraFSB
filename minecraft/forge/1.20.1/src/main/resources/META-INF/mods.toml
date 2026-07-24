@@ -1,0 +1,25 @@
+modLoader = "javafml"
+loaderVersion = "[${mc.forge.fml},)"
+license = "All-Rights-Reserved"
+
+[[mods]]
+modId = "figurafsb"
+version = "${modVersion}"
+displayName = "Figura Server Backend"
+description = """
+Figura avatar hosting service for LAN and dedicated servers.
+"""
+
+[[dependencies.figurafsb]]
+modId="forge"
+mandatory=true
+versionRange="[${mc.forge.fml},)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.figurafsb]]
+modId="minecraft"
+mandatory=true
+versionRange="[${mc.version}]"
+ordering="NONE"
+side="BOTH"
