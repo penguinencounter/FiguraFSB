@@ -126,6 +126,9 @@ the<OptionsExt>().then {
             }
 
             transform(TemplateTransform(templater = template, patternSet = PatternSet().include("**/*.toml")))
+            filesMatching("**/*.toml") {
+                duplicatesStrategy = DuplicatesStrategy.INCLUDE
+            }
 
             configurations.addAll(provider {
                 (upstreamShadows + plainConfigurations).values.map { project.configurations[it] }

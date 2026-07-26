@@ -43,7 +43,9 @@ the<OptionsExt>().then {
     }
 
     loom {
-        forge {}
+        forge {
+            mixinConfig("figura-fsb.mixins.json")
+        }
     }
 
     val version = versionFor(mc.minecraftVersion)

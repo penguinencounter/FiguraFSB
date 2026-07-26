@@ -49,4 +49,6 @@ class TemplateTransform(
             os.closeEntry()
         }
     }
+
+    override fun hasTransformedResource() = entries.isNotEmpty()
 }

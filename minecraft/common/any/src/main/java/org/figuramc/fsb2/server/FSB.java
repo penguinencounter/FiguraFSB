@@ -17,7 +17,7 @@ public class FSB {
 
     public static void init(FSBEnvType side) {
         FSB.environment = side;
-        LOGGER.info("FSB server environment (common/any) (physically {})", side);
+        LOGGER.info("Hello from FSB! This is the SERVER (any/any) component. It appears that this is a Minecraft {}. See you on the other side...", side);
         InitializerService.runInitializers();
     }
 
