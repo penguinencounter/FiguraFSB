@@ -1,4 +1,5 @@
-# Run copy-metadata.sh to clone this file automatically.
+# Run copier.sh to synchronize this file automatically.
+# If you're not in the `any` project, any changes you make will probably be lost.
 
 modLoader = "javafml"
 loaderVersion = "[${mc.forge.fml},)"

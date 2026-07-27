@@ -11,8 +11,7 @@ import org.figuramc.fsb2.server.FSBEnvType;
 
 @Mod(FSBConstants.MOD_ID)
 public class FSBForgeInit {
-    public FSBForgeInit() {
-        ModLoadingContext loader = ModLoadingContext.get();
+    public FSBForgeInit(ModLoadingContext loader) {
         loader.registerExtensionPoint(
                 IExtensionPoint.DisplayTest.class,
                 () -> new IExtensionPoint.DisplayTest(() -> IExtensionPoint.DisplayTest.IGNORESERVERONLY, (a, b) -> true)
