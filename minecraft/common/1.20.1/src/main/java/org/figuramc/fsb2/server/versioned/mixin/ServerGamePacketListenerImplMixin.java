@@ -6,6 +6,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.figuramc.fsb2.api.PlayerInfo;
+import org.figuramc.fsb2.api.config.ServerIdentification;
 import org.figuramc.fsb2.api.except.FSBArgumentException;
 import org.figuramc.fsb2.api.packets.s2c.S2CHelloPacket;
 import org.figuramc.fsb2.server.FSB;
@@ -33,7 +34,7 @@ public abstract class ServerGamePacketListenerImplMixin {
         try {
             srv.session.newRemote(that, info);
 
-            ((VersionedNetworking) NetworkingService.SERVICE).send(that, new S2CHelloPacket(null));
+            ((VersionedNetworking) NetworkingService.SERVICE).send(that, new S2CHelloPacket(ServerIdentification.defaultValues()));
         } catch (FSBArgumentException ignored) {
 
         }

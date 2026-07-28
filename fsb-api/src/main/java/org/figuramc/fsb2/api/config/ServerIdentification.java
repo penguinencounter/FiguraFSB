@@ -2,6 +2,7 @@ package org.figuramc.fsb2.api.config;
 
 import org.figuramc.fsb2.api.packets.Encodable;
 import org.figuramc.fsb2.api.packets.IFriendlyByteBuf;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
@@ -16,7 +17,7 @@ public class ServerIdentification implements Encodable {
     /**
      * Text that goes in the MOTD box in the menu.
      */
-    public String motd;
+    public @NotNull String motd = "please fill in MOTD thanks";
 
     // Limitations
     public long maxUploadSize;      // bytes
@@ -69,6 +70,13 @@ public class ServerIdentification implements Encodable {
 
     public ServerIdentification() {}
 
+    public static ServerIdentification defaultValues() {
+        ServerIdentification id = new ServerIdentification();
+        id.motd = "an unconfigured Figura Server Backend";
+        id.isPopulated = true;
+        return id;
+    }
+
     public void write(IFriendlyByteBuf buf) {
         buf.writeLong(maxUploadSize);
         buf.writeInt(maxNumberOfAvatars);
@@ -76,6 +84,11 @@ public class ServerIdentification implements Encodable {
         buf.writeInt(maxPingRate);
         buf.writeByte(packBitflags());
         buf.writeByteArray(motd.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static byte getArrayOrZero(byte[] ar, int idx) {
+        return idx >= ar.length ? (byte) 0 : ar[idx];
     }
 
     private byte packBitflags() {
@@ -88,7 +101,7 @@ public class ServerIdentification implements Encodable {
         bitSet.set(5, this.canManageServer);
         bitSet.set(6, this.canModerate);
         bitSet.set(7, this.canImmortalize);
-        return bitSet.toByteArray()[0];
+        return getArrayOrZero(bitSet.toByteArray(), 0);
     }
 
     private void unpackBitflags(byte flags) {
