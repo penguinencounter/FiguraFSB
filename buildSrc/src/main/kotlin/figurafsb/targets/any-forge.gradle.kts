@@ -1,6 +1,7 @@
 package figurafsb.targets
 
 import figurafsb.configurator.OptionsExt
+import figurafsb.yesno
 
 
 plugins {
@@ -14,4 +15,23 @@ the<OptionsExt>().apply {
 dependencies {
     compileOnly(project(":fsb-api"))
     compileOnly(project(":minecraft:common:any"))
+}
+
+val artifactRoot: String by project
+val snapshot: String? by project
+project.version = buildString {
+    append(rootProject.version)
+    append("+forge")
+    if (yesno(snapshot)) append("-SNAPSHOT")
+}
+project.group = rootProject.group
+
+publishing {
+    publications {
+        register("maven", MavenPublication::class) {
+            artifactId = "${artifactRoot}-forge-any"
+
+            from(components["java"])
+        }
+    }
 }
