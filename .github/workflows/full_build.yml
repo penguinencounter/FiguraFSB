@@ -32,11 +32,7 @@ jobs:
           path: repo
           fetch-depth: 0
           repository: penguinencounter/mvn
-      - name: Link maven
-        if: ${{ env.PUBLISH == 'yes' }}
-        run: ln -s "$(realpath ./repo/snapshots)" /home/runner/repo
       - name: Create empty maven
-        if: ${{ env.PUBLISH == 'no' }}
         run: mkdir -p /home/runner/repo
 
       - uses: actions/cache@v6
@@ -69,6 +65,12 @@ jobs:
         run: |
           pushd main || exit 1
           ./gradlew --console=colored -PmavenPath=/home/runner/repo publishAllPublicationsToMountedRepository
+          popd
+      - name: build for publishing
+        if: ${{ env.PUBLISH == 'yes' }}
+        run: |
+          pushd main || exit 1
+          ./gradlew --console=colored -PmavenPath=$(realpath ../repo/snapshots) publishAllPublicationsToMountedRepository
           popd
       - name: pull-rebase-push
         if: ${{ env.PUBLISH == 'yes' }}
