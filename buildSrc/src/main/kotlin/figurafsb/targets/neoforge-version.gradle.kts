@@ -14,6 +14,8 @@ import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
 import figurafsb.yesno
 import libs
+import net.fabricmc.loom.task.RemapJarTask
+import org.gradle.kotlin.dsl.named
 
 plugins {
     id("figurafsb.minecraft")
@@ -82,15 +84,28 @@ the<OptionsExt>().then {
     project.group = rootProject.group
     val artifactRoot: String by project
 
+    val remapComponentJar by tasks.registering(RemapJarTask::class) {
+        description = "remap the classes in this project only (non-shadow)"
+
+        dependsOn(tasks.jar)
+        inputFile = tasks.jar.get().archiveFile
+        archiveClassifier = null
+    }
+
     publishing {
         publications {
             register("maven", MavenPublication::class) {
                 artifactId = "${artifactRoot}-neoforge"
 
-                val shadowJar = tasks.named<ShadowJar>("shadowJar")
-                artifact(shadowJar) {
-                    builtBy(shadowJar)
+                val remapJar = tasks.named<RemapJarTask>("remapJar")
+                artifact(remapJar) {
+                    builtBy(remapJar)
                     classifier = ""
+                }
+
+                artifact(remapComponentJar) {
+                    builtBy(remapComponentJar)
+                    classifier = "component"
                 }
 
                 val sourcesJar = tasks.named<Jar>("sourcesJar")

@@ -1,5 +1,6 @@
 package figurafsb
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import figurafsb.configurator.OptionsExt
 import figurafsb.proc.JSONMerger
 import figurafsb.proc.TemplateTransform

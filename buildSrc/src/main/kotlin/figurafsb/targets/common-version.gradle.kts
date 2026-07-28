@@ -5,9 +5,9 @@ import figurafsb.configurator.OptionsExt
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
 import figurafsb.yesno
-import gradle.kotlin.dsl.accessors._428a6a25e01afd3767e10657b288cdc3.shadowJar
 import libs
 import net.fabricmc.loom.task.RemapJarTask
+import org.gradle.kotlin.dsl.provideDelegate
 
 plugins {
     id("figurafsb.minecraft")
@@ -56,19 +56,40 @@ the<OptionsExt>().then {
     val artifactRoot: String by project
 
     val shadowJar = tasks.named<ShadowJar>("shadowJar")
+    val componentJar = tasks.named<Jar>("jar")
 
     val remapJar = tasks.named<RemapJarTask>("remapJar") {
         dependsOn(shadowJar)
         inputFile = shadowJar.get().archiveFile
+        archiveClassifier = "fat"
+    }
+
+    val remapComponentJar by tasks.registering(RemapJarTask::class) {
+        description = "remap the classes in this project only (non-shadow)"
+
+        dependsOn(componentJar)
+        inputFile = componentJar.get().archiveFile
         archiveClassifier = null
     }
 
-    val mojmapJar = tasks.register<RemapJarTask>("mojmapJar") {
+    val mojmapJar by tasks.registering(RemapJarTask::class) {
+        description = "remap the classes in the fatjar to mojmap"
+
         dependsOn(remapJar)
         inputFile = remapJar.get().archiveFile
         sourceNamespace = "intermediary"
         targetNamespace = "named"
-        archiveClassifier = "mojmapped"
+        archiveClassifier = "fat-mojmap"
+    }
+
+    val mojmapComponentJar by tasks.registering(RemapJarTask::class) {
+        description = "remap the classes in this project only to mojmap"
+
+        dependsOn(remapComponentJar)
+        inputFile = remapComponentJar.get().archiveFile
+        sourceNamespace = "intermediary"
+        targetNamespace = "named"
+        archiveClassifier = "mojmap"
     }
 
     publishing {
@@ -76,9 +97,14 @@ the<OptionsExt>().then {
             register("maven", MavenPublication::class) {
                 artifactId = "${artifactRoot}-common-intermediary"
 
+                artifact(componentJar) {
+                    builtBy(componentJar)
+                    classifier = ""
+                }
+
                 artifact(remapJar) {
                     builtBy(remapJar)
-                    classifier = ""
+                    classifier = "fat"
                 }
 
                 val sourcesJar = tasks.named<Jar>("sourcesJar")
@@ -90,9 +116,14 @@ the<OptionsExt>().then {
             register("mojmap", MavenPublication::class) {
                 artifactId = "${artifactRoot}-common-mojmap"
 
+                artifact(mojmapComponentJar) {
+                    builtBy(mojmapComponentJar)
+                    classifier = ""
+                }
+
                 artifact(mojmapJar) {
                     builtBy(mojmapJar)
-                    classifier = ""
+                    classifier = "fat"
                 }
 
                 val sourcesJar = tasks.named<Jar>("sourcesJar")
