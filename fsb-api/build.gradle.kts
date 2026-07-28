@@ -1,3 +1,5 @@
+import figurafsb.yesno
+
 plugins {
     id("figurafsb.standalone")
 }
@@ -13,7 +15,11 @@ fsbOptions.configure {
 }
 
 val artifactRoot: String by project
-project.version = rootProject.version
+val snapshot: String? by project
+project.version = buildString {
+    append(rootProject.version)
+    if (yesno(snapshot)) append("-SNAPSHOT")
+}
 project.group = rootProject.group
 
 publishing {

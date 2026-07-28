@@ -3,6 +3,7 @@ package figurafsb.targets
 import figurafsb.configurator.OptionsExt
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
+import figurafsb.yesno
 import libs
 import net.fabricmc.loom.task.RemapJarTask
 
@@ -23,6 +24,8 @@ the<OptionsExt>().apply {
     }
 }
 
+val snapshot: String? by project
+
 the<OptionsExt>().then {
     val mc = it.minecraft!!
     architectury {
@@ -41,7 +44,10 @@ the<OptionsExt>().then {
         }
     }
 
-    project.version = "${rootProject.version}+${mc.minecraftVersion}"
+    project.version = buildString {
+        append("${rootProject.version}+${mc.minecraftVersion}")
+        if (yesno(snapshot)) append("-SNAPSHOT")
+    }
     project.group = rootProject.group
 
 

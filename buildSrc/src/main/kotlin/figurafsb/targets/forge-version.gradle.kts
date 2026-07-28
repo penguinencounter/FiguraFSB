@@ -12,6 +12,7 @@ import figurafsb.configurator.FSBPlatform
 import figurafsb.configurator.OptionsExt
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
+import figurafsb.yesno
 import libs
 
 plugins {
@@ -34,6 +35,8 @@ the<OptionsExt>().apply {
         plain(":common:modernish")
     }
 }
+
+val snapshot: String? by project
 
 the<OptionsExt>().then {
     val mc = it.minecraft!!
@@ -78,7 +81,10 @@ the<OptionsExt>().then {
         }
     }
 
-    project.version = "${rootProject.version}+${mc.minecraftVersion}-forge"
+    project.version = buildString {
+        append("${rootProject.version}+${mc.minecraftVersion}-forge")
+        if (yesno(snapshot)) append("-SNAPSHOT")
+    }
     project.group = rootProject.group
     val artifactRoot: String by project
 
