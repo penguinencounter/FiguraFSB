@@ -1,4 +1,4 @@
-package org.figuramc.fsb.fabric;
+package org.figuramc.fsb2.fabric;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;

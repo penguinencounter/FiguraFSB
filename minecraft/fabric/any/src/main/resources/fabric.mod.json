@@ -5,7 +5,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "org.figuramc.fsb.fabric.FSBFabricInit"
+      "org.figuramc.fsb2.fabric.FSBFabricInit"
     ]
   },
   "mixins": [

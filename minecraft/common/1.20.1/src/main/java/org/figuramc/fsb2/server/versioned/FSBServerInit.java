@@ -6,7 +6,7 @@ import org.figuramc.fsb2.services.FSBInitializerService;
 public class FSBServerInit implements FSBInitializerService {
     @Override
     public void init() {
-        FSB.LOGGER.info("fsb: target 1.21.4 having mixins");
+        FSB.LOGGER.info("fsb: target 1.20.1 having mixins");
     }
 
     @Override
