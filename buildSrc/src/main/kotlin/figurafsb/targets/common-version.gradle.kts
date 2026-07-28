@@ -1,9 +1,11 @@
 package figurafsb.targets
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import figurafsb.configurator.OptionsExt
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
 import figurafsb.yesno
+import gradle.kotlin.dsl.accessors._428a6a25e01afd3767e10657b288cdc3.shadowJar
 import libs
 import net.fabricmc.loom.task.RemapJarTask
 
@@ -53,8 +55,15 @@ the<OptionsExt>().then {
 
     val artifactRoot: String by project
 
+    val shadowJar = tasks.named<ShadowJar>("shadowJar")
+
+    val remapJar = tasks.named<RemapJarTask>("remapJar") {
+        dependsOn(shadowJar)
+        inputFile = shadowJar.get().archiveFile
+        archiveClassifier = null
+    }
+
     val mojmapJar = tasks.register<RemapJarTask>("mojmapJar") {
-        val remapJar = tasks.named<RemapJarTask>("remapJar")
         dependsOn(remapJar)
         inputFile = remapJar.get().archiveFile
         sourceNamespace = "intermediary"
@@ -67,7 +76,6 @@ the<OptionsExt>().then {
             register("maven", MavenPublication::class) {
                 artifactId = "${artifactRoot}-common-intermediary"
 
-                val remapJar = tasks.named<RemapJarTask>("remapJar")
                 artifact(remapJar) {
                     builtBy(remapJar)
                     classifier = ""
