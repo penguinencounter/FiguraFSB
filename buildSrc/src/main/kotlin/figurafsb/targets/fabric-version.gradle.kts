@@ -15,6 +15,12 @@ import figurafsb.versioning.versionFor
 import figurafsb.yesno
 import libs
 import net.fabricmc.loom.task.RemapJarTask
+import org.gradle.internal.fingerprint.DirectorySensitivity
+import org.gradle.internal.fingerprint.LineEndingSensitivity
+import org.gradle.internal.properties.InputBehavior
+import org.gradle.internal.properties.InputFilePropertyType
+import org.gradle.internal.properties.PropertyValue
+import org.gradle.internal.properties.PropertyVisitor
 
 plugins {
     id("figurafsb.minecraft")
@@ -92,7 +98,7 @@ the<OptionsExt>().then {
 
         dependsOn(tasks.jar)
         inputFile = tasks.jar.get().archiveFile
-        archiveClassifier = null
+        archiveClassifier = "component"
     }
 
     publishing {

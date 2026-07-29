@@ -89,7 +89,7 @@ the<OptionsExt>().then {
 
         dependsOn(tasks.jar)
         inputFile = tasks.jar.get().archiveFile
-        archiveClassifier = null
+        archiveClassifier = "component"
     }
 
     publishing {
