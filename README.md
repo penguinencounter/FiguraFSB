@@ -183,17 +183,17 @@ really!!)
 > ```
 > 3. Run `./gradlew`. Watch carefully for the start of the output and get ready to cancel it with `Ctrl` `C` if something's wrong.
 
-The main culprit for this is the fact that you're downloading at least 30 copies of Minecraft in various forms.
+The main culprit for the massive cache size is the fact that you're downloading at least 30 copies of Minecraft in various forms.
 
 The initial sync might take a long time due to all the downloading that needs to happen. Subsequent Gradle operations
 should be significantly quicker, especially if you keep using the same Gradle daemon throughout.
 
-Some statistics that may help you decide what to do:
+Some statistics that may help you decide what to do (and whether you want to use filtered builds):
 
 * This project has CI. The CI process caches only the global Gradle cache (`~/.gradle`).
-    * Running a build from no cache takes upwards of **30 minutes** (!)
+    * Running an unfiltered build from no cache takes upwards of **30 minutes** (!)
     * With the cache loaded (but not including the project cache), a build takes **5 minutes**
-* On my personal computer (which is pretty powerful to be fair), I can run a full build in **50 seconds** with the
+* On my personal computer (which is pretty powerful to be fair), I can run a full unfiltered build in **50 seconds** with the
   global and project cache primed (`gradlew clean build --rerun-tasks`)
 
 ### Running the game
