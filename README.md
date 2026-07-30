@@ -160,8 +160,28 @@ You need to assign **JDK 21 (or newer) as your `JAVA_HOME`**. How to do this tem
 
 ### Sync performance & resources
 
-This project has a _LOT_ of dependencies. By my estimates, you'll need around 7 gigabytes of disk space for cache (yes,
+This project has a _LOT_ of dependencies. By default, you'll need around 7 gigabytes of disk space for cache (yes,
 really!!)
+
+> [!important]
+> ### How to Not use 7 GB for cache (filtered builds)
+> We have a mechanism to avoid configuring the projects you aren't working with.
+> This can save you a LOT of time and disk space!
+>
+> 1. Create a file named `build.properties` in the project root, preferably **before** opening
+>    the project in IDEA.
+> 2. Add the following contents, adjusting the parameters as necessary:
+> ```properties
+> # Filtered build options
+> 
+> # "Fabric", "Forge", "NeoForge" are supported platforms. Separate with commas.
+> platforms=Fabric,Forge,NeoForge
+> 
+> # Separate Minecraft versions with commas.
+> #minecraft=1.16.5,1.18.2,1.19.2,1.19.3,1.19.4,1.20.1,1.20.2,1.20.4,1.20.6,1.21.1,1.21.3,1.21.4
+> minecraft=1.20.1,1.21.1,1.21.4
+> ```
+> 3. Run `./gradlew`. Watch carefully for the start of the output and get ready to cancel it with `Ctrl` `C` if something's wrong.
 
 The main culprit for this is the fact that you're downloading at least 30 copies of Minecraft in various forms.
 
