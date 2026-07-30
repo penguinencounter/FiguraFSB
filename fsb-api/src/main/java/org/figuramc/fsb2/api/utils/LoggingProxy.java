@@ -1,14 +1,10 @@
-package org.figuramc.fsb2.server.internals.logging;
+package org.figuramc.fsb2.api.utils;
 
-import org.figuramc.fsb2.server.internals.BindingException;
-import org.figuramc.fsb2.api.utils.FSBLogger;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.LambdaConversionException;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-
-import static org.figuramc.fsb2.server.internals.PolymorphicBindings.produceLambda;
 
 /**
  * <p>
@@ -80,7 +76,7 @@ public class LoggingProxy implements FSBLogger {
 
     private Form1 generateForm1(Class<?> wrapperClass,
                                 String name) throws NoSuchMethodException, IllegalAccessException, LambdaConversionException {
-        return produceLambda(
+        return PolymorphicBindings.produceLambda(
                 LOOKUP,
                 Form1.class,
                 "log",
@@ -92,7 +88,7 @@ public class LoggingProxy implements FSBLogger {
 
     private Form2 generateForm2(Class<?> wrapperClass,
                                 String name) throws NoSuchMethodException, IllegalAccessException, LambdaConversionException {
-        return produceLambda(
+        return PolymorphicBindings.produceLambda(
                 LOOKUP,
                 Form2.class,
                 "log",
@@ -104,7 +100,7 @@ public class LoggingProxy implements FSBLogger {
 
     private Form3 generateForm3(Class<?> wrapperClass,
                                 String name) throws NoSuchMethodException, IllegalAccessException, LambdaConversionException {
-        return produceLambda(
+        return PolymorphicBindings.produceLambda(
                 LOOKUP,
                 Form3.class,
                 "log",

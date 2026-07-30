@@ -2,7 +2,7 @@ package org.figuramc.fsb2.server;
 
 import org.figuramc.fsb2.server.internals.InitializerService;
 import org.figuramc.fsb2.server.internals.logging.LogService;
-import org.figuramc.fsb2.server.internals.logging.LoggingProxy;
+import org.figuramc.fsb2.api.utils.LoggingProxy;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;

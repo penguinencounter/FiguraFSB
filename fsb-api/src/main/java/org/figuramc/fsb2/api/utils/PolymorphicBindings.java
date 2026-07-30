@@ -1,4 +1,4 @@
-package org.figuramc.fsb2.server.internals;
+package org.figuramc.fsb2.api.utils;
 
 import java.lang.invoke.*;
 

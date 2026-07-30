@@ -1,5 +1,6 @@
 package org.figuramc.fsb2.server.internals;
 
+import org.figuramc.fsb2.api.utils.BindingException;
 import org.figuramc.fsb2.services.FSBNetworkingService;
 
 import java.util.ServiceLoader;
