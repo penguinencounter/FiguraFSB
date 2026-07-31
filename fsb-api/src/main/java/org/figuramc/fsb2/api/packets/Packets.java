@@ -31,8 +31,26 @@ public final class Packets {
          * (it's shorter)
          */
         @Contract("_, _ -> new")
-        public static <T extends Packet<?>> @NotNull PacketRecord<T> rec(Identifier id, Packet.Deserializer<T> deserializer) {
+        public static <T extends Packet<?>> @NotNull PacketRecord<T> rec(Identifier id,
+                                                                         Packet.Deserializer<T> deserializer) {
             return new PacketRecord<>(id, deserializer);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            PacketRecord<?> that = (PacketRecord<?>) o;
+            return id.equals(that.id);
+        }
+
+        @Override
+        public int hashCode() {
+            return id.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return String.format("PacketRecord{id=%s}", id);
         }
     }
 
@@ -50,14 +68,27 @@ public final class Packets {
     public static Packet<?> decode(@NotNull IFriendlyByteBuf buf, @NotNull Object context) {
         Identifier id = Identifier.parse(new String(buf.readByteArray(512), StandardCharsets.UTF_8));
         PacketRecord<?> record = getRecord(id);
-        if (record == null) return NoOpPacket.INSTANCE;
+        if (record == null) {
+            ProtocolSession maybeSession = ProtocolSession.lookup(context);
+            if (maybeSession != null) {
+                ProtocolSession.internal.unknownPacket.accept(maybeSession, id);
+            }
+            return NoOpPacket.INSTANCE;
+        }
         try {
             return record.deserializer.read(buf, context);
         } catch (FSBException e) {
             // Try to acquire a logger and complain.
             ProtocolSession maybeSession = ProtocolSession.lookup(context);
-            if (maybeSession == null) return NoOpPacket.INSTANCE;
-            maybeSession.logger.error(String.format("Decode rejected for FSB packet '%s' (ctx %s), dropping. reason:", id, context), e);
+            if (maybeSession != null) {
+                maybeSession.logger.error(
+                        String.format(
+                                "Decode rejected for FSB packet '%s' (ctx %s), dropping. reason:",
+                                id,
+                                context
+                        ), e
+                );
+            }
             return NoOpPacket.INSTANCE;
         }
     }

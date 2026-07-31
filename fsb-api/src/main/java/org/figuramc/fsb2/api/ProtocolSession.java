@@ -9,6 +9,7 @@ import org.figuramc.fsb2.api.packets.Packets;
 import org.figuramc.fsb2.api.transfer.TransferInbox;
 import org.figuramc.fsb2.api.transfer.TransferOutbox;
 import org.figuramc.fsb2.api.utils.FSBLogger;
+import org.figuramc.fsb2.api.utils.Identifier;
 import org.figuramc.fsb2.api.utils.Locking;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +19,8 @@ import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,7 +41,8 @@ public class ProtocolSession {
      * This means that <b>two sessions are happening at the same time</b>! It is <i>not safe</i> to assume that
      * there is only one session.
      */
-    private static final ConcurrentMap<Object, ProtocolSession> relations = new MapMaker().weakKeys().concurrencyLevel(8).makeMap();
+    private static final ConcurrentMap<Object, ProtocolSession> relations = new MapMaker().weakKeys()
+            .concurrencyLevel(8).makeMap();
 
     public final @NotNull FSBLogger logger;
     public final boolean isClient;
@@ -65,7 +69,8 @@ public class ProtocolSession {
 
     // Fields related to remotes and maintaining them
     private final AtomicInteger nextRemoteId = new AtomicInteger(0);
-    private final ConcurrentMap<Object, PlayerSession> remotes = new MapMaker().weakKeys().concurrencyLevel(8).makeMap();
+    private final ConcurrentMap<Object, PlayerSession> remotes = new MapMaker().weakKeys().concurrencyLevel(8)
+            .makeMap();
     /**
      * Map between phantom references used in the {@link #remoteDisposal} and their corresponding session objects.
      */
@@ -123,11 +128,17 @@ public class ProtocolSession {
     public void relate(Object context, PlayerSession session) throws FSBArgumentException {
         ProtocolSession resultOfInsert = relations.putIfAbsent(context, this);
         if (resultOfInsert != null && resultOfInsert != this)
-            throw new FSBArgumentException(String.format("This context object is already related to a different context: %s", resultOfInsert));
+            throw new FSBArgumentException(String.format(
+                    "This context object is already related to a different context: %s",
+                    resultOfInsert
+            ));
         try (Locking.Resource ignored = Locking.use(remoteLock.writeLock())) {
             PlayerSession resultOfInsert2 = remotes.putIfAbsent(context, session);
             if (resultOfInsert2 != null && !resultOfInsert2.equals(session))
-                throw new FSBArgumentException(String.format("This context object is already related to a different player session: %s", resultOfInsert2));
+                throw new FSBArgumentException(String.format(
+                        "This context object is already related to a different player session: %s",
+                        resultOfInsert2
+                ));
             if (resultOfInsert2 != null) {
                 // Create a new reference for this context object.
                 PhantomReference<Object> theRef = new PhantomReference<>(context, remoteDisposal);
@@ -135,6 +146,13 @@ public class ProtocolSession {
                 remoteTrackingInv.put(session, theRef);
             }
         }
+    }
+
+    /**
+     * Delete the referent from the relations table so it can be used in a new session.
+     */
+    public void unrelate(Object referent) {
+        relations.remove(referent);
     }
 
     private final AtomicBoolean isDisposingAlready = new AtomicBoolean(false);
@@ -179,10 +197,17 @@ public class ProtocolSession {
         if (isClient && remoteID != 0)
             throw new FSBArgumentException("Client side should only ever have zero as its remote id");
 
-        ConcurrentHashMap<Integer, Integer> clientMap = inboundTransferMap.computeIfAbsent(remoteID, ConcurrentHashMap::new);
+        ConcurrentHashMap<Integer, Integer> clientMap = inboundTransferMap.computeIfAbsent(
+                remoteID,
+                ConcurrentHashMap::new
+        );
         int nextId = nextInboundTransferId.incrementAndGet();
         if (clientMap.putIfAbsent(remoteTransferId, nextId) != null)
-            throw new FSBArgumentException(String.format("Already allocated inbound transfer {remote=%d, remoteTx=%d}", remoteID, remoteTransferId));
+            throw new FSBArgumentException(String.format(
+                    "Already allocated inbound transfer {remote=%d, remoteTx=%d}",
+                    remoteID,
+                    remoteTransferId
+            ));
         return nextId;
     }
 
@@ -257,7 +282,8 @@ public class ProtocolSession {
         this.inboundTransfers.put(obj.localTransactionID, obj);
     }
 
-    public <T extends Packet<?>> void onReceive(Packets.PacketRecord<T> record, PacketHandler<T> handler) throws FSBStateException {
+    public <T extends Packet<?>> void onReceive(Packets.PacketRecord<T> record,
+                                                PacketHandler<T> handler) throws FSBStateException {
         if (this.handlers.putIfAbsent(record, handler) != null)
             throw new FSBStateException("Handler is already registered");
     }
@@ -270,11 +296,22 @@ public class ProtocolSession {
         handler.handle(packet, context);
     }
 
+    private final Set<Identifier> seenIDs = new HashSet<>();
+
+    private void unknownPacket(Identifier id) {
+        synchronized (seenIDs) {
+            if (seenIDs.contains(id)) return;
+            logger.warn("discarding unknown packet with id {}. will not report additional packets with this id", id);
+            seenIDs.add(id);
+        }
+    }
+
     /**
      * All the implementation details that are not part of the public API but need access beyond the current package
      */
     public static class internal {
         public static final BiConsumer<ProtocolSession, TransferOutbox> registerOut = ProtocolSession::register;
         public static final BiConsumer<ProtocolSession, TransferInbox> registerIn = ProtocolSession::register;
+        public static final BiConsumer<ProtocolSession, Identifier> unknownPacket = ProtocolSession::unknownPacket;
     }
 }

@@ -13,6 +13,8 @@ public class C2SHelloPacket implements Packet<C2SHelloPacket> {
             C2SHelloPacket::new
     );
 
+    public C2SHelloPacket() {}
+
     public C2SHelloPacket(IFriendlyByteBuf buf, Object context) {
     }
 
