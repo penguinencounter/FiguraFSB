@@ -34,13 +34,3 @@ project.version = buildString {
     if (yesno(snapshot)) append("-SNAPSHOT")
 }
 project.group = rootProject.group
-
-publishing {
-    publications {
-        register("maven", MavenPublication::class) {
-            artifactId = "${artifactRoot}-fabric-any"
-
-            from(components["java"])
-        }
-    }
-}

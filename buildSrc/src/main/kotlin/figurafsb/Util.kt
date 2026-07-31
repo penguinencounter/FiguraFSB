@@ -2,7 +2,7 @@ package figurafsb
 
 fun projToConfName(name: String, prefixes: List<String> = emptyList()) = name.split(":", "-").let {
     val combined = prefixes + it
-    combined.first() + combined.asSequence().drop(1).map { it.replaceFirstChar(Char::uppercase) }.joinToString("")
+    combined.first() + combined.asSequence().drop(1).joinToString("") { it.replaceFirstChar(Char::uppercase) }
 }
 
 private val theMinecraftPrefix = Regex("^:?minecraft:")

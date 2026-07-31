@@ -10,17 +10,15 @@ package figurafsb.targets
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import figurafsb.configurator.FSBPlatform
 import figurafsb.configurator.OptionsExt
+import figurafsb.proc.Templater
+import figurafsb.proc.shadowDefaults
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
 import figurafsb.yesno
 import libs
 import net.fabricmc.loom.task.RemapJarTask
-import org.gradle.internal.fingerprint.DirectorySensitivity
-import org.gradle.internal.fingerprint.LineEndingSensitivity
-import org.gradle.internal.properties.InputBehavior
-import org.gradle.internal.properties.InputFilePropertyType
-import org.gradle.internal.properties.PropertyValue
-import org.gradle.internal.properties.PropertyVisitor
+import org.gradle.kotlin.dsl.invoke
+import kotlin.collections.plus
 
 plugins {
     id("figurafsb.minecraft")
@@ -57,6 +55,7 @@ the<OptionsExt>().then {
 
     val upstreamConfigurations: MutableMap<String, String> by extra
     val plainConfigurations: MutableMap<String, String> by extra
+    val template: Templater by extra
 
     configurations {
         afterEvaluate { // wait for loom
@@ -93,11 +92,19 @@ the<OptionsExt>().then {
     project.group = rootProject.group
     val artifactRoot: String by project
 
-    val remapComponentJar by tasks.registering(RemapJarTask::class) {
-        description = "remap the classes in this project only (non-shadow)"
+    val componentShadowJar by tasks.registering(ShadowJar::class) {
+        shadowDefaults(template)
+        description = "this + fabric-any"
+        configurations.add(project.configurations.named("upstreamFabricAny"))
+        configurations.add(project.configurations.named("includedResources"))
+        archiveClassifier = "component-shadow"
+    }
 
-        dependsOn(tasks.jar)
-        inputFile = tasks.jar.get().archiveFile
+    val remapComponentJar by tasks.registering(RemapJarTask::class) {
+        description = "remap the classes in this project only? + fabric-any"
+
+        dependsOn(componentShadowJar)
+        inputFile = componentShadowJar.get().archiveFile
         archiveClassifier = "component"
     }
 

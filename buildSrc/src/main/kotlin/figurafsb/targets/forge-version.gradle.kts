@@ -10,6 +10,8 @@ package figurafsb.targets
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import figurafsb.configurator.FSBPlatform
 import figurafsb.configurator.OptionsExt
+import figurafsb.proc.Templater
+import figurafsb.proc.shadowDefaults
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
 import figurafsb.yesno
@@ -54,6 +56,7 @@ the<OptionsExt>().then {
 
     val version = versionFor(mc.minecraftVersion)
 
+    val template: Templater by extra
     val upstreamConfigurations: MutableMap<String, String> by extra
     val plainConfigurations: MutableMap<String, String> by extra
 
@@ -89,11 +92,19 @@ the<OptionsExt>().then {
     project.group = rootProject.group
     val artifactRoot: String by project
 
+    val componentShadowJar by tasks.registering(ShadowJar::class) {
+        shadowDefaults(template)
+        description = "this + forge-any"
+        configurations.add(project.configurations.named("upstreamForgeAny"))
+        configurations.add(project.configurations.named("includedResources"))
+        archiveClassifier = "component-shadow"
+    }
+
     val remapComponentJar by tasks.registering(RemapJarTask::class) {
         description = "remap the classes in this project only (non-shadow)"
 
-        dependsOn(tasks.jar)
-        inputFile = tasks.jar.get().archiveFile
+        dependsOn(componentShadowJar)
+        inputFile = componentShadowJar.get().archiveFile
         archiveClassifier = "component"
     }
 

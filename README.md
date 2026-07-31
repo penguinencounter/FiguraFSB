@@ -127,13 +127,10 @@ Note that some code may only make it into `fat`-type jars, but that code is not 
 | `:fsb-common-intermediary` |    `fat`    | `{version}+{mc}`          | Platform-independent code for targets supporting mixins incl. deps. |
 |       `:fsb-common-mojmap` |             | `{version}+{mc}`          | `:fsb-common-intermediary` remapped to Mojang mappings.             |
 |       `:fsb-common-mojmap` |    `fat`    | `{version}+{mc}`          | `:fsb-common-intermediary:fat` remapped to Mojang mappings.         |
-|          `:fsb-fabric-any` |             | `{version}+fabric`        | Fabric common code and resources                                    |
 |              `:fsb-fabric` |             | `{version}+{mc}-fabric`   | **Fabric fat jar for player and runtime use**                       |
 |              `:fsb-fabric` | `component` | `{version}+{mc}-fabric`   | Fabric slim jar for maven consumers                                 |
-|           `:fsb-forge-any` |             | `{version}+forge`         | Forge common code and resources (currently none)                    |
 |               `:fsb-forge` |             | `{version}+{mc}-forge`    | **Forge fat jar for player and runtime use**                        |
 |               `:fsb-forge` | `component` | `{version}+{mc}-forge`    | Forge slim jar for maven consumers                                  |
-|        `:fsb-neoforge-any` |             | `{version}+neoforge`      | NeoForge common code and resources (currently none)                 |
 |            `:fsb-neoforge` |             | `{version}+{mc}-neoforge` | **NeoForge fat jar for player and runtime use**                     |
 |            `:fsb-neoforge` | `component` | `{version}+{mc}-neoforge` | NeoForge slim jar for maven consumers                               |
 

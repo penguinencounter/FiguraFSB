@@ -1,10 +1,8 @@
 package figurafsb
 
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import figurafsb.configurator.OptionsExt
-import figurafsb.proc.JSONMerger
-import figurafsb.proc.TemplateTransform
 import figurafsb.proc.Templater
+import figurafsb.proc.shadowDefaults
 import figurafsb.versioning.addToTemplate
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
@@ -42,7 +40,7 @@ the<OptionsExt>().then {
     )
     version.addToTemplate(repl, "mc")
 
-    val template = Templater(repl)
+    val template: Templater by extra { Templater(repl) }
 
     configurations {
         for (upstream in mcData.upstreams) {
@@ -112,23 +110,8 @@ the<OptionsExt>().then {
 
     tasks {
         shadowJar {
+            shadowDefaults(template)
             duplicatesStrategy = DuplicatesStrategy.WARN
-            exclude("architectury.common.json")
-
-            mergeServiceFiles()
-            filesMatching("META-INF/services/**") {
-                duplicatesStrategy = DuplicatesStrategy.INCLUDE
-            }
-
-            transform(JSONMerger(templater = template))
-            filesMatching("**/*.json") {
-                duplicatesStrategy = DuplicatesStrategy.INCLUDE
-            }
-
-            transform(TemplateTransform(templater = template, patternSet = PatternSet().include("**/*.toml")))
-            filesMatching("**/*.toml") {
-                duplicatesStrategy = DuplicatesStrategy.INCLUDE
-            }
 
             configurations.addAll(provider {
                 (upstreamShadows + plainConfigurations).values.map { project.configurations[it] }

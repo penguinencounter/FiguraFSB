@@ -2,6 +2,8 @@ package figurafsb.targets
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import figurafsb.configurator.OptionsExt
+import figurafsb.proc.Templater
+import figurafsb.proc.shadowDefaults
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
 import figurafsb.yesno
@@ -35,6 +37,7 @@ the<OptionsExt>().then {
     }
 
     val version = versionFor(mc.minecraftVersion)
+    val template: Templater by extra
 
     dependencies {
         version.dependencyContext { d ->
@@ -56,7 +59,6 @@ the<OptionsExt>().then {
     val artifactRoot: String by project
 
     val shadowJar = tasks.named<ShadowJar>("shadowJar")
-    val componentJar = tasks.named<Jar>("jar")
 
     val remapJar = tasks.named<RemapJarTask>("remapJar") {
         dependsOn(shadowJar)
@@ -64,11 +66,20 @@ the<OptionsExt>().then {
         archiveClassifier = "fat"
     }
 
+    val componentShadowJar by tasks.registering(ShadowJar::class) {
+        shadowDefaults(template)
+        description = "this + modernish, if applicable"
+        if (version.minecraft != "1.16.5")
+            configurations.add(project.configurations.named("upstreamCommonModernish"))
+        archiveClassifier = "component-shadow"
+    }
+
+    val componentJarTarget = if (version.minecraft != "1.16.5") componentShadowJar else tasks.named<Jar>("jar")
+
     val remapComponentJar by tasks.registering(RemapJarTask::class) {
         description = "remap the classes in this project only (non-shadow)"
-
-        dependsOn(componentJar)
-        inputFile = componentJar.get().archiveFile
+        dependsOn(componentJarTarget)
+        inputFile = componentJarTarget.get().archiveFile
         archiveClassifier = null
     }
 
@@ -97,8 +108,8 @@ the<OptionsExt>().then {
             register("maven", MavenPublication::class) {
                 artifactId = "${artifactRoot}-common-intermediary"
 
-                artifact(componentJar) {
-                    builtBy(componentJar)
+                artifact(remapComponentJar) {
+                    builtBy(remapComponentJar)
                     classifier = ""
                 }
 
