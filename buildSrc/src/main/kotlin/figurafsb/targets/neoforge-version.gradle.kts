@@ -90,6 +90,7 @@ the<OptionsExt>().then {
     val componentShadowJar by tasks.registering(ShadowJar::class) {
         shadowDefaults(template)
         description = "this + neoforge-any"
+        from(sourceSets.main.map {i -> i.output})
         configurations.add(project.configurations.named("upstreamNeoforgeAny"))
         configurations.add(project.configurations.named("includedResources"))
         archiveClassifier = "component-shadow"

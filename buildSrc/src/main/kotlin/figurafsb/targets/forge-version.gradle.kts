@@ -95,6 +95,7 @@ the<OptionsExt>().then {
     val componentShadowJar by tasks.registering(ShadowJar::class) {
         shadowDefaults(template)
         description = "this + forge-any"
+        from(sourceSets.main.map {i -> i.output})
         configurations.add(project.configurations.named("upstreamForgeAny"))
         configurations.add(project.configurations.named("includedResources"))
         archiveClassifier = "component-shadow"

@@ -69,6 +69,7 @@ the<OptionsExt>().then {
     val componentShadowJar by tasks.registering(ShadowJar::class) {
         shadowDefaults(template)
         description = "this + modernish, if applicable"
+        from(sourceSets.main.map {i -> i.output})
         if (version.minecraft != "1.16.5")
             configurations.add(project.configurations.named("upstreamCommonModernish"))
         archiveClassifier = "component-shadow"
