@@ -3,6 +3,7 @@ package figurafsb.targets
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import figurafsb.configurator.OptionsExt
 import figurafsb.proc.Templater
+import figurafsb.proc.enableRemap
 import figurafsb.proc.shadowDefaults
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
@@ -62,6 +63,8 @@ the<OptionsExt>().then {
 
     val remapJar = tasks.named<RemapJarTask>("remapJar") {
         dependsOn(shadowJar)
+        enableRemap("intermediary")
+
         inputFile = shadowJar.get().archiveFile
         archiveClassifier = "fat"
     }
@@ -80,6 +83,8 @@ the<OptionsExt>().then {
     val remapComponentJar by tasks.registering(RemapJarTask::class) {
         description = "remap the classes in this project only (non-shadow)"
         dependsOn(componentJarTarget)
+        enableRemap("intermediary")
+
         inputFile = componentJarTarget.get().archiveFile
         archiveClassifier = null
     }
@@ -88,6 +93,8 @@ the<OptionsExt>().then {
         description = "remap the classes in the fatjar to mojmap"
 
         dependsOn(remapJar)
+        enableRemap("named")
+
         inputFile = remapJar.get().archiveFile
         sourceNamespace = "intermediary"
         targetNamespace = "named"
@@ -98,6 +105,8 @@ the<OptionsExt>().then {
         description = "remap the classes in this project only to mojmap"
 
         dependsOn(remapComponentJar)
+        enableRemap("named")
+
         inputFile = remapComponentJar.get().archiveFile
         sourceNamespace = "intermediary"
         targetNamespace = "named"

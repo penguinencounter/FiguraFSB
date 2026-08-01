@@ -94,6 +94,8 @@ the<OptionsExt>().then {
 
     val componentShadowJar by tasks.registering(ShadowJar::class) {
         shadowDefaults(template)
+        exclude("architectury.common.json")
+
         description = "this + fabric-any"
         from(sourceSets.main.map {i -> i.output})
         configurations.add(project.configurations.named("upstreamFabricAny"))
