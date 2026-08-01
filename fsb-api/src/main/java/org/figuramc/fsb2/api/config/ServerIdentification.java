@@ -129,4 +129,25 @@ public class ServerIdentification implements Encodable {
         sid.isPopulated = true;
         return sid;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "ServerIdentification{isPopulated %s; motd '%s'; avSize %d x%d; pingSize %d %dHz; support: up %s, down %s, ping %s, custom %s; perm: mgr %s, mod %s, imm %s; mix %s}",
+                isPopulated,
+                motd,
+                maxUploadSize,
+                maxNumberOfAvatars,
+                maxPingSize,
+                maxPingRate,
+                supportsUploading,
+                supportsDownloading,
+                supportsPings,
+                supportsCustomPackets,
+                canManageServer,
+                canModerate,
+                canImmortalize,
+                allowMixingAvatars
+        );
+    }
 }

@@ -12,14 +12,19 @@ import org.figuramc.fsb2.services.FSBNetworkingService;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public interface VersionedNetworking extends FSBNetworkingService<ServerGamePacketListenerImpl> {
-    @Override
-    default void send(@NotNull ServerGamePacketListenerImpl connection, @NotNull Packet<?> packet) {
+    default void sendVia(@NotNull Consumer<? super ClientboundCustomPayloadPacket> consumer, @NotNull Packet<?> packet) {
         ServerPacketImpl.Buf bufW = new ServerPacketImpl.Buf(new FriendlyByteBuf(Unpooled.buffer()));
         bufW.writeByteArray(packet.identify().netID);
         packet.write(bufW);
-        connection.send(new ClientboundCustomPayloadPacket(ServerPacketImpl.PACKET_ID, bufW.actual()));
+        consumer.accept(new ClientboundCustomPayloadPacket(ServerPacketImpl.PACKET_ID, bufW.actual()));
+    }
+
+    @Override
+    default void send(@NotNull ServerGamePacketListenerImpl connection, @NotNull Packet<?> packet) {
+        sendVia(connection::send, packet);
     }
 
     @Override
