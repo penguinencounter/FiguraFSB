@@ -21,9 +21,12 @@ public final class Packets {
         public final Identifier id;
         public final Packet.Deserializer<T> deserializer;
 
+        public final byte[] netID;
+
         public PacketRecord(@NotNull Identifier id, Packet.Deserializer<T> deserializer) {
             this.id = id;
             this.deserializer = deserializer;
+            this.netID = id.toString().getBytes(StandardCharsets.UTF_8);
         }
 
         /**

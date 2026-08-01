@@ -15,12 +15,14 @@ import org.figuramc.fsb2.server.versioned.VersionedNetworking;
 import org.figuramc.fsb2.services.FSBInitializerService;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class FabricNetworkingImpl implements VersionedNetworking, FSBInitializerService {
     @Override
     public void send(@NotNull ServerGamePacketListenerImpl connection, @NotNull Packet<?> packet) {
         ServerPacketImpl.Buf bufW = new ServerPacketImpl.Buf(Unpooled.buffer());
+        bufW.writeByteArray(packet.identify().netID);
         packet.write(bufW);
         FSBWrapper wrapperPayload = new FSBWrapper(bufW);
         connection.send(ServerPlayNetworking.createS2CPacket(wrapperPayload));

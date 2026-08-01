@@ -17,6 +17,7 @@ public interface VersionedNetworking extends FSBNetworkingService<ServerGamePack
     @Override
     default void send(@NotNull ServerGamePacketListenerImpl connection, @NotNull Packet<?> packet) {
         ServerPacketImpl.Buf bufW = new ServerPacketImpl.Buf(new FriendlyByteBuf(Unpooled.buffer()));
+        bufW.writeByteArray(packet.identify().netID);
         packet.write(bufW);
         connection.send(new ClientboundCustomPayloadPacket(ServerPacketImpl.PACKET_ID, bufW.actual()));
     }
