@@ -3,6 +3,7 @@ package org.figuramc.fsb2.api.utils;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -98,8 +99,8 @@ public abstract class EventSystem {
             return result.get();
         }
 
-        public CompletableFuture<R> dispatch(T event) {
-            CompletableFuture<R> fut = new CompletableFuture<>();
+        public CompletableFuture<@Nullable R> dispatch(T event) {
+            CompletableFuture<@Nullable R> fut = new CompletableFuture<>();
             enqueue(() -> fut.complete(dispatchInner(event)));
             return fut;
         }
