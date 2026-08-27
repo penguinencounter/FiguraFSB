@@ -10,7 +10,7 @@ import org.figuramc.fsb2.api.config.ServerIdentification;
 import org.figuramc.fsb2.api.except.FSBArgumentException;
 import org.figuramc.fsb2.api.packets.s2c.S2CHelloPacket;
 import org.figuramc.fsb2.server.FSB;
-import org.figuramc.fsb2.server.ServerExt;
+import org.figuramc.fsb2.server.ServerSession;
 import org.figuramc.fsb2.server.internals.NetworkingService;
 import org.figuramc.fsb2.server.versioned.VersionedNetworking;
 import org.spongepowered.asm.mixin.Final;
@@ -29,10 +29,10 @@ public abstract class ServerGamePacketListenerImplMixin {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void afterPlayBegins(MinecraftServer server, Connection connection, ServerPlayer player, CallbackInfo ci) {
         ServerGamePacketListenerImpl that = (ServerGamePacketListenerImpl) (Object) this;
-        ServerExt srv = FSB.serverGet(server);
+        ServerSession srv = FSB.serverGet(server);
         PlayerInfo info = new PlayerInfo(player.getUUID(), player.getName().getString());
         try {
-            srv.session.newRemote(that, info);
+            srv.newRemote(that, info);
             VersionedNetworking netSvc = (VersionedNetworking) NetworkingService.SERVICE;
             srv.scheduler.countDown(
                     () -> netSvc.send(that, new S2CHelloPacket(ServerIdentification.defaultValues())),
@@ -46,7 +46,7 @@ public abstract class ServerGamePacketListenerImplMixin {
     @Inject(method = "onDisconnect", at = @At("HEAD"))
     private void beforeDisconnect(Component reason, CallbackInfo ci) {
         ServerGamePacketListenerImpl that = (ServerGamePacketListenerImpl) (Object) this;
-        ServerExt srv = FSB.serverGet(server);
-        srv.session.delRemote(that);
+        ServerSession srv = FSB.serverGet(server);
+        srv.delRemote(that);
     }
 }

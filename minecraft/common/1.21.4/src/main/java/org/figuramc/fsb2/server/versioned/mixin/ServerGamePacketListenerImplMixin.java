@@ -8,7 +8,7 @@ import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.figuramc.fsb2.server.FSB;
-import org.figuramc.fsb2.server.ServerExt;
+import org.figuramc.fsb2.server.ServerSession;
 import org.figuramc.fsb2.api.PlayerInfo;
 import org.figuramc.fsb2.api.except.FSBArgumentException;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,10 +27,10 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
     @Inject(method = "<init>", at = @At("RETURN"))
     private void afterPlayBegins(MinecraftServer server, Connection connection, ServerPlayer player, CommonListenerCookie cookie, CallbackInfo ci) {
         ServerGamePacketListenerImpl that = (ServerGamePacketListenerImpl) (Object) this;
-        ServerExt srv = FSB.serverGet(server);
+        ServerSession srv = FSB.serverGet(server);
         PlayerInfo info = new PlayerInfo(player.getUUID(), player.getName().getString());
         try {
-            srv.session.newRemote(that, info);
+            srv.newRemote(that, info);
         } catch (FSBArgumentException ignored) {
 
         }
@@ -39,7 +39,7 @@ public abstract class ServerGamePacketListenerImplMixin extends ServerCommonPack
     @Inject(method = "onDisconnect", at = @At("HEAD"))
     private void beforeDisconnect(DisconnectionDetails details, CallbackInfo ci) {
         ServerGamePacketListenerImpl that = (ServerGamePacketListenerImpl) (Object) this;
-        ServerExt srv = FSB.serverGet(server);
-        srv.session.delRemote(that);
+        ServerSession srv = FSB.serverGet(server);
+        srv.delRemote(that);
     }
 }

@@ -293,7 +293,11 @@ public class ProtocolSession {
         //noinspection unchecked :(
         PacketHandler<T> handler = (PacketHandler<T>) this.handlers.get(record);
         if (handler == null) return;
-        handler.handle(packet, context);
+        try {
+            handler.handle(packet, context);
+        } catch (Exception e) {
+            logger.error(String.format("Exception in packet handler for %s", packet), e);
+        }
     }
 
     private final Set<Identifier> seenIDs = new HashSet<>();

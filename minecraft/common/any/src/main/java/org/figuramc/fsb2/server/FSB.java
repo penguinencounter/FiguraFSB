@@ -11,7 +11,7 @@ import java.util.WeakHashMap;
 public class FSB {
     public static final LoggingProxy LOGGER = LogService.getLogger();
 
-    public static final WeakHashMap<Object, ServerExt> servers = new WeakHashMap<>();
+    public static final WeakHashMap<Object, ServerSession> servers = new WeakHashMap<>();
 
     public static FSBEnvType environment;
 
@@ -21,9 +21,9 @@ public class FSB {
         InitializerService.runInitializers();
     }
 
-    public static @NotNull ServerExt serverInit(Object /* MinecraftServer */ minecraftServer) {
+    public static @NotNull ServerSession serverInit(Object /* MinecraftServer */ minecraftServer) {
         // Create the new protocol and such
-        ServerExt att = new ServerExt(minecraftServer);
+        ServerSession att = new ServerSession(minecraftServer);
         servers.put(minecraftServer, att);
         return att;
     }
@@ -32,7 +32,7 @@ public class FSB {
         servers.remove(minecraftServer);
     }
 
-    public static @NotNull ServerExt serverGet(Object minecraftServer) {
+    public static @NotNull ServerSession serverGet(Object minecraftServer) {
         return Objects.requireNonNull(servers.get(minecraftServer));
     }
 }
