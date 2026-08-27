@@ -11,8 +11,8 @@ import org.figuramc.fsb2.api.except.FSBArgumentException;
 import org.figuramc.fsb2.api.packets.s2c.S2CHelloPacket;
 import org.figuramc.fsb2.server.FSB;
 import org.figuramc.fsb2.server.ServerExt;
-import org.figuramc.fsb2.server.versioned.VersionedNetworking;
 import org.figuramc.fsb2.server.internals.NetworkingService;
+import org.figuramc.fsb2.server.versioned.VersionedNetworking;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -33,8 +33,11 @@ public abstract class ServerGamePacketListenerImplMixin {
         PlayerInfo info = new PlayerInfo(player.getUUID(), player.getName().getString());
         try {
             srv.session.newRemote(that, info);
-
-            ((VersionedNetworking) NetworkingService.SERVICE).send(that, new S2CHelloPacket(ServerIdentification.defaultValues()));
+            VersionedNetworking netSvc = (VersionedNetworking) NetworkingService.SERVICE;
+            srv.scheduler.countDown(
+                    () -> netSvc.send(that, new S2CHelloPacket(ServerIdentification.defaultValues())),
+                    5
+            );
         } catch (FSBArgumentException ignored) {
 
         }

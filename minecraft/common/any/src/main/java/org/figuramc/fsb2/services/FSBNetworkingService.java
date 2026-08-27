@@ -11,6 +11,13 @@ public interface FSBNetworkingService<C> {
     void sendToPlayer(Object minecraftServer, @NotNull UUID player, @NotNull Packet<?> packet);
 
     /**
+     * Send a packet to all players on the server, including those who haven't indicated
+     * their compatibility with FSB.
+     * @param minecraftServer Minecraft Server object
+     */
+    void broadcast(Object minecraftServer, @NotNull Packet<?> packet);
+
+    /**
      * {@link #send} minus the {@link C} type variable
      * <p>
      * some situations in which you can use this and it will definitely work:

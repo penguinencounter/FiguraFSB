@@ -16,16 +16,9 @@ public class FSBVersionSpecific {
         BuiltInHandlers.setupTransferHandling(session);
     }
 
-    private static long nTicks = 0L;
-
     public static void tick(MinecraftServer minecraftServer) {
-        nTicks++;
-        if (nTicks % 100 == 0) {
-            VersionedNetworking networkSvc = (VersionedNetworking) NetworkingService.SERVICE;
-            networkSvc.sendVia(
-                    minecraftServer.getPlayerList()::broadcastAll,
-                    new S2CHelloPacket(ServerIdentification.defaultValues())
-            );
-        }
+        ServerExt container = FSB.servers.get(minecraftServer);
+        if (container != null) container.scheduler.tick();
+        else FSB.LOGGER.warn("ticking before server init'd for FSB");
     }
 }

@@ -41,6 +41,12 @@ public interface VersionedNetworking extends FSBNetworkingService<ServerGamePack
     }
 
     @Override
+    default void broadcast(Object minecraftServer, @NotNull Packet<?> packet) {
+        if (!(minecraftServer instanceof MinecraftServer srv)) throw new IllegalArgumentException("minecraftServer is not a MinecraftServer");
+        srv.execute(() -> sendVia(srv.getPlayerList()::broadcastAll, packet));
+    }
+
+    @Override
     default boolean trySend(Object maybeConnection, @NotNull Packet<?> packet) {
         if (maybeConnection instanceof ServerGamePacketListenerImpl) {
             send((ServerGamePacketListenerImpl) maybeConnection, packet);
