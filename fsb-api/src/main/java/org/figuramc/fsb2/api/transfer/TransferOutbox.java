@@ -7,6 +7,7 @@ import org.figuramc.fsb2.api.except.FSBStateException;
 import org.figuramc.fsb2.api.packets.transfer.TransferChunkPacket;
 import org.figuramc.fsb2.api.packets.transfer.TransferOpenPacket;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 import java.util.BitSet;
 import java.util.zip.CRC32;
@@ -70,12 +71,20 @@ public final class TransferOutbox {
         return algo.getValue();
     }
 
+    /**
+     * Create an Outbox.
+     * @param session session to create Outbox in (stateful!)
+     * @param data data with intent to send
+     * @param targetSizePerChunk chunk size per packet, max 0xffff, min 0
+     */
     public TransferOutbox(
             @NotNull ProtocolSession session,
             byte @NotNull [] data,
-            int targetSizePerChunk
-    ) throws FSBArgumentException {
-        if (targetSizePerChunk > 0xffff) throw new FSBArgumentException("Chunks cannot be more than 0xFFFF in length");
+            @Range(from = 0, to = 0xFFFF) int targetSizePerChunk
+    ) {
+        // (this is a runtime check for the annotated constraint)
+        //noinspection ConstantValue
+        if (targetSizePerChunk < 0 || targetSizePerChunk > 0xffff) throw new IllegalArgumentException("Chunks cannot be more than 0xFFFF in length, or negative");
         this.localTransactionID = session.allocateOutboundTransfer();
         this.overallCRC = crc32(data);
         this.chunks = splitChunks(data, targetSizePerChunk);
