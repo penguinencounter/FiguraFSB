@@ -4,7 +4,6 @@ import figurafsb.configurator.OptionsExt
 import figurafsb.proc.Templater
 import figurafsb.versioning.addToTemplate
 import figurafsb.versioning.versionFor
-import gradle.kotlin.dsl.accessors._428a6a25e01afd3767e10657b288cdc3.processResources
 import libs
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.attributes.LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE
