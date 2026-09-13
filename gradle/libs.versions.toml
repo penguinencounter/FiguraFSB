@@ -14,6 +14,10 @@ brigadier = "1.0.17"
 gson = "2.8.0"
 guava = "21.0"
 
+# Testing frameworks don't care about your Minecraft anyway
+junit = "6.1.3"
+classgraph = "4.8.195"
+
 # spans all the versions!
 mixinExtras = "0.5.4"
 
@@ -32,6 +36,10 @@ mixinExtras-forge = { module = "io.github.llamalad7:mixinextras-forge", version.
 mixinExtras-neoforge = { module = "io.github.llamalad7:mixinextras-neoforge", version.ref = "mixinExtras" }
 
 forPlugins-kotlinxJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "forPlugins-kotlinxJson" }
+
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classgraph" }
 
 [plugins]
 architectury-plugin = { id = "architectury-plugin", version.ref = "architectury-plugin" }

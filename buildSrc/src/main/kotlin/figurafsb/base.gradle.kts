@@ -72,7 +72,11 @@ the<OptionsExt>().then {
     }
 
     tasks.withType<JavaCompile>().configureEach {
-        options.release = it.javaVersion
+        // JUnit needs 17 and tests aren't public API, so pin java 17 at least for testing
+        if ("test" in name || "Test" in name)
+            options.release = it.javaVersion.coerceAtLeast(17)
+        else
+            options.release = it.javaVersion
     }
 
     tasks.withType<ProcessResources>().configureEach {

@@ -8,10 +8,24 @@ dependencies {
     compileOnlyApi(libs.brigadier)
     compileOnlyApi(libs.gson)
     compileOnlyApi(libs.guava)
+
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.launcher)
+    testImplementation(libs.classgraph)
 }
 
 fsbOptions.configure {
     java8()
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+
+    maxHeapSize = "1G"
+
+    testLogging {
+        events("passed")
+    }
 }
 
 val artifactRoot: String by project

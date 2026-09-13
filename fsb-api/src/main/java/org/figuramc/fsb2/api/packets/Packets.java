@@ -2,9 +2,11 @@ package org.figuramc.fsb2.api.packets;
 
 import org.figuramc.fsb2.api.ProtocolSession;
 import org.figuramc.fsb2.api.except.FSBException;
+import org.figuramc.fsb2.api.packets.c2s.C2SBeginUploadPacket;
 import org.figuramc.fsb2.api.packets.c2s.C2SHelloPacket;
 import org.figuramc.fsb2.api.packets.s2c.S2CHelloPacket;
 import org.figuramc.fsb2.api.packets.s2c.S2CReconfigurePacket;
+import org.figuramc.fsb2.api.packets.s2c.S2CUploadResponsePacket;
 import org.figuramc.fsb2.api.packets.transfer.*;
 import org.figuramc.fsb2.api.utils.Identifier;
 import org.jetbrains.annotations.CheckReturnValue;
@@ -63,6 +65,10 @@ public final class Packets {
         allPackets.put(instance.id, instance);
     }
 
+    public static HashMap<Identifier, PacketRecord<?>> getAllPackets() {
+        return new HashMap<>(allPackets);
+    }
+
     public static PacketRecord<?> getRecord(Identifier id) {
         return allPackets.get(id);
     }
@@ -118,5 +124,9 @@ public final class Packets {
 
         // .c2s
         register(C2SHelloPacket.REC);
+
+        // Uploading mechanism
+        register(C2SBeginUploadPacket.REC);
+        register(S2CUploadResponsePacket.REC);
     }
 }

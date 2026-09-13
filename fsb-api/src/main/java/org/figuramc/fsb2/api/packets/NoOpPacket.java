@@ -7,6 +7,7 @@ import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
 /**
  * decoding errors fall here. don't make this yourself.
  */
+@PacketRegistrationExempt
 public class NoOpPacket implements Packet<NoOpPacket> {
     public static final Packets.PacketRecord<NoOpPacket> REC = rec(
             Identifier.fsb("noop"),
