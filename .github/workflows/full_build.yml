@@ -61,7 +61,12 @@ jobs:
         with:
           distribution: temurin
           java-version: 25
-      - name: build
+      - name: compile & test
+        run: |
+          pushd main || exit 1
+          ./gradlew --console=colored test
+          popd
+      - name: build for CI artifacts
         run: |
           pushd main || exit 1
           ./gradlew --console=colored -PmavenPath=/home/runner/repo publishAllPublicationsToMountedRepository
