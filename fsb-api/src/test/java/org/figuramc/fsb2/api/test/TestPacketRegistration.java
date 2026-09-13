@@ -6,12 +6,14 @@ import org.figuramc.fsb2.api.packets.Packet;
 import org.figuramc.fsb2.api.packets.PacketIdentity;
 import org.figuramc.fsb2.api.packets.PacketRegistrationExempt;
 import org.figuramc.fsb2.api.packets.Packets;
+import org.figuramc.fsb2.api.utils.Identifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class TestPacketRegistration {
@@ -24,6 +26,14 @@ public class TestPacketRegistration {
             return Packets.PacketRecord.class.isAssignableFrom(sig.loadClass());
         } catch (IllegalArgumentException | ClassCastException e) {
             return false;
+        }
+    }
+
+    @Test
+    public void checkMappingConsistency() {
+        for (Map.Entry<Identifier, Packets.PacketRecord<?>> entry : Packets.getAllPackets()
+                .entrySet()) {
+            Assertions.assertEquals(entry.getKey(), entry.getValue().id);
         }
     }
 
