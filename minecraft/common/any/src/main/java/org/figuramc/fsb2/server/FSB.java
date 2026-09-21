@@ -1,8 +1,8 @@
 package org.figuramc.fsb2.server;
 
+import org.figuramc.fsb2.api.utils.LoggingProxy;
 import org.figuramc.fsb2.server.internals.InitializerService;
 import org.figuramc.fsb2.server.internals.logging.LogService;
-import org.figuramc.fsb2.api.utils.LoggingProxy;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -17,7 +17,11 @@ public class FSB {
 
     public static void init(FSBEnvType side) {
         FSB.environment = side;
-        LOGGER.info("Hello from FSB! This is the SERVER (any/any) component. It appears that this is a Minecraft {}. See you on the other side...", side);
+        LOGGER.info(
+                "Hello from FSB! This is the SERVER (any/any) component. It appears that this is a Minecraft {}. See you on the other side...",
+                side
+        );
+        BuiltInEventHandlers.init();
         InitializerService.runInitializers();
     }
 
@@ -25,6 +29,11 @@ public class FSB {
         // Create the new protocol and such
         ServerSession att = new ServerSession(minecraftServer);
         servers.put(minecraftServer, att);
+        // Announce the new server to all plugins
+        FSBServerLifecycleEvents.INSTANCE.ON_SERVER_CREATED.dispatch(
+                new FSBServerLifecycleEvents.ServerCreated(att),
+                null
+        );
         return att;
     }
 

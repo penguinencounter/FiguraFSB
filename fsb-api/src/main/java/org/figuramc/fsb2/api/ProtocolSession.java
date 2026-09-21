@@ -28,6 +28,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * a session! either direction works. you might want to extend this for your client and server implementations.
@@ -259,15 +261,44 @@ public class ProtocolSession {
      */
     private void cleanUpSession(PlayerSession session) {
         ConcurrentHashMap<Integer, Integer> toDispose = inboundTransferMap.remove(session.sessionID);
-        if (toDispose == null) return;
-        for (Integer ours : toDispose.values()) {
-            TransferInbox box = inboundTransfers.remove(ours);
-            box.maybeReject("session destroyed");
+        if (toDispose == null || toDispose.isEmpty()) return;
+        synchronized (inboundTransfers) {
+            for (Integer ours : toDispose.values()) {
+                TransferInbox box = inboundTransfers.remove(ours);
+                box.maybeReject("session destroyed");
+            }
         }
     }
 
-    public @Nullable TransferInbox inboxFor(int clientID, int transactionID) {
-        return inboundTransfers.get(lookupInboundTransfer(clientID, transactionID));
+    public @Nullable TransferInbox existingInboxFor(int clientID, int transactionID) {
+        Integer key = lookupInboundTransfer(clientID, transactionID);
+        if (key == null) return null;
+        return inboundTransfers.get(key);
+    }
+
+    /**
+     * @throws FSBArgumentException if the client & transaction IDs don't map to anything right now
+     * @throws FSBStateException    if there's already an inbox for this pair of IDs
+     */
+    public TransferInbox createInboxFor(
+            int clientID,
+            int transactionID,
+            Function<Integer, TransferInbox> ctor
+    ) throws FSBArgumentException, FSBStateException {
+        Integer key = lookupInboundTransfer(clientID, transactionID);
+        if (key == null) throw new FSBArgumentException(
+                "Client + txid combo has not been ack'd yet (unsolicited transfer / eager out of order packet?)"
+        );
+        TransferInbox created, swapped;
+        synchronized (inboundTransfers) {
+            if (inboundTransfers.containsKey(key)) throw new FSBStateException("Client + txid already created");
+            created = ctor.apply(key);
+            swapped = inboundTransfers.putIfAbsent(key, created);
+        }
+        if (swapped != null) throw new RuntimeException(
+                "Encountered race condition with inboundTransfers table (REPORT THIS AS A BUG)"
+        );
+        return created;
     }
 
     public @Nullable TransferOutbox outboxFor(int transactionID) {

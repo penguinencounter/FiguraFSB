@@ -7,6 +7,7 @@ import org.figuramc.fsb2.server.internals.NetworkingService;
 
 public class ServerSession extends ProtocolSession {
     public final ServerScheduler scheduler = new ServerScheduler();
+    public final FSBServerEvents eventBus = new FSBServerEvents(scheduler::once);
 
     /**
      * Default server extension.
