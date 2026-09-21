@@ -6,15 +6,20 @@ import org.figuramc.fsb2.api.utils.EventSystem;
 import java.util.function.Consumer;
 
 public class FSBServerEvents extends EventSystem {
-    private final Consumer<Runnable> queuer;
-    public FSBServerEvents(Consumer<Runnable> queuer) {
+    /**
+     * This field exists <b>purely as a helper for addon developers.</b> By default, events run on the network thread.
+     * Before blocking on the main thread, make sure you are not on the main thread already.
+     */
+    public final Consumer<Runnable> runOnMainThread;
+
+    public FSBServerEvents(Consumer<Runnable> runOnMainThread) {
         super();
-        this.queuer = queuer;
+        this.runOnMainThread = runOnMainThread;
     }
 
     @Override
     protected void enqueue(Runnable action) {
-        queuer.accept(action);
+        action.run();
     }
 
     public static class TransferParametersEvent extends Event {
