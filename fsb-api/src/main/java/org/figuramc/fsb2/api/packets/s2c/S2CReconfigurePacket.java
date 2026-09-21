@@ -13,7 +13,7 @@ import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
  * <p>
  * Also used to communicate per-player permissions changes.
  */
-public class S2CReconfigurePacket implements Packet<S2CReconfigurePacket> {
+public final class S2CReconfigurePacket implements Packet<S2CReconfigurePacket> {
     public static final Packets.PacketRecord<S2CReconfigurePacket> REC = rec(
             Identifier.fsb("s2c/reconfigure"),
             S2CReconfigurePacket::new

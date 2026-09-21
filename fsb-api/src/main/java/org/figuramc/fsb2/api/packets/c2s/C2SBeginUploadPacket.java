@@ -7,7 +7,7 @@ import org.figuramc.fsb2.api.utils.Identifier;
 
 import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
 
-public class C2SBeginUploadPacket implements Packet<C2SBeginUploadPacket> {
+public final class C2SBeginUploadPacket implements Packet<C2SBeginUploadPacket> {
     public static final Packets.PacketRecord<C2SBeginUploadPacket> REC = rec(
             Identifier.fsb("c2s/upload_begin"),
             C2SBeginUploadPacket::new

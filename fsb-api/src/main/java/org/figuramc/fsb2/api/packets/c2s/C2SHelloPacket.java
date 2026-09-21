@@ -7,7 +7,7 @@ import org.figuramc.fsb2.api.utils.Identifier;
 
 import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
 
-public class C2SHelloPacket implements Packet<C2SHelloPacket> {
+public final class C2SHelloPacket implements Packet<C2SHelloPacket> {
     public static final Packets.PacketRecord<C2SHelloPacket> REC = rec(
             Identifier.fsb("c2s/hello"),
             C2SHelloPacket::new

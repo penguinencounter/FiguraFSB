@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.figuramc.fsb2.api.packets.Packets.PacketRecord.rec;
 
-public class S2CUploadResponsePacket implements Packet<S2CUploadResponsePacket> {
+public final class S2CUploadResponsePacket implements Packet<S2CUploadResponsePacket> {
     public static final Packets.PacketRecord<S2CUploadResponsePacket> REC = rec(
             Identifier.fsb("s2c/upload_response"),
             S2CUploadResponsePacket::new

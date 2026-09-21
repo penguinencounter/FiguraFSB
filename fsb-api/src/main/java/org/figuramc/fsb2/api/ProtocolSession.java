@@ -29,7 +29,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * a session! either direction works. you might want to extend this for your client and server implementations.
@@ -346,7 +345,6 @@ public class ProtocolSession {
      */
     public static class internal {
         public static final BiConsumer<ProtocolSession, TransferOutbox> registerOut = ProtocolSession::register;
-        public static final BiConsumer<ProtocolSession, TransferInbox> registerIn = ProtocolSession::register;
         public static final BiConsumer<ProtocolSession, Identifier> unknownPacket = ProtocolSession::unknownPacket;
     }
 }
