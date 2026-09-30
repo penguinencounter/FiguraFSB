@@ -4,6 +4,7 @@ import org.figuramc.fsb2.api.PlayerSession;
 import org.figuramc.fsb2.api.except.FSBArgumentException;
 import org.figuramc.fsb2.api.except.FSBException;
 import org.figuramc.fsb2.api.except.FSBStateException;
+import org.figuramc.fsb2.api.packets.c2s.C2SBeginUploadPacket;
 import org.figuramc.fsb2.api.packets.transfer.*;
 import org.figuramc.fsb2.api.transfer.TransferInbox;
 import org.figuramc.fsb2.api.transfer.TransferOutbox;
@@ -31,6 +32,9 @@ public class BuiltInPacketHandlers {
 
             // R2S
             session.onReceive(TransferAcceptPacket.REC, this::handleTransferAcceptPacket);
+
+            // Uploading
+            session.onReceive(C2SBeginUploadPacket.REC, this::handleBeginUploadPacket);
         } catch (FSBStateException e) {
             throw new RuntimeException(e);
         }
@@ -80,7 +84,7 @@ public class BuiltInPacketHandlers {
         {
             try {
                 PlayerSession remote = session.getRemote(c);
-                session.eventBus.BEFORE_TRANSFER.dispatch(new FSBServerEvents.TransferParametersEvent(p, c), session);
+                session.eventBus.BEFORE_ANY_TRANSFER.dispatch(FSBServerEvents.wrap(p, remote), session);
                 TransferInbox inbox = session.createInboxFor(remote.sessionID, p.transactionID, localID -> new TransferInbox(
                         remote.sessionID, p.transactionID, localID, p.totalSize, p.numberOfChunks, p.overallCRC
                 ));
@@ -122,6 +126,21 @@ public class BuiltInPacketHandlers {
             outbox.accepted();
         } catch (FSBStateException e) {
             failToHandle("transfer accept", e);
+        }
+    }
+
+    private void handleBeginUploadPacket(C2SBeginUploadPacket p, Object c) {
+        PlayerSession remote;
+        try {
+            remote = session.getRemote(c);
+        } catch (FSBArgumentException e) {
+            failToHandle("begin upload request", e);
+            return;
+        }
+        try {
+            session.allocateInboundTransfer(remote.sessionID, p.transferId);
+        } catch (FSBArgumentException e) {
+            failToHandle("begin upload request", e);
         }
     }
 }

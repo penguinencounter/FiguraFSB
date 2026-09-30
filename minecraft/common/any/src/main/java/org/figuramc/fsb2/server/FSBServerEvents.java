@@ -1,5 +1,8 @@
 package org.figuramc.fsb2.server;
 
+import org.figuramc.fsb2.api.PlayerSession;
+import org.figuramc.fsb2.api.packets.Packet;
+import org.figuramc.fsb2.api.packets.c2s.C2SBeginUploadPacket;
 import org.figuramc.fsb2.api.packets.transfer.TransferOpenPacket;
 import org.figuramc.fsb2.api.utils.EventSystem;
 
@@ -22,15 +25,22 @@ public class FSBServerEvents extends EventSystem {
         action.run();
     }
 
-    public static class TransferParametersEvent extends Event {
-        public final TransferOpenPacket parameters;
-        public final Object connection;
+    public static <T extends Packet<?>> SimplePacketWrapEvent<T> wrap(T packet, PlayerSession player) {
+        return new SimplePacketWrapEvent<>(packet, player);
+    }
 
-        public TransferParametersEvent(TransferOpenPacket parameters, Object connection) {
-            this.parameters = parameters;
-            this.connection = connection;
+    public static class SimplePacketWrapEvent<T extends Packet<?>> extends Event {
+        public final T packet;
+        public final PlayerSession player;
+
+
+        public SimplePacketWrapEvent(T packet, PlayerSession player) {
+            this.packet = packet;
+            this.player = player;
         }
     }
 
-    public ReturnableEventBus<TransferParametersEvent, ServerSession, Boolean> BEFORE_TRANSFER = new ReturnableEventBus<>();
+    public ReturnableEventBus<SimplePacketWrapEvent<TransferOpenPacket>, ServerSession, Boolean> BEFORE_ANY_TRANSFER = new ReturnableEventBus<>();
+    public ReturnableEventBus<SimplePacketWrapEvent<TransferOpenPacket>, ServerSession, Boolean> BEFORE_UPLOAD_TRANSFER = new ReturnableEventBus<>();
+    public ReturnableEventBus<SimplePacketWrapEvent<C2SBeginUploadPacket>, ServerSession, Boolean> BEFORE_UPLOAD_BEGINS = new ReturnableEventBus<>();
 }
