@@ -26,7 +26,7 @@ repositories {
 }
 
 // move resources around
-val resourceJar by tasks.registering(Jar::class) {
+val resourceJar = tasks.register<Jar>("resourceJar") {
     archiveClassifier.set("resources")
     from(tasks.processResources)
 }
@@ -47,8 +47,10 @@ dependencies {
     compileOnly(libs.annotations)
 }
 
-val modVersion: String by project
-val overrideMC: String? by project
+fun String.property() = providers.gradleProperty(this)
+
+val modVersion: String by "modVersion".property()
+val overrideMC: String? by "overrideMC".property().asNullable
 
 the<OptionsExt>().then {
 
@@ -93,7 +95,7 @@ the<OptionsExt>().then {
 
 publishing {
     repositories {
-        val mavenPath: String? by rootProject
+        val mavenPath: String? = providers.gradleProperty("mavenPath").orNull
         mavenPath?.let {
             maven {
                 name = "mounted"

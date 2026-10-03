@@ -1,7 +1,9 @@
 package figurafsb.targets
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import figurafsb.asNullable
 import figurafsb.configurator.OptionsExt
+import figurafsb.getValue
 import figurafsb.proc.Templater
 import figurafsb.proc.enableRemap
 import figurafsb.proc.shadowDefaults
@@ -29,7 +31,9 @@ the<OptionsExt>().apply {
     }
 }
 
-val snapshot: String? by project
+fun String.property() = providers.gradleProperty(this)
+
+val snapshot: String? by "snapshot".property().asNullable
 
 the<OptionsExt>().then {
     val mc = it.minecraft!!
@@ -38,7 +42,7 @@ the<OptionsExt>().then {
     }
 
     val version = versionFor(mc.minecraftVersion)
-    val template: Templater by extra
+    val template = extra["template"] as Templater
 
     dependencies {
         version.dependencyContext { d ->
@@ -57,7 +61,7 @@ the<OptionsExt>().then {
     project.group = rootProject.group
 
 
-    val artifactRoot: String by project
+    val artifactRoot: String by "artifactRoot".property()
 
     val shadowJar = tasks.named<ShadowJar>("shadowJar")
 
@@ -69,7 +73,7 @@ the<OptionsExt>().then {
         archiveClassifier = "fat"
     }
 
-    val componentShadowJar by tasks.registering(ShadowJar::class) {
+   val componentShadowJar = tasks.register<ShadowJar>("componentShadowJar") {
         shadowDefaults(template)
         description = "this + modernish, if applicable"
         from(sourceSets.main.map {i -> i.output})
@@ -80,7 +84,7 @@ the<OptionsExt>().then {
 
     val componentJarTarget = if (version.minecraft != "1.16.5") componentShadowJar else tasks.named<Jar>("jar")
 
-    val remapComponentJar by tasks.registering(RemapJarTask::class) {
+   val remapComponentJar = tasks.register<RemapJarTask>("remapComponentJar") {
         description = "remap the classes in this project only (non-shadow)"
         dependsOn(componentJarTarget)
         enableRemap("intermediary")
@@ -89,7 +93,7 @@ the<OptionsExt>().then {
         archiveClassifier = null
     }
 
-    val mojmapJar by tasks.registering(RemapJarTask::class) {
+   val mojmapJar = tasks.register<RemapJarTask>("mojmapJar") {
         description = "remap the classes in the fatjar to mojmap"
 
         dependsOn(remapJar)
@@ -101,7 +105,7 @@ the<OptionsExt>().then {
         archiveClassifier = "fat-mojmap"
     }
 
-    val mojmapComponentJar by tasks.registering(RemapJarTask::class) {
+   val mojmapComponentJar = tasks.register<RemapJarTask>("mojmapComponentJar") {
         description = "remap the classes in this project only to mojmap"
 
         dependsOn(remapComponentJar)

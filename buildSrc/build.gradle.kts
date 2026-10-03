@@ -1,6 +1,6 @@
 import dev.panuszewski.gradle.pluginMarker
 
-val javaVersion: String by project
+val javaVersion: String = providers.gradleProperty("javaVersion").get()
 
 plugins {
     `kotlin-dsl`

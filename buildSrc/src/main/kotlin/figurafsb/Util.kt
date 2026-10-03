@@ -1,5 +1,8 @@
 package figurafsb
 
+import org.gradle.api.provider.Provider
+import kotlin.reflect.KProperty
+
 fun projToConfName(name: String, prefixes: List<String> = emptyList()) = name.split(":", "-").let {
     val combined = prefixes + it
     combined.first() + combined.asSequence().drop(1).joinToString("") { it.replaceFirstChar(Char::uppercase) }
@@ -21,3 +24,18 @@ fun yesno(s: String?, default: Boolean = false) = when (s?.lowercase()) {
     in no -> false
     else -> throw IllegalArgumentException("couldn't parse ${s.lowercase()} as a boolean value (try 'yes', 'true', 'no', 'false')")
 }
+
+operator fun <T : Any> Provider<T>.getValue(thisRef: Any?, prop: KProperty<*>): T {
+    return get()
+}
+
+interface NullableProvider<T> {
+    operator fun getValue(thisRef: Any?, prop: KProperty<*>): T?
+}
+
+val <T : Any> Provider<T>.asNullable
+    get() = object : NullableProvider<T> {
+        override operator fun getValue(thisRef: Any?, prop: KProperty<*>): T? {
+            return this@asNullable.orNull
+        }
+    }

@@ -1,4 +1,7 @@
+import figurafsb.asNullable
+import figurafsb.getValue
 import figurafsb.yesno
+import org.gradle.kotlin.dsl.provideDelegate
 
 plugins {
     id("figurafsb.standalone")
@@ -28,8 +31,11 @@ tasks.named<Test>("test") {
     }
 }
 
-val artifactRoot: String by project
-val snapshot: String? by project
+fun String.property() = providers.gradleProperty(this)
+
+val artifactRoot: String by "artifactRoot".property()
+val snapshot: String? by "snapshot".property().asNullable
+
 project.version = buildString {
     append(rootProject.version)
     if (yesno(snapshot)) append("-SNAPSHOT")

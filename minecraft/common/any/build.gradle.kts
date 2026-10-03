@@ -1,3 +1,5 @@
+import figurafsb.asNullable
+import figurafsb.getValue
 import figurafsb.yesno
 
 plugins {
@@ -10,8 +12,11 @@ dependencies {
 
 fsbOptions.done()
 
-val artifactRoot: String by project
-val snapshot: String? by project
+fun String.property() = providers.gradleProperty(this)
+
+val artifactRoot: String by "artifactRoot".property()
+val snapshot: String? by "snapshot".property().asNullable
+
 project.version = buildString {
     append(rootProject.version)
     if (yesno(snapshot)) append("-SNAPSHOT")

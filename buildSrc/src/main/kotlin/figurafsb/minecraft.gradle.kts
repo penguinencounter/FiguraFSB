@@ -15,15 +15,20 @@ plugins {
     id("com.gradleup.shadow")
 }
 
-val modVersion: String by project
+fun String.property() = providers.gradleProperty(this)
+
+val modVersion: String by "modVersion".property()
 
 the<OptionsExt>().then {
     val mcData = it.minecraft
         ?: throw IllegalStateException("this target requires Minecraft versioning data, but none is present in the fsbOptions block")
     val version = versionFor(mcData.minecraftVersion)
-    val plainConfigurations: MutableMap<String, String> by extra { mutableMapOf() }
-    val upstreamConfigurations: MutableMap<String, String> by extra { mutableMapOf() }
-    val upstreamShadows: MutableMap<String, String> by extra { mutableMapOf() }
+    val plainConfigurations: MutableMap<String, String> = mutableMapOf()
+    extra.set("plainConfigurations", plainConfigurations)
+    val upstreamConfigurations: MutableMap<String, String> = mutableMapOf()
+    extra.set("upstreamConfigurations", upstreamConfigurations)
+    val upstreamShadows: MutableMap<String, String> = mutableMapOf()
+    extra.set("upstreamShadows", upstreamShadows)
 
     val resourceIncludes by configurations.dependencyScope("resourceIncludes")
     val includedResources by configurations.resolvable("includedResources") {
@@ -40,7 +45,8 @@ the<OptionsExt>().then {
     )
     version.addToTemplate(repl, "mc")
 
-    val template: Templater by extra { Templater(repl) }
+    val template = Templater(repl)
+    extra.set("template", template)
 
     configurations {
         for (upstream in mcData.upstreams) {

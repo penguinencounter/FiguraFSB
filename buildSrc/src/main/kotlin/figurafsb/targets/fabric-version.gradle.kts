@@ -8,8 +8,10 @@
 package figurafsb.targets
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import figurafsb.asNullable
 import figurafsb.configurator.FSBPlatform
 import figurafsb.configurator.OptionsExt
+import figurafsb.getValue
 import figurafsb.proc.Templater
 import figurafsb.proc.shadowDefaults
 import figurafsb.versioning.dependencyContext
@@ -17,8 +19,6 @@ import figurafsb.versioning.versionFor
 import figurafsb.yesno
 import libs
 import net.fabricmc.loom.task.RemapJarTask
-import org.gradle.kotlin.dsl.invoke
-import kotlin.collections.plus
 
 plugins {
     id("figurafsb.minecraft")
@@ -42,7 +42,9 @@ the<OptionsExt>().apply {
     }
 }
 
-val snapshot: String? by project
+fun String.property() = providers.gradleProperty(this)
+
+val snapshot: String? by "snapshot".property().asNullable
 
 the<OptionsExt>().then {
     val mc = it.minecraft!!
@@ -53,9 +55,11 @@ the<OptionsExt>().then {
 
     val version = versionFor(mc.minecraftVersion)
 
-    val upstreamConfigurations: MutableMap<String, String> by extra
-    val plainConfigurations: MutableMap<String, String> by extra
-    val template: Templater by extra
+    val template = extra["template"] as Templater
+    @Suppress("UNCHECKED_CAST") val upstreamConfigurations =
+        extra["upstreamConfigurations"] as MutableMap<String, String>
+    @Suppress("UNCHECKED_CAST") val plainConfigurations =
+        extra["plainConfigurations"] as MutableMap<String, String>
 
     configurations {
         afterEvaluate { // wait for loom
@@ -90,20 +94,20 @@ the<OptionsExt>().then {
         if (yesno(snapshot)) append("-SNAPSHOT")
     }
     project.group = rootProject.group
-    val artifactRoot: String by project
+    val artifactRoot: String by "artifactRoot".property()
 
-    val componentShadowJar by tasks.registering(ShadowJar::class) {
+    val componentShadowJar = tasks.register<ShadowJar>("componentShadowJar") {
         shadowDefaults(template)
         exclude("architectury.common.json")
 
         description = "this + fabric-any"
-        from(sourceSets.main.map {i -> i.output})
+        from(sourceSets.main.map { i -> i.output })
         configurations.add(project.configurations.named("upstreamFabricAny"))
         configurations.add(project.configurations.named("includedResources"))
         archiveClassifier = "component-shadow"
     }
 
-    val remapComponentJar by tasks.registering(RemapJarTask::class) {
+    val remapComponentJar = tasks.register<RemapJarTask>("remapComponentJar") {
         description = "remap the classes in this project only? + fabric-any"
 
         dependsOn(componentShadowJar)

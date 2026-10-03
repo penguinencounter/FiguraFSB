@@ -1,8 +1,13 @@
+import figurafsb.getValue
+
 plugins {
     idea
 }
 
-val modVersion: String by project
+
+fun String.property() = providers.gradleProperty(this)
+
+val modVersion: String by "modVersion".property()
 project.version = modVersion
-val rootGroup: String by project
+val rootGroup: String by "rootGroup".property()
 project.group = rootGroup
