@@ -71,6 +71,12 @@ jobs:
           pushd main || exit 1
           ./gradlew --console=colored -PmavenPath=/home/runner/repo publishAllPublicationsToMountedRepository
           popd
+      - name: pull-rebase repo
+        if: ${{ env.PUBLISH == 'yes' }}
+        run: |
+          pushd ./repo || exit 1
+          git pull --rebase
+          popd
       - name: build for publishing
         if: ${{ env.PUBLISH == 'yes' }}
         run: |
@@ -89,7 +95,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "🚀 Automated snapshot: penguinencounter/FiguraFSB"
-          git pull --rebase
           git push -u origin main  # should be fast-forward
           echo "## Maven publishing" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
