@@ -1,6 +1,7 @@
 package org.figuramc.fsb2.server;
 
 import org.figuramc.fsb2.api.PlayerSession;
+import org.figuramc.fsb2.api.except.EventResultException;
 import org.figuramc.fsb2.api.except.FSBArgumentException;
 import org.figuramc.fsb2.api.except.FSBException;
 import org.figuramc.fsb2.api.except.FSBStateException;
@@ -9,6 +10,8 @@ import org.figuramc.fsb2.api.packets.transfer.*;
 import org.figuramc.fsb2.api.transfer.TransferInbox;
 import org.figuramc.fsb2.api.transfer.TransferOutbox;
 import org.figuramc.fsb2.server.internals.NetworkingService;
+
+import static org.figuramc.fsb2.server.FSBServerEvents.wrap;
 
 public class BuiltInPacketHandlers {
     private final ServerSession session;
@@ -84,7 +87,7 @@ public class BuiltInPacketHandlers {
         {
             try {
                 PlayerSession remote = session.getRemote(c);
-                session.eventBus.BEFORE_ANY_TRANSFER.dispatch(FSBServerEvents.wrap(p, remote), session);
+                session.eventBus.BEFORE_ANY_TRANSFER.dispatch(wrap(p, remote), session);
                 TransferInbox inbox = session.createInboxFor(remote.sessionID, p.transactionID, localID -> new TransferInbox(
                         remote.sessionID, p.transactionID, localID, p.totalSize, p.numberOfChunks, p.overallCRC
                 ));
@@ -138,9 +141,18 @@ public class BuiltInPacketHandlers {
             return;
         }
         try {
-            session.allocateInboundTransfer(remote.sessionID, p.transferId);
+            Boolean result = session.eventBus.BEFORE_UPLOAD_BEGINS.dispatch(wrap(p, remote), session);
+            if (result == null) throw EventResultException.noResult("BEFORE_UPLOAD_BEGINS", Boolean.class, null, null);
+            if (result) {
+                int newTransferId = session.allocateInboundTransfer(remote.sessionID, p.transferId);
+                session.uploads.register(newTransferId, p, remote);
+            } else {
+                FSB.LOGGER.info("upload cancelled by event handler: {} upload into slot '{}' (remote tx {})", remote.blame(), p.avatarSlot, p.transferId);
+            }
         } catch (FSBArgumentException e) {
             failToHandle("begin upload request", e);
+        } catch (FSBStateException e) {
+            failToHandle("begin upload request (SHOULDN'T HAPPEN)", e);
         }
     }
 }

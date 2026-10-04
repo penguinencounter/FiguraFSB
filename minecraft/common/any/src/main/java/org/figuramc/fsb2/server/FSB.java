@@ -30,7 +30,7 @@ public class FSB {
         ServerSession att = new ServerSession(minecraftServer);
         servers.put(minecraftServer, att);
         // Announce the new server to all plugins
-        FSBServerLifecycleEvents.INSTANCE.ON_SERVER_CREATED.dispatch(
+        FSBServerLifecycleEvents.ON_SERVER_CREATED.dispatch(
                 new FSBServerLifecycleEvents.ServerCreated(att),
                 null
         );

@@ -4,10 +4,12 @@ import org.figuramc.fsb2.api.ProtocolSession;
 import org.figuramc.fsb2.api.config.ServerIdentification;
 import org.figuramc.fsb2.api.packets.s2c.S2CHelloPacket;
 import org.figuramc.fsb2.server.internals.NetworkingService;
+import org.figuramc.fsb2.server.uploading.UploadManager;
 
 public class ServerSession extends ProtocolSession {
     public final ServerScheduler scheduler = new ServerScheduler();
     public final FSBServerEvents eventBus = new FSBServerEvents(scheduler::once);
+    public final UploadManager uploads = new UploadManager();
 
     /**
      * Default server extension.

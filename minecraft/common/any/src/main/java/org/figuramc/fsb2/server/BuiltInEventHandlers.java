@@ -4,11 +4,9 @@ import org.figuramc.fsb2.api.packets.transfer.TransferOpenPacket;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.figuramc.fsb2.server.FSBServerLifecycleEvents.INSTANCE;
-
 public class BuiltInEventHandlers {
     static void init() {
-        INSTANCE.ON_SERVER_CREATED.register(BuiltInEventHandlers::onServerCreated, 0);
+        FSBServerLifecycleEvents.ON_SERVER_CREATED.register(BuiltInEventHandlers::onServerCreated, 0);
     }
 
     private static void onServerCreated(FSBServerLifecycleEvents.ServerCreated e, Void ignored) {

@@ -1,23 +1,16 @@
 package org.figuramc.fsb2.server;
 
-import org.figuramc.fsb2.api.utils.EventSystem;
+import org.figuramc.fsb2.api.utils.ImmediateEventSystem;
 
 /**
  * Event handlers that last for the lifetime of the entire game (and are not tied to any specific server thread).
  * Does not have any specific execution semantics.
  */
-public class FSBServerLifecycleEvents extends EventSystem {
-    @Override
-    protected void enqueue(Runnable action) {
-        action.run();
-    }
-
+public class FSBServerLifecycleEvents {
     private FSBServerLifecycleEvents() {
     }
 
-    public static final FSBServerLifecycleEvents INSTANCE = new FSBServerLifecycleEvents();
-
-    public static class ServerCreated extends Event {
+    public static class ServerCreated extends ImmediateEventSystem.Event {
         public final ServerSession session;
 
         public ServerCreated(ServerSession session) {
@@ -25,5 +18,5 @@ public class FSBServerLifecycleEvents extends EventSystem {
         }
     }
 
-    public final EventBus<ServerCreated, Void> ON_SERVER_CREATED = new EventBus<>();
+    public static final ImmediateEventSystem.EventBus<ServerCreated, Void> ON_SERVER_CREATED = new ImmediateEventSystem.EventBus<>();
 }

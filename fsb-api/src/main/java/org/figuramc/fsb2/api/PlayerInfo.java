@@ -31,4 +31,13 @@ public class PlayerInfo {
     public String toString() {
         return String.format("PlayerInfo{uuid=%s, displayName='%s'}", uuid, displayName);
     }
+
+    public String blame() {
+        if (!displayName.isEmpty()) {
+            if (!displayName.chars().allMatch(Character::isWhitespace)) {
+                return displayName;
+            }
+        }
+        return "(" + uuid.toString() + ")";
+    }
 }

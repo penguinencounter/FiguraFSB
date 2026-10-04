@@ -4,11 +4,12 @@ import org.figuramc.fsb2.api.PlayerSession;
 import org.figuramc.fsb2.api.packets.Packet;
 import org.figuramc.fsb2.api.packets.c2s.C2SBeginUploadPacket;
 import org.figuramc.fsb2.api.packets.transfer.TransferOpenPacket;
-import org.figuramc.fsb2.api.utils.EventSystem;
+import org.figuramc.fsb2.api.utils.ImmediateEventSystem;
+import org.figuramc.fsb2.api.utils.ImmediateEventSystem.ReturnableEventBus;
 
 import java.util.function.Consumer;
 
-public class FSBServerEvents extends EventSystem {
+public class FSBServerEvents {
     /**
      * This field exists <b>purely as a helper for addon developers.</b> By default, events run on the network thread.
      * Before blocking on the main thread, make sure you are not on the main thread already.
@@ -20,16 +21,11 @@ public class FSBServerEvents extends EventSystem {
         this.runOnMainThread = runOnMainThread;
     }
 
-    @Override
-    protected void enqueue(Runnable action) {
-        action.run();
-    }
-
     public static <T extends Packet<?>> SimplePacketWrapEvent<T> wrap(T packet, PlayerSession player) {
         return new SimplePacketWrapEvent<>(packet, player);
     }
 
-    public static class SimplePacketWrapEvent<T extends Packet<?>> extends Event {
+    public static class SimplePacketWrapEvent<T extends Packet<?>> extends ImmediateEventSystem.Event {
         public final T packet;
         public final PlayerSession player;
 

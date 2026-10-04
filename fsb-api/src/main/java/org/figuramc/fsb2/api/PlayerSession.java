@@ -14,6 +14,7 @@ public class PlayerSession {
 
     public final PlayerInfo info;
     public final int sessionID;
+    private boolean stillExists = true;
 
     public PlayerSession(PlayerInfo info, int sessionID) {
         this.info = info;
@@ -32,6 +33,10 @@ public class PlayerSession {
         return sessionID == that.sessionID && Objects.equals(info, that.info);
     }
 
+    public void invalidate() {
+        stillExists = false;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(info, sessionID);
@@ -40,5 +45,11 @@ public class PlayerSession {
     @Override
     public String toString() {
         return String.format("PlayerSession{info=%s, sessionID=%d}", info, sessionID);
+    }
+
+    public String blame() { return info.blame(); }
+
+    public boolean stillExists() {
+        return stillExists;
     }
 }

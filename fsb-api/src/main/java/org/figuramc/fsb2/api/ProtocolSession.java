@@ -70,15 +70,17 @@ public class ProtocolSession {
 
     // Fields related to remotes and maintaining them
     private final AtomicInteger nextRemoteId = new AtomicInteger(0);
-    private final ConcurrentMap<Object, PlayerSession> remotes = new MapMaker().weakKeys().concurrencyLevel(8)
+    private final ConcurrentMap<Object, Integer> remoteIdFromReferent = new MapMaker().weakKeys().concurrencyLevel(8)
+            .makeMap();
+    private final ConcurrentMap<Integer, PlayerSession> remotes = new MapMaker().weakKeys().concurrencyLevel(8)
             .makeMap();
     /**
      * Map between phantom references used in the {@link #remoteDisposal} and their corresponding session objects.
      */
-    private final HashMap<PhantomReference<Object>, PlayerSession> remoteTracking = new HashMap<>();
-    private final HashMap<PlayerSession, PhantomReference<Object>> remoteTrackingInv = new HashMap<>();
+    private final HashMap<PhantomReference<Object>, PlayerSession> remoteReferentTracking = new HashMap<>();
+    private final HashMap<PlayerSession, PhantomReference<Object>> remoteToReferent = new HashMap<>();
     /**
-     * Lock protecting {@link #remotes}, {@link #remoteTracking}, and {@link #remoteTrackingInv}.
+     * Lock protecting {@link #remotes}, {@link #remoteIdFromReferent}, {@link #remoteReferentTracking}, and {@link #remoteToReferent}.
      */
     private final ReadWriteLock remoteLock = new ReentrantReadWriteLock();
 
@@ -134,17 +136,20 @@ public class ProtocolSession {
                     resultOfInsert
             ));
         try (Locking.Resource ignored = Locking.use(remoteLock.writeLock())) {
-            PlayerSession resultOfInsert2 = remotes.putIfAbsent(context, session);
-            if (resultOfInsert2 != null && !resultOfInsert2.equals(session))
+            int sessionID = session.sessionID;
+            Integer resultOfInsert2 = remoteIdFromReferent.putIfAbsent(context, sessionID);
+            if (resultOfInsert2 != null && !resultOfInsert2.equals(sessionID))
                 throw new FSBArgumentException(String.format(
                         "This context object is already related to a different player session: %s",
                         resultOfInsert2
                 ));
             if (resultOfInsert2 != null) {
                 // Create a new reference for this context object.
+                if (remotes.putIfAbsent(sessionID, session) != null)
+                    throw new FSBArgumentException(String.format("Context object id already used? %d", sessionID));
                 PhantomReference<Object> theRef = new PhantomReference<>(context, remoteDisposal);
-                remoteTracking.put(theRef, session);
-                remoteTrackingInv.put(session, theRef);
+                remoteReferentTracking.put(theRef, session);
+                remoteToReferent.put(session, theRef);
             }
         }
     }
@@ -165,9 +170,10 @@ public class ProtocolSession {
             try (Locking.Resource ignored = Locking.use(remoteLock.writeLock())) {
                 do {
                     //noinspection SuspiciousMethodCalls
-                    PlayerSession session = remoteTracking.remove(r);
+                    PlayerSession session = remoteReferentTracking.remove(r);
                     if (session == null) continue;
-                    remoteTrackingInv.remove(session);
+                    remoteToReferent.remove(session);
+                    remoteIdFromReferent.remove(session.sessionID);
                     remotes.values().remove(session);
                     cleanUpSession(session);
                 } while ((r = remoteDisposal.poll()) != null);
@@ -227,10 +233,16 @@ public class ProtocolSession {
         return clientMap.get(remoteTransferId);
     }
 
+    public @Nullable PlayerSession getRemoteById(int id) {
+        try (Locking.Resource ignored = Locking.use(remoteLock.readLock())) {
+            return remotes.get(id);
+        }
+    }
+
     public PlayerSession getRemote(Object context) throws FSBArgumentException {
         PlayerSession result;
         try (Locking.Resource ignored = Locking.use(remoteLock.readLock())) {
-            result = remotes.get(context);
+            result = remotes.get(remoteIdFromReferent.get(context));
         }
         if (result == null)
             throw new FSBArgumentException(String.format("No session available for context %s", context));
@@ -245,10 +257,13 @@ public class ProtocolSession {
 
     public void delRemote(Object context) {
         try (Locking.Resource ignored = Locking.use(remoteLock.writeLock())) {
-            PlayerSession ref = this.remotes.remove(context);
+            Integer key = this.remoteIdFromReferent.remove(context);
+            PlayerSession ref = this.remotes.remove(key);
             // Already disposed
             if (ref == null) return;
-            Reference<?> k = remoteTrackingInv.remove(ref);
+            // in case something else is holding onto the reference...
+            ref.invalidate();
+            Reference<?> k = remoteToReferent.remove(ref);
             // If <k> is null then we can't continue anyway
             if (k == null) return;
         }
