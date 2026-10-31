@@ -189,6 +189,10 @@ really!!)
 > ```
 > 3. Run `./gradlew`. Watch carefully for the start of the output and get ready to cancel it with `Ctrl` `C` if
      something's wrong.
+>
+> This is also important when debugging in order to avoid this:
+>
+> ![list of sources, there are like 8 sources in a combobox and the scrollbar indicates there are probably 50 more](./readme_assets/which_source_do_you_want.png)
 
 The main culprit for the massive cache size is the fact that you're downloading at least 30 copies of Minecraft in
 various forms.
