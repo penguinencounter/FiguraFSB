@@ -15,12 +15,13 @@ Making addons? Choose one of the following strategies...
 > Maven snapshot semantics demand that `-SNAPSHOT` is on the end, _after the `+` segment._
 > You may have to adjust your build scripts to support this configuration, since doing `${fsbVersion}+fabric`
 > does not work when `fsbVersion` is `1.2.3-SNAPSHOT` (it makes `1.2.3-SNAPSHOT+fabric`, which is wrong).  
->Or, just don't use snapshot versions :3
+> Or, just don't use snapshot versions :3
 
 <details>
 <summary>I'm making a <b>Fabric, single-Minecraft-version</b> addon.</summary>
 
 Congratulations! That's the easiest option. Add this to your `dependencies`:
+
 ```kts
 // Kotlin/Groovy
 modImplementation("org.figuramc.fsb:fsb-fabric:$fsbVer+$minecraft-fabric")
@@ -38,12 +39,14 @@ modImplementation("org.figuramc.fsb:fsb-fabric:$fsbVer+$minecraft-fabric")
     additionalRuntimeClasspath(it) // 1.21.8 and below only
 }
 ```
+
 ```groovy
 // ModDevGradle: Groovy
 def fsb = "org.figuramc.fsb:fsb-neoforge:$fsbVer+$minecraft-neoforge"
 implementation(fsb)
 additionalRuntimeClasspath(fsb) // 1.21.8 and below only
 ```
+
 ```kotlin
 // NeoGradle: Groovy/Kotlin (1.21.8 and below)
 var fsb = "org.figuramc.fsb:fsb-neoforge:$fsbVer+$minecraft-neoforge"
@@ -66,12 +69,14 @@ runs {
 <summary>I'm making a multiloader addon for a single Minecraft version with <b>Architectury</b>.</summary>
 
 In your common project:
+
 ```kts
 // note: 'fat' classifier required to get transitives
 modCompileOnly("org.figuramc.fsb:fsb-common-intermediary:$fsbVer+$minecraft:fat")
 ```
 
 In individual loader projects (in this case, Fabric):
+
 ```kotlin
 modImplementation("org.figuramc.fsb:fsb-fabric:$fsbVer+$minecraft-fabric")
 ```
@@ -83,6 +88,7 @@ modImplementation("org.figuramc.fsb:fsb-fabric:$fsbVer+$minecraft-fabric")
 
 Good luck with that! (/gen)  
 Consult the table below. Here's my recommendations:
+
 ```kts
 // Any-version any-loader
 compileOnlyApi("org.figuramc.fsb:fsb-api:$fsbVer")
@@ -119,20 +125,23 @@ This project exports quite a few maven coordinates (excluding sources, Javadoc):
 Note that some code may only make it into `fat`-type jars, but that code is not part of the public API in any case.
 (Currently, it only includes loggers.)
 
-|                Artifact ID | Classifier  | Versioning                | Description                                                         |
-|---------------------------:|:-----------:|---------------------------|:--------------------------------------------------------------------|
-|                 `:fsb-api` |             | `{version}`               | FSB's client/server shared API.                                     |
-|          `:fsb-server-api` |             | `{version}`               | FSB's server shared API.                                            |
-| `:fsb-common-intermediary` |             | `{version}+{mc}`          | Platform-independent code for targets supporting mixins.            |
-| `:fsb-common-intermediary` |    `fat`    | `{version}+{mc}`          | Platform-independent code for targets supporting mixins incl. deps. |
-|       `:fsb-common-mojmap` |             | `{version}+{mc}`          | `:fsb-common-intermediary` remapped to Mojang mappings.             |
-|       `:fsb-common-mojmap` |    `fat`    | `{version}+{mc}`          | `:fsb-common-intermediary:fat` remapped to Mojang mappings.         |
-|              `:fsb-fabric` |             | `{version}+{mc}-fabric`   | **Fabric fat jar for player and runtime use**                       |
-|              `:fsb-fabric` | `component` | `{version}+{mc}-fabric`   | Fabric slim jar for maven consumers                                 |
-|               `:fsb-forge` |             | `{version}+{mc}-forge`    | **Forge fat jar for player and runtime use**                        |
-|               `:fsb-forge` | `component` | `{version}+{mc}-forge`    | Forge slim jar for maven consumers                                  |
-|            `:fsb-neoforge` |             | `{version}+{mc}-neoforge` | **NeoForge fat jar for player and runtime use**                     |
-|            `:fsb-neoforge` | `component` | `{version}+{mc}-neoforge` | NeoForge slim jar for maven consumers                               |
+All artifacts are in the `org.figuramc.fsb` group, shortened to `[fsb]` in the table below.
+Some artifacts are in subgroups.
+
+| Group            |                   Artifact | Classifier  | Versioning       | Description                                                         |
+|------------------|---------------------------:|:-----------:|------------------|:--------------------------------------------------------------------|
+| `[fsb]`          |                 `:fsb-api` |             | `{version}`      | FSB's client/server shared API.                                     |
+| `[fsb]`          |          `:fsb-server-api` |             | `{version}`      | FSB's server shared API.                                            |
+| `[fsb].common`   | `:fsb-common-intermediary` |             | `{version}+{mc}` | Platform-independent code for targets supporting mixins.            |
+| `[fsb].common`   | `:fsb-common-intermediary` |    `fat`    | `{version}+{mc}` | Platform-independent code for targets supporting mixins incl. deps. |
+| `[fsb].common`   |       `:fsb-common-mojmap` |             | `{version}+{mc}` | `:fsb-common-intermediary` remapped to Mojang mappings.             |
+| `[fsb].common`   |       `:fsb-common-mojmap` |    `fat`    | `{version}+{mc}` | `:fsb-common-intermediary:fat` remapped to Mojang mappings.         |
+| `[fsb].fabric`   |              `:fsb-fabric` |             | `{version}+{mc}` | **Fabric fat jar for player and runtime use**                       |
+| `[fsb].fabric`   |              `:fsb-fabric` | `component` | `{version}+{mc}` | Fabric slim jar for maven consumers                                 |
+| `[fsb].forge`    |               `:fsb-forge` |             | `{version}+{mc}` | **Forge fat jar for player and runtime use**                        |
+| `[fsb].forge`    |               `:fsb-forge` | `component` | `{version}+{mc}` | Forge slim jar for maven consumers                                  |
+| `[fsb].neoforge` |            `:fsb-neoforge` |             | `{version}+{mc}` | **NeoForge fat jar for player and runtime use**                     |
+| `[fsb].neoforge` |            `:fsb-neoforge` | `component` | `{version}+{mc}` | NeoForge slim jar for maven consumers                               |
 
 ### Development dependencies
 
@@ -166,7 +175,7 @@ really!!)
 > This can save you a LOT of time and disk space!
 >
 > 1. Create a file named `build.properties` in the project root, preferably **before** opening
->    the project in IDEA.
+     > the project in IDEA.
 > 2. Add the following contents, adjusting the parameters as necessary:
 > ```properties
 > # Filtered build options
@@ -178,9 +187,11 @@ really!!)
 > #minecraft=1.16.5,1.18.2,1.19.2,1.19.3,1.19.4,1.20.1,1.20.2,1.20.4,1.20.6,1.21.1,1.21.3,1.21.4
 > minecraft=1.20.1,1.21.1,1.21.4
 > ```
-> 3. Run `./gradlew`. Watch carefully for the start of the output and get ready to cancel it with `Ctrl` `C` if something's wrong.
+> 3. Run `./gradlew`. Watch carefully for the start of the output and get ready to cancel it with `Ctrl` `C` if
+     something's wrong.
 
-The main culprit for the massive cache size is the fact that you're downloading at least 30 copies of Minecraft in various forms.
+The main culprit for the massive cache size is the fact that you're downloading at least 30 copies of Minecraft in
+various forms.
 
 The initial sync might take a long time due to all the downloading that needs to happen. Subsequent Gradle operations
 should be significantly quicker, especially if you keep using the same Gradle daemon throughout.
@@ -190,7 +201,8 @@ Some statistics that may help you decide what to do (and whether you want to use
 * This project has CI. The CI process caches only the global Gradle cache (`~/.gradle`).
     * Running an unfiltered build from no cache takes upwards of **30 minutes** (!)
     * With the cache loaded (but not including the project cache), a build takes **5 minutes**
-* On my personal computer (which is pretty powerful to be fair), I can run a full unfiltered build in **50 seconds** with the
+* On my personal computer (which is pretty powerful to be fair), I can run a full unfiltered build in **50 seconds**
+  with the
   global and project cache primed (`gradlew clean build --rerun-tasks`)
 
 ### Running the game

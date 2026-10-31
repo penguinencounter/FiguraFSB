@@ -8,6 +8,7 @@
 
 package figurafsb.targets
 
+import figurafsb.Names.Companion.names
 import figurafsb.asNullable
 import figurafsb.configurator.OptionsExt
 import figurafsb.getValue
@@ -30,12 +31,13 @@ dependencies {
 
 fun String.property() = providers.gradleProperty(this)
 
+names().run {
+    project.version = version("fabric")
+
+}
 val artifactRoot: String by "artifactRoot".property()
 val snapshot: String? by "snapshot".property().asNullable
 
-project.version = buildString {
-    append(rootProject.version)
-    append("+fabric")
-    if (yesno(snapshot)) append("-SNAPSHOT")
-}
-project.group = rootProject.group
+val names = project.names()
+project.version = names.version("fabric")
+project.group = names.fabricGroup

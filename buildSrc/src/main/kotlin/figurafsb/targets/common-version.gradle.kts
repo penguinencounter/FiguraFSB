@@ -1,15 +1,14 @@
 package figurafsb.targets
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import figurafsb.Names.Companion.names
 import figurafsb.asNullable
 import figurafsb.configurator.OptionsExt
-import figurafsb.getValue
 import figurafsb.proc.Templater
 import figurafsb.proc.enableRemap
 import figurafsb.proc.shadowDefaults
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
-import figurafsb.yesno
 import libs
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.kotlin.dsl.provideDelegate
@@ -54,14 +53,9 @@ the<OptionsExt>().then {
         }
     }
 
-    project.version = buildString {
-        append("${rootProject.version}+${mc.minecraftVersion}")
-        if (yesno(snapshot)) append("-SNAPSHOT")
-    }
-    project.group = rootProject.group
-
-
-    val artifactRoot: String by "artifactRoot".property()
+    val names = project.names()
+    project.version = names.version(mc.minecraftVersion)
+    project.group = names.commonGroup
 
     val shadowJar = tasks.named<ShadowJar>("shadowJar")
 
@@ -120,7 +114,7 @@ the<OptionsExt>().then {
     publishing {
         publications {
             register("maven", MavenPublication::class) {
-                artifactId = "${artifactRoot}-common-intermediary"
+                artifactId = "${names.artifactRoot}-common-intermediary"
 
                 artifact(remapComponentJar) {
                     builtBy(remapComponentJar)
@@ -139,7 +133,7 @@ the<OptionsExt>().then {
                 }
             }
             register("mojmap", MavenPublication::class) {
-                artifactId = "${artifactRoot}-common-mojmap"
+                artifactId = "${names.artifactRoot}-common-mojmap"
 
                 artifact(mojmapComponentJar) {
                     builtBy(mojmapComponentJar)

@@ -8,15 +8,14 @@
 package figurafsb.targets
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import figurafsb.Names.Companion.names
 import figurafsb.asNullable
 import figurafsb.configurator.FSBPlatform
 import figurafsb.configurator.OptionsExt
-import figurafsb.getValue
 import figurafsb.proc.Templater
 import figurafsb.proc.shadowDefaults
 import figurafsb.versioning.dependencyContext
 import figurafsb.versioning.versionFor
-import figurafsb.yesno
 import libs
 import net.fabricmc.loom.task.RemapJarTask
 
@@ -91,12 +90,9 @@ the<OptionsExt>().then {
         }
     }
 
-    project.version = buildString {
-        append("${rootProject.version}+${mc.minecraftVersion}-forge")
-        if (yesno(snapshot)) append("-SNAPSHOT")
-    }
-    project.group = rootProject.group
-    val artifactRoot: String by "artifactRoot".property()
+    val names = project.names()
+    project.version = names.version(mc.minecraftVersion)
+    project.group = names.forgeGroup
 
     val componentShadowJar = tasks.register<ShadowJar>("componentShadowJar") {
         shadowDefaults(template)
@@ -120,7 +116,7 @@ the<OptionsExt>().then {
     publishing {
         publications {
             register("maven", MavenPublication::class) {
-                artifactId = "${artifactRoot}-forge"
+                artifactId = "${names.artifactRoot}-forge"
 
                 val remapJar = tasks.named<RemapJarTask>("remapJar")
                 artifact(remapJar) {
