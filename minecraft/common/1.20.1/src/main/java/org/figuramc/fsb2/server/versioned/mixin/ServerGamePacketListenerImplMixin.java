@@ -33,11 +33,6 @@ public abstract class ServerGamePacketListenerImplMixin {
         PlayerInfo info = new PlayerInfo(player.getUUID(), player.getName().getString());
         try {
             srv.newRemote(that, info);
-            VersionedNetworking netSvc = (VersionedNetworking) NetworkingService.SERVICE;
-            srv.scheduler.countDown(
-                    () -> netSvc.send(that, new S2CHelloPacket(ServerIdentification.defaultValues())),
-                    5
-            );
         } catch (FSBArgumentException ignored) {
 
         }

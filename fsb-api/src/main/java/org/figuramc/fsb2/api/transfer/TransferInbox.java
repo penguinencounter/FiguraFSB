@@ -19,8 +19,6 @@ import java.util.zip.CRC32;
  * State data for an inbound transfer.
  */
 public final class TransferInbox {
-
-
     public enum State {
         OPEN,
         COMPLETE,
@@ -110,7 +108,11 @@ public final class TransferInbox {
         if (state != State.OPEN)
             return;
         if (chunkId < 0 || chunkId >= totalNumberOfChunks)
-            throw new FSBArgumentException(String.format("chunk ID %d out of range; total # of chunks is %d", chunkId, totalNumberOfChunks));
+            throw new FSBArgumentException(String.format(
+                    "chunk ID %d out of range; total # of chunks is %d",
+                    chunkId,
+                    totalNumberOfChunks
+            ));
         try (Locking.Resource ignored = Locking.use(lock.readLock())) {
             if (state != State.OPEN)
                 return;
@@ -201,13 +203,22 @@ public final class TransferInbox {
             for (byte[] chunk : chunks) {
                 int l = chunk.length;
                 if (c + l > totalSize)
-                    throw new RuntimeException(String.format("too much data (cur %d + len %d > expected %d)", c, l, totalSize));
+                    throw new RuntimeException(String.format(
+                            "too much data (cur %d + len %d > expected %d)",
+                            c,
+                            l,
+                            totalSize
+                    ));
                 System.arraycopy(chunk, 0, result, c, l);
                 crc.update(chunk, 0, l);
                 c += l;
             }
             if (c != totalSize)
-                throw new RuntimeException(String.format("wrong amount of data (actual %d != expected %d)", c, totalSize));
+                throw new RuntimeException(String.format(
+                        "wrong amount of data (actual %d != expected %d)",
+                        c,
+                        totalSize
+                ));
             long crcSum = crc.getValue();
             if (crcSum != overallCRC)
                 throw new FSBInvalidDataException(String.format(
