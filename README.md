@@ -73,7 +73,7 @@ really!!)
 > This can save you a LOT of time and disk space!
 >
 > 1. Create a file named `build.properties` in the project root, preferably **before** opening
-     > the project in IDEA.
+     the project in IDEA.
 > 2. Add the following contents, adjusting the parameters as necessary:
 > ```properties
 > # Filtered build options
