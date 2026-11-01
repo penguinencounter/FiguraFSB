@@ -8,7 +8,7 @@
 
 ### Working with FSB in a development environment
 
-Making addons? Choose one of the following strategies...
+Making addons? Grab the parts of the mod you need from the table below.
 
 > [!warning]
 > **Warning: Snapshots**  
@@ -16,108 +16,6 @@ Making addons? Choose one of the following strategies...
 > You may have to adjust your build scripts to support this configuration, since doing `${fsbVersion}+fabric`
 > does not work when `fsbVersion` is `1.2.3-SNAPSHOT` (it makes `1.2.3-SNAPSHOT+fabric`, which is wrong).  
 > Or, just don't use snapshot versions :3
-
-<details>
-<summary>I'm making a <b>Fabric, single-Minecraft-version</b> addon.</summary>
-
-Congratulations! That's the easiest option. Add this to your `dependencies`:
-
-```kts
-// Kotlin/Groovy
-modImplementation("org.figuramc.fsb:fsb-fabric:$fsbVer+$minecraft-fabric")
-```
-
-</details>
-
-<details>
-<summary>I'm making a <b>NeoForge, single-Minecraft-version</b> addon.</summary>
-
-```kts
-// ModDevGradle: Kotlin
-"org.figuramc.fsb:fsb-neoforge:$fsbVer+$minecraft-neoforge".let {
-    implementation(it)
-    additionalRuntimeClasspath(it) // 1.21.8 and below only
-}
-```
-
-```groovy
-// ModDevGradle: Groovy
-def fsb = "org.figuramc.fsb:fsb-neoforge:$fsbVer+$minecraft-neoforge"
-implementation(fsb)
-additionalRuntimeClasspath(fsb) // 1.21.8 and below only
-```
-
-```kotlin
-// NeoGradle: Groovy/Kotlin (1.21.8 and below)
-var fsb = "org.figuramc.fsb:fsb-neoforge:$fsbVer+$minecraft-neoforge"
-
-dependencies {
-    implementation(fsb)
-}
-runs {
-    configureEach {
-        dependencies {
-            runtime(fsb)
-        }
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>I'm making a multiloader addon for a single Minecraft version with <b>Architectury</b>.</summary>
-
-In your common project:
-
-```kts
-// note: 'fat' classifier required to get transitives
-modCompileOnly("org.figuramc.fsb:fsb-common-intermediary:$fsbVer+$minecraft:fat")
-```
-
-In individual loader projects (in this case, Fabric):
-
-```kotlin
-modImplementation("org.figuramc.fsb:fsb-fabric:$fsbVer+$minecraft-fabric")
-```
-
-</details>
-
-<details>
-<summary>I'm trying to be everywhere Figura is.</summary>
-
-Good luck with that! (/gen)  
-Consult the table below. Here's my recommendations:
-
-```kts
-// Any-version any-loader
-compileOnlyApi("org.figuramc.fsb:fsb-api:$fsbVer")
-compileOnlyApi("org.figuramc.fsb:fsb-server-api:$fsbVer")
-
-// Any-version single-loader (currently only matters for Fabric)
-compileOnlyApi("org.figuramc.fsb:fsb-fabric-any:$fsbVer+fabric")
-
-// Specific version common
-/* might be transitive from any/any */
-compileOnlyApi("org.figuramc.fsb:fsb-api:$fsbVer")
-compileOnlyApi("org.figuramc.fsb:fsb-server-api:$fsbVer")
-/* new stuff */
-modCompileOnlyApi("org.figuramc.fsb:fsb-common-intermediary:$fsbVer+$minecraftVer")
-
-// Specific loader + version
-/* might be transitive from any/any */
-compileOnly("org.figuramc.fsb:fsb-api:$fsbVer")
-compileOnly("org.figuramc.fsb:fsb-server-api:$fsbVer")
-/* might be transitive from common */
-modCompileOnly("org.figuramc.fsb:fsb-common-intermediary:$fsbVer+$minecraftVer")
-/* might be transitive from fabric/any */
-compileOnly("org.figuramc.fsb:fsb-fabric-any:$fsbVer+fabric")
-/* new stuff */
-modCompileOnly("org.figuramc.fsb:fsb-fabric:$fsbVer+$minecraftVer-fabric:component") // [!] ":component" is required
-modRuntimeOnly("org.figuramc.fsb:fsb-fabric:$fsbVer+$minecraftVer-fabric")
-```
-
-</details>
 
 ### Maven coordinates
 
@@ -192,7 +90,7 @@ really!!)
 >
 > This is also important when debugging in order to avoid this:
 >
-> ![list of sources, there are like 8 sources in a combobox and the scrollbar indicates there are probably 50 more](./readme_assets/which_source_do_you_want.png)
+> ![Combobox of 40 different sources for one file.](./readme_assets/which_source_do_you_want.png)
 
 The main culprit for the massive cache size is the fact that you're downloading at least 30 copies of Minecraft in
 various forms.
